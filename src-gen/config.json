@@ -1,0 +1,36 @@
+{
+    "globals": {
+        // To simulate scnearios with realtime scenario
+        //"startTime": "2019-01-01T18:00:00.000Z",
+        //"endTime": "2019-01-01T18:10:00.000Z",
+        //"deltaTUnit": "seconds",
+        
+        // To simulate with only the steps
+        "steps": 10,
+        
+        "deltaT": 1,
+        "output": "csv",
+        "options": {
+            "delimiter": ";",
+            "numberFormat" : "G",
+            "format": "en-EN"
+        }
+    },
+    "layers": [
+        {
+            "name": "Airportland"
+        },
+        {
+            "name": "AirportStadeLayer",
+            "file": "AirportStade.geojson"
+        }
+    ],
+    "agents": [
+        {
+            "name":"Aircraft",
+            "count":1,
+            // Deactivate the output for the Observer agent
+            //"outputFrequency": -1
+        }
+    ]
+}

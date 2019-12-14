@@ -1,0 +1,34 @@
+model cessna_digital_twin
+
+use Mars
+
+layer AgentLayer
+
+vector-layer AirportStadeLayer as airportstadelayer
+
+agent Aircraft on AgentLayer{
+	
+	observe var Failure : real = 0.0
+	
+	//#(9.4987928, 53.560392)
+	initialize Aircraft => pos at #(9.4987928, 53.560392)
+	tick{
+		println "Stepcounter: " + simtime
+		Failure = Failure + 0.1
+		
+		// can return current position field and it`s type, printing only works on strings!
+		var typeName = airportstadelayer.Get(xcor, ycor);		
+		println "typeName:"
+		println typeName.Get("aeroway")
+		
+		//use explore or nearest for return lat-lon of specific feature
+		var result = explore on AirportStadeLayer where [it => return it.Contains("aeroway") and it.Get("aeroway") === "taxiway"]
+		println result[1]
+		
+		var res = nearest on AirportStadeLayer where [it => return it.Contains("aeroway") and it.Get("aeroway") === "taxiway"]
+		println res
+		// return max. Latitude of map
+		//var maxLat = airportlayer.MaxLat()
+		//println maxLat
+	}
+}

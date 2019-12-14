@@ -1,0 +1,10 @@
+C:\Users\eriks\Google Drive\Bachelorarbeit\02_Eclipse_Workspace\cessna_digital_twin\src-gen\bin\Debug\netcoreapp2.2\cessna_digital_twin.deps.json
+C:\Users\eriks\Google Drive\Bachelorarbeit\02_Eclipse_Workspace\cessna_digital_twin\src-gen\bin\Debug\netcoreapp2.2\cessna_digital_twin.runtimeconfig.json
+C:\Users\eriks\Google Drive\Bachelorarbeit\02_Eclipse_Workspace\cessna_digital_twin\src-gen\bin\Debug\netcoreapp2.2\cessna_digital_twin.runtimeconfig.dev.json
+C:\Users\eriks\Google Drive\Bachelorarbeit\02_Eclipse_Workspace\cessna_digital_twin\src-gen\bin\Debug\netcoreapp2.2\cessna_digital_twin.dll
+C:\Users\eriks\Google Drive\Bachelorarbeit\02_Eclipse_Workspace\cessna_digital_twin\src-gen\bin\Debug\netcoreapp2.2\cessna_digital_twin.pdb
+C:\Users\eriks\Google Drive\Bachelorarbeit\02_Eclipse_Workspace\cessna_digital_twin\src-gen\obj\Debug\netcoreapp2.2\cessna_digital_twin.csprojAssemblyReference.cache
+C:\Users\eriks\Google Drive\Bachelorarbeit\02_Eclipse_Workspace\cessna_digital_twin\src-gen\obj\Debug\netcoreapp2.2\cessna_digital_twin.AssemblyInfoInputs.cache
+C:\Users\eriks\Google Drive\Bachelorarbeit\02_Eclipse_Workspace\cessna_digital_twin\src-gen\obj\Debug\netcoreapp2.2\cessna_digital_twin.AssemblyInfo.cs
+C:\Users\eriks\Google Drive\Bachelorarbeit\02_Eclipse_Workspace\cessna_digital_twin\src-gen\obj\Debug\netcoreapp2.2\cessna_digital_twin.dll
+C:\Users\eriks\Google Drive\Bachelorarbeit\02_Eclipse_Workspace\cessna_digital_twin\src-gen\obj\Debug\netcoreapp2.2\cessna_digital_twin.pdb
