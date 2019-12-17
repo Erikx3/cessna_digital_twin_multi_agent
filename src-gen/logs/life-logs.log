@@ -16,3 +16,39 @@
 [ERROR] 2019-12-04 14:42:32,047 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
 [ERROR] 2019-12-04 14:42:32,047 | Mars.Core.SimulationStarter.SimulationStarter - One or more errors occurred. (The given key 'type' was not present in the dictionary.) 
 [ERROR] 2019-12-04 14:42:32,047 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2019-12-14 14:19:51,279 | Mars.Core.SimulationStepExecutor.Implementation.StepExecutionUseCase - Object reference not set to an instance of an object. 
+[ERROR] 2019-12-14 14:19:51,293 | Mars.Core.SimulationStarter.SimulationStarter - MARS simulation execution crashed by AggregateException 
+[ERROR] 2019-12-14 14:19:51,293 | Mars.Core.SimulationStarter.SimulationStarter - Exception message: 
+[ERROR] 2019-12-14 14:19:51,293 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2019-12-14 14:19:51,293 | Mars.Core.SimulationStarter.SimulationStarter - One or more errors occurred. (Object reference not set to an instance of an object.) 
+[ERROR] 2019-12-14 14:19:51,293 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2019-12-14 15:11:49,736 | Mars.Core.SimulationStepExecutor.Implementation.StepExecutionUseCase - Object reference not set to an instance of an object. 
+[ERROR] 2019-12-14 15:11:49,754 | Mars.Core.SimulationStarter.SimulationStarter - MARS simulation execution crashed by AggregateException 
+[ERROR] 2019-12-14 15:11:49,754 | Mars.Core.SimulationStarter.SimulationStarter - Exception message: 
+[ERROR] 2019-12-14 15:11:49,754 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2019-12-14 15:11:49,754 | Mars.Core.SimulationStarter.SimulationStarter - One or more errors occurred. (Object reference not set to an instance of an object.) 
+[ERROR] 2019-12-14 15:11:49,754 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2019-12-14 15:13:31,576 | Mars.Core.SimulationStepExecutor.Implementation.StepExecutionUseCase - Object reference not set to an instance of an object. 
+[ERROR] 2019-12-14 15:13:31,588 | Mars.Core.SimulationStarter.SimulationStarter - MARS simulation execution crashed by AggregateException 
+[ERROR] 2019-12-14 15:13:31,588 | Mars.Core.SimulationStarter.SimulationStarter - Exception message: 
+[ERROR] 2019-12-14 15:13:31,588 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2019-12-14 15:13:31,588 | Mars.Core.SimulationStarter.SimulationStarter - One or more errors occurred. (Object reference not set to an instance of an object.) 
+[ERROR] 2019-12-14 15:13:31,588 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2019-12-14 15:13:59,788 | Mars.Core.SimulationStepExecutor.Implementation.StepExecutionUseCase - Object reference not set to an instance of an object. 
+[ERROR] 2019-12-14 15:13:59,801 | Mars.Core.SimulationStarter.SimulationStarter - MARS simulation execution crashed by AggregateException 
+[ERROR] 2019-12-14 15:13:59,801 | Mars.Core.SimulationStarter.SimulationStarter - Exception message: 
+[ERROR] 2019-12-14 15:13:59,801 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2019-12-14 15:13:59,801 | Mars.Core.SimulationStarter.SimulationStarter - One or more errors occurred. (Object reference not set to an instance of an object.) 
+[ERROR] 2019-12-14 15:13:59,801 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2019-12-14 15:15:23,240 | Mars.Core.SimulationStepExecutor.Implementation.StepExecutionUseCase - Object reference not set to an instance of an object. 
+[ERROR] 2019-12-14 15:15:23,254 | Mars.Core.SimulationStarter.SimulationStarter - MARS simulation execution crashed by AggregateException 
+[ERROR] 2019-12-14 15:15:23,254 | Mars.Core.SimulationStarter.SimulationStarter - Exception message: 
+[ERROR] 2019-12-14 15:15:23,254 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2019-12-14 15:15:23,254 | Mars.Core.SimulationStarter.SimulationStarter - One or more errors occurred. (Object reference not set to an instance of an object.) 
+[ERROR] 2019-12-14 15:15:23,254 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2019-12-14 15:59:13,826 | Mars.Core.SimulationStepExecutor.Implementation.StepExecutionUseCase - Object reference not set to an instance of an object. 
+[ERROR] 2019-12-14 15:59:13,838 | Mars.Core.SimulationStarter.SimulationStarter - MARS simulation execution crashed by AggregateException 
+[ERROR] 2019-12-14 15:59:13,838 | Mars.Core.SimulationStarter.SimulationStarter - Exception message: 
+[ERROR] 2019-12-14 15:59:13,838 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2019-12-14 15:59:13,838 | Mars.Core.SimulationStarter.SimulationStarter - One or more errors occurred. (Object reference not set to an instance of an object.) 
+[ERROR] 2019-12-14 15:59:13,838 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 

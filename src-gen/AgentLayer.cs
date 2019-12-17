@@ -37,10 +37,56 @@ namespace cessna_digital_twin {
 		public double MaxLat() => _maxLat;
 		
 		public Mars.Components.Environments.GeoHashEnvironment<Aircraft> _AircraftEnvironment { get; set; }
+		public Mars.Components.Environments.GeoHashEnvironment<Pilot> _PilotEnvironment { get; set; }
 		public AirportStadeLayer _AirportStadeLayer { get; set; }
 		public System.Collections.Generic.IDictionary<System.Guid, Aircraft> _AircraftAgents { get; set; }
+		public System.Collections.Generic.IDictionary<System.Guid, Pilot> _PilotAgents { get; set; }
 		
 		public AgentLayer _AgentLayer => this;
+		public AgentLayer agentlayer => this;
+		private double __spawn_xcor
+			 = 9.4987928;
+		internal double spawn_xcor { 
+			get { return __spawn_xcor; }
+			set{
+				if(System.Math.Abs(__spawn_xcor - value) > 0.0000001) __spawn_xcor = value;
+			}
+		}
+		private double __spawn_ycor
+			 = 53.560392;
+		internal double spawn_ycor { 
+			get { return __spawn_ycor; }
+			set{
+				if(System.Math.Abs(__spawn_ycor - value) > 0.0000001) __spawn_ycor = value;
+			}
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void update_spawn_coord() 
+		{
+			{
+			spawn_xcor = spawn_xcor + _Random.Next(5)
+			 - 4;
+			spawn_ycor = spawn_ycor + _Random.Next(5)
+			 - 4
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public double get_spawn_x_coord() 
+		{
+			{
+			return spawn_xcor
+			;}
+			return default(double);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public double get_spawn_y_coord() 
+		{
+			{
+			return spawn_ycor
+			;}
+			return default(double);;
+		}
 		public AgentLayer (
 		AirportStadeLayer _airportstadelayer, 
 		double? minLon = null, double? minLat = null,
@@ -73,6 +119,7 @@ namespace cessna_digital_twin {
 			var _gisLayerExist = true;
 			if (!_isDefault && _lowerLeft != null && _upperRight != null) {
 				this._AircraftEnvironment = Mars.Components.Environments.GeoHashEnvironment<Aircraft>.BuildByBBox(_lowerLeft.Longitude, _lowerLeft.Latitude, _upperRight.Longitude, _upperRight.Latitude);
+				this._PilotEnvironment = Mars.Components.Environments.GeoHashEnvironment<Pilot>.BuildByBBox(_lowerLeft.Longitude, _lowerLeft.Latitude, _upperRight.Longitude, _upperRight.Latitude);
 			} else if (_gisLayerExist)
 			{
 				var geometries = new List<GeoAPI.Geometries.IGeometry>();
@@ -86,15 +133,22 @@ namespace cessna_digital_twin {
 				
 				this._AircraftEnvironment = Mars.Components.Environments.GeoHashEnvironment<Aircraft>
 					.BuildByBBox(_feature.MinX, _feature.MinY, _feature.MaxX, _feature.MaxY);
+				this._PilotEnvironment = Mars.Components.Environments.GeoHashEnvironment<Pilot>
+					.BuildByBBox(_feature.MinX, _feature.MinY, _feature.MaxX, _feature.MaxY);
 			} 
 			else if (_lowerLeft != null && _upperRight != null) {
 				this._AircraftEnvironment = Mars.Components.Environments.GeoHashEnvironment<Aircraft>.BuildByBBox(_lowerLeft.Longitude, _lowerLeft.Latitude, _upperRight.Longitude, _upperRight.Latitude);
+				this._PilotEnvironment = Mars.Components.Environments.GeoHashEnvironment<Pilot>.BuildByBBox(_lowerLeft.Longitude, _lowerLeft.Latitude, _upperRight.Longitude, _upperRight.Latitude);
 			} else {
 				throw new ArgumentException("No environment boundary was used for agent layer 'TestLayer'");
 			}
 			
 			_AircraftAgents = Mars.Components.Services.AgentManager.SpawnAgents<Aircraft>(
 			initData.AgentInitConfigs.First(config => config.Type == typeof(Aircraft)),
+			regHandle, unregHandle, 
+			new System.Collections.Generic.List<Mars.Interfaces.Layer.ILayer> { this, this._AirportStadeLayer });
+			_PilotAgents = Mars.Components.Services.AgentManager.SpawnAgents<Pilot>(
+			initData.AgentInitConfigs.First(config => config.Type == typeof(Pilot)),
 			regHandle, unregHandle, 
 			new System.Collections.Generic.List<Mars.Interfaces.Layer.ILayer> { this, this._AirportStadeLayer });
 			
@@ -111,6 +165,16 @@ namespace cessna_digital_twin {
 			_AircraftAgents.Add(id, agent);
 			return agent;
 		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public cessna_digital_twin.Pilot _SpawnPilot(double xcor = 0, double ycor = 0, int freq = 1) {
+			var id = System.Guid.NewGuid();
+			var agent = new cessna_digital_twin.Pilot(id, this, _Register, _Unregister,
+			_PilotEnvironment,
+			_AirportStadeLayer
+		, 	xcor, ycor, freq);
+			_PilotAgents.Add(id, agent);
+			return agent;
+		}
 		
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public void _KillAircraft(cessna_digital_twin.Aircraft target, int executionFrequency = 1)
@@ -119,6 +183,14 @@ namespace cessna_digital_twin {
 			_AircraftEnvironment.Remove(target);
 			_Unregister(this, target, target._executionFrequency);
 			_AircraftAgents.Remove(target.ID);
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void _KillPilot(cessna_digital_twin.Pilot target, int executionFrequency = 1)
+		{
+			target._isAlive = false;
+			_PilotEnvironment.Remove(target);
+			_Unregister(this, target, target._executionFrequency);
+			_PilotAgents.Remove(target.ID);
 		}
 	}
 }

@@ -2,33 +2,299 @@ model cessna_digital_twin
 
 use Mars
 
-layer AgentLayer
+layer AgentLayer as agentlayer
+{
+	//-----Spawn Handling-----
+	var spawn_xcor : real = 9.4987928
+	var spawn_ycor : real = 53.560392
+	
+	def update_spawn_coord()
+	{
+		spawn_xcor = spawn_xcor + random(5) - 4
+		spawn_ycor = spawn_ycor + random(5) - 4
+	}	
+	
+	def get_spawn_x_coord()
+	{
+		return spawn_xcor
+	}	
+	
+	def get_spawn_y_coord()
+	{
+		return spawn_ycor
+	}
+}
 
 vector-layer AirportStadeLayer as airportstadelayer
 
+
+
 agent Aircraft on AgentLayer{
 	
-	observe var Failure : real = 0.0
+	initialize
+	{
+		var x_spawn = agentlayer.get_spawn_x_coord()
+		var y_spawn = agentlayer.get_spawn_y_coord()
+		pos at #(x_spawn, y_spawn)
+		
+		update_general_values() // also used for initialization so far
+		initialize_RightWingTank()
+		initialize_LeftWingTank()
+		initialize_Tire()
+		initialize_Engine()
+	}
 	
-	//#(9.4987928, 53.560392)
-	initialize Aircraft => pos at #(9.4987928, 53.560392)
-	tick{
-		println "Stepcounter: " + simtime
-		Failure = Failure + 0.1
+	
+	tick
+	{
+		update_general_values()
+	}
+	
+	
+	
+	// -----General Values and Functions-----
+	observe var Latitude : real
+	observe var Longitude : real
+	//observe var passive_activity: string // activity by pilot is more precise
+	//observe var malfunction_notification // maybe add something like this or think about it
+	
+	def update_general_values()
+	{
+		Longitude = xcor
+		Latitude = ycor
+	}
+	
+	passive Get_position() => return #(xcor, ycor) // for returning the position of the aircraft
+	
+	
+	
+	// -----Engine-----
+	observe var Engine__oil : real //litre
+	var Engine__oil_max : integer = 6
+	
+	def initialize_Engine()
+	{
+		Engine__oil = random(4) + 3
+	}
+	
+	passive Get_Engine__oil() => return RWT__fuel_quantity
+	
+	
+	
+	// -----Right Wing Tank (RWT)-----
+	observe var RWT__fuel_quantity : real 
+	observe var RWT__water_sediments : bool
+	var RWT__total_capacity : integer = 49 // Litre
 		
-		// can return current position field and it`s type, printing only works on strings!
-		var typeName = airportstadelayer.Get(xcor, ycor);		
-		println "typeName:"
-		println typeName.Get("aeroway")
+	passive Get_RWT__fuel_quantity() => return RWT__fuel_quantity
+	passive Get_RWT__water_sediments() => return RWT__water_sediments
+	
+	def initialize_RightWingTank()
+	{
+		RWT__fuel_quantity = random(RWT__total_capacity+1)
+		RWT__water_sediments = false
+	}
+	
+	
+	
+	// -----Left Wing Tank (LWT)-----
+	observe var LWT__fuel_quantity : real // Litre
+	observe var LWT__water_sediments : bool 
+	var LWT__total_capacity : integer = 49 // Litre
+	
+	passive Get_LWT__fuel_quantity() => return LWT__fuel_quantity // return of fuel quantity "visual"
+	passive Get_LWT__water_sediments() => return LWT__water_sediments
+	
+	def initialize_LeftWingTank()
+	{
+		LWT__fuel_quantity = random(LWT__total_capacity+1)
+		LWT__water_sediments = false
+	}
+	
+	
+	
+	
+	// -----Tire-----
+	observe var TireRightMainWheel__inflation : integer
+	observe var TireLeftMainWheel__inflation : integer
+	observe var TireNoseWheel__inflation : integer
+	var TireRightMainWheel__inflation_max : integer = 145000
+	var TireLeftMainWheel__inflation_max : integer = 145000
+	var TireNoseWheel__inflation_max : integer = 207000
+	
+	// 1% Chance that a Tire is not fully inflated
+	def initialize_Tire()
+	{
+		if (random(100) <= 99)
+		{
+			TireRightMainWheel__inflation = TireRightMainWheel__inflation_max
+		}
+		else
+		{
+			TireRightMainWheel__inflation = random(TireRightMainWheel__inflation_max)
+		}
 		
-		//use explore or nearest for return lat-lon of specific feature
-		var result = explore on AirportStadeLayer where [it => return it.Contains("aeroway") and it.Get("aeroway") === "taxiway"]
-		println result[1]
+		if (random(100) <= 99)
+		{
+			TireLeftMainWheel__inflation = TireLeftMainWheel__inflation_max
+		}
+		else
+		{
+			TireLeftMainWheel__inflation = random(TireLeftMainWheel__inflation_max)
+		}
 		
-		var res = nearest on AirportStadeLayer where [it => return it.Contains("aeroway") and it.Get("aeroway") === "taxiway"]
-		println res
-		// return max. Latitude of map
-		//var maxLat = airportlayer.MaxLat()
-		//println maxLat
+		if (random(100) <= 99)
+		{
+			TireNoseWheel__inflation = TireNoseWheel__inflation_max
+		}
+		else
+		{
+			TireNoseWheel__inflation = random(TireNoseWheel__inflation_max)
+		}
+	}
+	
+	passive Get_TireRightMainWheel__inflation() => return TireRightMainWheel__inflation
+	passive Get_TireLeftMainWheel__inflation() => return TireLeftMainWheel__inflation
+	passive Get_TireNoseWheel__inflation() => return TireNoseWheel__inflation
+}
+
+
+
+
+
+agent Pilot on AgentLayer{
+		
+	initialize
+	{
+		var x_spawn = agentlayer.get_spawn_x_coord()
+		var y_spawn = agentlayer.get_spawn_y_coord()
+		pos at #(x_spawn, y_spawn)
+		myAircraft = nearest Aircraft // assign aircraft only ones
+		update_general_values() // also used for initialization so far
+		state = "PreflightInspection"
+	}
+		
+	tick
+	{	
+		println simtime
+		if (state === "PreflightInspection"){
+			PreflightInspection_action()
+		}
+		
+		update_general_values()
+	}
+	
+	
+	//-----General Values-----
+	observe var Latitude : real
+	observe var Longitude : real
+	var myAircraft : Aircraft // for accessing the real aircraft
+	observe var state : string
+	observe var current_activity : string
+	
+	var timehandler = new TimeHandler()
+	var first_action_done : bool = false // temporary auxiliary variable
+	var next_action : string
+	
+	def update_general_values()
+	{
+		Longitude = xcor
+		Latitude = ycor
+		current_activity = next_action
+	}
+	
+	
+	
+	//-----Preflight Inspection-----
+	def PreflightInspection_action()
+	{
+		if (first_action_done === false)
+		{
+			Check_TireRightMainWheel__inflation("Check_RWT__water_sediments")
+			if (next_action === "Check_RWT__water_sediments")
+			{
+				first_action_done = true
+			}
+		}
+			
+		else if (next_action === "Check_RWT__water_sediments")
+		{
+			Check_RWT__water_sediments("End_of_Actions")
+			if (next_action === "End_of_Actions")
+			{
+				println "Finished State >" + state + " with next action flag >" + next_action
+				state = "my_second_state"
+				first_action_done = false
+			}
+		}
+	}
+	
+	
+	// Visual Tire Functions
+	def Check_TireRightMainWheel__inflation(next_act : string)
+	{	
+		timehandler.create_action_duration(5, 2)
+		if (timehandler.hold_action_time(timehandler.action_duration))
+		{
+			println "Checking right Main Wheel Tire inflation"
+			println myAircraft.Get_TireRightMainWheel__inflation()
+			next_action = next_act
+		}
+			
+	}
+	
+	def Check_RWT__water_sediments(next_act : string)
+	{
+		timehandler.create_action_duration(20, 10)
+		if (timehandler.hold_action_time(timehandler.action_duration))
+		{
+			println "Checking right wing tank for water sediments"
+			println myAircraft.Get_RWT__water_sediments()
+			next_action = next_act
+		}
+			
+	}
+	
+	
+}
+
+
+
+
+
+// -----Class for handling all time issues-----
+class TimeHandler
+{
+	var action_run_time : integer =  0
+	var action_duration_time_set : bool = false
+	var action_duration : integer
+	
+	def hold_action_time(time_needed : integer): bool 
+	{
+		action_run_time = action_run_time + 1
+		if (action_run_time >= time_needed)
+		{
+			reset_action_timer()
+			action_duration_time_set = false
+			return true	
+		}
+		else
+		{
+			return false
+		}
+	}
+	
+	def reset_action_timer(): void
+	{
+		action_run_time = 0
+	}
+	
+	def create_action_duration(action_duration_base : integer, action_duration_extra : integer)
+	{
+		if (action_duration_time_set === false)
+		{
+			action_duration_time_set = true
+			action_duration = action_duration_base + random(action_duration_extra)
+		}
 	}
 }
