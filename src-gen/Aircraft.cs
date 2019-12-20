@@ -231,7 +231,7 @@ namespace cessna_digital_twin {
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public double Get_Engine__oil() {
 			{
-			return RWT__fuel_quantity
+			return Engine__oil
 					;
 			}
 			

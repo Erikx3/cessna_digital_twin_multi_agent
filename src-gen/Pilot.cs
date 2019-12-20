@@ -34,14 +34,6 @@ namespace cessna_digital_twin {
 				if(System.Math.Abs(__Longitude - value) > 0.0000001) __Longitude = value;
 			}
 		}
-		private cessna_digital_twin.Aircraft __myAircraft
-			 = default(cessna_digital_twin.Aircraft);
-		internal cessna_digital_twin.Aircraft myAircraft { 
-			get { return __myAircraft; }
-			set{
-				if(__myAircraft != value) __myAircraft = value;
-			}
-		}
 		private string __state
 			 = default(string);
 		public string state { 
@@ -56,6 +48,14 @@ namespace cessna_digital_twin {
 			get { return __current_activity; }
 			set{
 				if(__current_activity != value) __current_activity = value;
+			}
+		}
+		private cessna_digital_twin.Aircraft __myAircraft
+			 = default(cessna_digital_twin.Aircraft);
+		internal cessna_digital_twin.Aircraft myAircraft { 
+			get { return __myAircraft; }
+			set{
+				if(__myAircraft != value) __myAircraft = value;
 			}
 		}
 		private cessna_digital_twin.TimeHandler __timehandler
@@ -82,6 +82,38 @@ namespace cessna_digital_twin {
 				if(__next_action != value) __next_action = value;
 			}
 		}
+		private int __age_max
+			 = 75;
+		internal int age_max { 
+			get { return __age_max; }
+			set{
+				if(__age_max != value) __age_max = value;
+			}
+		}
+		private int __age_min
+			 = 18;
+		internal int age_min { 
+			get { return __age_min; }
+			set{
+				if(__age_min != value) __age_min = value;
+			}
+		}
+		private int __age
+			 = default(int);
+		public int age { 
+			get { return __age; }
+			set{
+				if(__age != value) __age = value;
+			}
+		}
+		private int __flight_experience
+			 = default(int);
+		public int flight_experience { 
+			get { return __flight_experience; }
+			set{
+				if(__flight_experience != value) __flight_experience = value;
+			}
+		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public void update_general_values() 
 		{
@@ -98,6 +130,7 @@ namespace cessna_digital_twin {
 			{
 			if(Equals(first_action_done, false)) {
 							{
+							next_action = "Check_TireRightMainWheel__inflation";
 							Check_TireRightMainWheel__inflation("Check_RWT__water_sediments");
 							if(Equals(next_action, "Check_RWT__water_sediments")) {
 											{
@@ -108,16 +141,52 @@ namespace cessna_digital_twin {
 					;} else {
 							if(Equals(next_action, "Check_RWT__water_sediments")) {
 											{
-											Check_RWT__water_sediments("End_of_Actions");
-											if(Equals(next_action, "End_of_Actions")) {
-															{
-															System.Console.WriteLine("Finished State >" + state + " with next action flag >" + next_action);;
-															state = "my_second_state";
-															first_action_done = false
-															;}
-													;} 
+											Check_RWT__water_sediments("Check_RWT__fuel_quantity")
 											;}
-									;} 
+									;} else {
+											if(Equals(next_action, "Check_RWT__fuel_quantity")) {
+															{
+															Check_RWT__fuel_quantity("Check_Engine__oil")
+															;}
+													;} else {
+															if(Equals(next_action, "Check_Engine__oil")) {
+																			{
+																			Check_Engine__oil("Check_TireNoseWheel__inflation")
+																			;}
+																	;} else {
+																			if(Equals(next_action, "Check_TireNoseWheel__inflation")) {
+																							{
+																							Check_TireNoseWheel__inflation("Check_TireLeftMainWheel__inflation")
+																							;}
+																					;} else {
+																							if(Equals(next_action, "Check_TireLeftMainWheel__inflation")) {
+																											{
+																											Check_TireLeftMainWheel__inflation("Check_LWT__water_sediments")
+																											;}
+																									;} else {
+																											if(Equals(next_action, "Check_LWT__water_sediments")) {
+																															{
+																															Check_LWT__water_sediments("Check_LWT__fuel_quantity")
+																															;}
+																													;} else {
+																															if(Equals(next_action, "Check_LWT__fuel_quantity")) {
+																																			{
+																																			Check_LWT__fuel_quantity("End_of_Actions");
+																																			if(Equals(next_action, "End_of_Actions")) {
+																																							{
+																																							System.Console.WriteLine("Finished State >" + state + " with next action flag >" + next_action);;
+																																							state = "my_second_state";
+																																							first_action_done = false
+																																							;}
+																																					;} 
+																																			;}
+																																	;} 
+																														;}
+																										;}
+																						;}
+																		;}
+														;}
+										;}
 						;}
 			;}
 			return;
@@ -126,7 +195,7 @@ namespace cessna_digital_twin {
 		public void Check_TireRightMainWheel__inflation(string next_act) 
 		{
 			{
-			timehandler.create_action_duration(5,2);
+			timehandler.create_action_duration(10,10,"age_and_experience");
 			if(timehandler.hold_action_time(timehandler.action_duration)
 			) {
 							{
@@ -140,15 +209,117 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void Check_TireLeftMainWheel__inflation(string next_act) 
+		{
+			{
+			timehandler.create_action_duration(10,10,"age_and_experience");
+			if(timehandler.hold_action_time(timehandler.action_duration)
+			) {
+							{
+							System.Console.WriteLine("Checking left Main Wheel Tire inflation");;
+							System.Console.WriteLine(myAircraft.Get_TireLeftMainWheel__inflation()
+							);;
+							next_action = next_act
+							;}
+					;} 
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void Check_TireNoseWheel__inflation(string next_act) 
+		{
+			{
+			timehandler.create_action_duration(10,10,"age_and_experience");
+			if(timehandler.hold_action_time(timehandler.action_duration)
+			) {
+							{
+							System.Console.WriteLine("Checking Nose Wheel Tire inflation");;
+							System.Console.WriteLine(myAircraft.Get_TireNoseWheel__inflation()
+							);;
+							next_action = next_act
+							;}
+					;} 
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void Check_RWT__fuel_quantity(string next_act) 
+		{
+			{
+			timehandler.create_action_duration(20,20,"age_and_experience");
+			if(timehandler.hold_action_time(timehandler.action_duration)
+			) {
+							{
+							System.Console.WriteLine("Checking right wing tank fuel quantity");;
+							System.Console.WriteLine(myAircraft.Get_RWT__fuel_quantity()
+							);;
+							next_action = next_act
+							;}
+					;} 
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void Check_LWT__fuel_quantity(string next_act) 
+		{
+			{
+			timehandler.create_action_duration(20,20,"age_and_experience");
+			if(timehandler.hold_action_time(timehandler.action_duration)
+			) {
+							{
+							System.Console.WriteLine("Checking left wing tank fuel quantity");;
+							System.Console.WriteLine(myAircraft.Get_RWT__fuel_quantity()
+							);;
+							next_action = next_act
+							;}
+					;} 
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public void Check_RWT__water_sediments(string next_act) 
 		{
 			{
-			timehandler.create_action_duration(20,10);
+			timehandler.create_action_duration(20,20,"age_and_experience");
 			if(timehandler.hold_action_time(timehandler.action_duration)
 			) {
 							{
 							System.Console.WriteLine("Checking right wing tank for water sediments");;
 							System.Console.WriteLine(myAircraft.Get_RWT__water_sediments()
+							);;
+							next_action = next_act
+							;}
+					;} 
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void Check_LWT__water_sediments(string next_act) 
+		{
+			{
+			timehandler.create_action_duration(20,20,"age_and_experience");
+			if(timehandler.hold_action_time(timehandler.action_duration)
+			) {
+							{
+							System.Console.WriteLine("Checking left wing tank for water sediments");;
+							System.Console.WriteLine(myAircraft.Get_LWT__water_sediments()
+							);;
+							next_action = next_act
+							;}
+					;} 
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void Check_Engine__oil(string next_act) 
+		{
+			{
+			timehandler.create_action_duration(20,20,"age_and_experience");
+			if(timehandler.hold_action_time(timehandler.action_duration)
+			) {
+							{
+							System.Console.WriteLine("Checking Engine oil");;
+							System.Console.WriteLine(myAircraft.Get_Engine__oil()
 							);;
 							next_action = next_act
 							;}
@@ -190,35 +361,39 @@ namespace cessna_digital_twin {
 			double y_spawn = agentlayer.get_spawn_y_coord();
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget171_3957 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget172_3962 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object171_3957 = this;
+				var _object172_3962 = this;
 				
-				_AgentLayer._PilotEnvironment.PosAt(_object171_3957, 
-					_taget171_3957.Item1, _taget171_3957.Item2
+				_AgentLayer._PilotEnvironment.PosAt(_object172_3962, 
+					_taget172_3962.Item1, _taget172_3962.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
 			myAircraft = new Func<cessna_digital_twin.Aircraft>(() => {
-				Func<cessna_digital_twin.Aircraft, bool> _predicate172_4000 = null;
-				Func<cessna_digital_twin.Aircraft, bool> _predicateMod172_4000 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
+				Func<cessna_digital_twin.Aircraft, bool> _predicate175_4037 = null;
+				Func<cessna_digital_twin.Aircraft, bool> _predicateMod175_4037 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
 				{
 					if (_it?.ID == this.ID)
 					{
 						return false;
-					} else if (_predicate172_4000 != null)
+					} else if (_predicate175_4037 != null)
 					{
-						return _predicate172_4000.Invoke(_it);
+						return _predicate175_4037.Invoke(_it);
 					} else return true;
 				});
 				
-				const int _range172_4000 = -1;
-				var _source172_4000 = this.Position;
+				const int _range175_4037 = -1;
+				var _source175_4037 = this.Position;
 				
-				return _AgentLayer._AircraftEnvironment.Explore(_source172_4000, _range172_4000, 1, _predicateMod172_4000)?.FirstOrDefault();
+				return _AgentLayer._AircraftEnvironment.Explore(_source175_4037, _range175_4037, 1, _predicateMod175_4037)?.FirstOrDefault();
 			}).Invoke();
 			update_general_values();
-			state = "PreflightInspection"
+			state = "PreflightInspection";
+			age = age_min + _Random.Next((age_max - age_min) + 1);
+			flight_experience = _Random.Next(age - age_min)
+			 + 1;
+			timehandler.initialize_variables(age,flight_experience,age_max,age_min)
 			;}
 		}
 		
@@ -226,7 +401,6 @@ namespace cessna_digital_twin {
 		{
 			{ if (!_isAlive) return; }
 			{
-			System.Console.WriteLine((int) Mars.Core.SimulationManager.Entities.SimulationClock.CurrentStep);;
 			if(Equals(state, "PreflightInspection")) {
 							{
 							PreflightInspection_action()

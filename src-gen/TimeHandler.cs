@@ -42,6 +42,49 @@ namespace cessna_digital_twin {
 				if(__action_duration != value) __action_duration = value;
 			}
 		}
+		private int __pilot_age
+			 = default(int);
+		internal int pilot_age { 
+			get { return __pilot_age; }
+			set{
+				if(__pilot_age != value) __pilot_age = value;
+			}
+		}
+		private int __pilot_flight_experience
+			 = default(int);
+		internal int pilot_flight_experience { 
+			get { return __pilot_flight_experience; }
+			set{
+				if(__pilot_flight_experience != value) __pilot_flight_experience = value;
+			}
+		}
+		private int __pilot_age_max
+			 = default(int);
+		internal int pilot_age_max { 
+			get { return __pilot_age_max; }
+			set{
+				if(__pilot_age_max != value) __pilot_age_max = value;
+			}
+		}
+		private int __pilot_age_min
+			 = default(int);
+		internal int pilot_age_min { 
+			get { return __pilot_age_min; }
+			set{
+				if(__pilot_age_min != value) __pilot_age_min = value;
+			}
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void initialize_variables(int p_age, int p_exp, int p_age_max, int p_age_min) 
+		{
+			{
+			pilot_age = p_age;
+			pilot_flight_experience = p_exp;
+			pilot_age_max = p_age_max;
+			pilot_age_min = p_age_min
+			;}
+			return;
+		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public bool hold_action_time(int time_needed) 
 		{
@@ -70,13 +113,22 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void create_action_duration(int action_duration_base, int action_duration_extra) 
+		public void create_action_duration(int action_duration_base, int action_duration_extra, string mode) 
 		{
 			{
 			if(Equals(action_duration_time_set, false)) {
 							{
 							action_duration_time_set = true;
-							action_duration = action_duration_base + _Random.Next(action_duration_extra)
+							if(Equals(mode, "age_and_experience")) {
+											{
+											int action_duration_extra_calc = action_duration_extra * (1 + (pilot_age / pilot_age_max) - pilot_flight_experience / (pilot_age_max - pilot_age_min));
+											action_duration = action_duration_base + _Random.Next(action_duration_extra_calc)
+											;}
+									;} else {
+											{
+											action_duration = action_duration_base + _Random.Next(action_duration_extra)
+											;}
+										;}
 							;}
 					;} 
 			;}

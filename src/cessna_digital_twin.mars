@@ -77,7 +77,7 @@ agent Aircraft on AgentLayer{
 		Engine__oil = random(4) + 3
 	}
 	
-	passive Get_Engine__oil() => return RWT__fuel_quantity
+	passive Get_Engine__oil() => return Engine__oil
 	
 	
 	
@@ -166,17 +166,24 @@ agent Pilot on AgentLayer{
 		
 	initialize
 	{
+		// Spawn
 		var x_spawn = agentlayer.get_spawn_x_coord()
 		var y_spawn = agentlayer.get_spawn_y_coord()
 		pos at #(x_spawn, y_spawn)
+		
+		//General Initialization
 		myAircraft = nearest Aircraft // assign aircraft only ones
-		update_general_values() // also used for initialization so far
-		state = "PreflightInspection"
+		update_general_values() // so first row of csv is not empty
+		state = "PreflightInspection" // first state so far
+		
+		// Pilot attributes and share them
+		age = age_min + random((age_max - age_min) + 1)
+		flight_experience = random(age - age_min) +1
+		timehandler.initialize_variables(age, flight_experience, age_max, age_min)
 	}
 		
 	tick
 	{	
-		println simtime
 		if (state === "PreflightInspection"){
 			PreflightInspection_action()
 		}
@@ -185,16 +192,25 @@ agent Pilot on AgentLayer{
 	}
 	
 	
-	//-----General Values-----
+	//-----General Values and functions (Settings)-----
 	observe var Latitude : real
 	observe var Longitude : real
-	var myAircraft : Aircraft // for accessing the real aircraft
 	observe var state : string
 	observe var current_activity : string
-	
+	var myAircraft : Aircraft // for accessing the real aircraft
 	var timehandler = new TimeHandler()
 	var first_action_done : bool = false // temporary auxiliary variable
 	var next_action : string
+	var age_max : integer = 75
+	var age_min : integer = 18
+	
+	
+	//-----General Pilot Values and functions-----
+	observe var age: integer // years
+	observe var flight_experience : integer // years
+	
+	
+	
 	
 	def update_general_values()
 	{
@@ -202,24 +218,55 @@ agent Pilot on AgentLayer{
 		Latitude = ycor
 		current_activity = next_action
 	}
+		
 	
-	
-	
-	//-----Preflight Inspection-----
+	//-----State Preflight Inspection-----
 	def PreflightInspection_action()
 	{
+		// Flag for first action and architecture like this avoids loose of one tick
 		if (first_action_done === false)
 		{
+			next_action ="Check_TireRightMainWheel__inflation"
 			Check_TireRightMainWheel__inflation("Check_RWT__water_sediments")
 			if (next_action === "Check_RWT__water_sediments")
 			{
 				first_action_done = true
 			}
 		}
-			
+		
 		else if (next_action === "Check_RWT__water_sediments")
 		{
-			Check_RWT__water_sediments("End_of_Actions")
+			Check_RWT__water_sediments("Check_RWT__fuel_quantity")
+		}
+		
+		else if (next_action === "Check_RWT__fuel_quantity")
+		{
+			Check_RWT__fuel_quantity("Check_Engine__oil")
+		}
+		
+		else if (next_action === "Check_Engine__oil")
+		{
+			Check_Engine__oil("Check_TireNoseWheel__inflation")
+		}
+		
+		else if (next_action === "Check_TireNoseWheel__inflation")
+		{
+			Check_TireNoseWheel__inflation("Check_TireLeftMainWheel__inflation")
+		}
+		
+		else if (next_action === "Check_TireLeftMainWheel__inflation")
+		{
+			Check_TireLeftMainWheel__inflation("Check_LWT__water_sediments")
+		}				
+		
+		else if(next_action === "Check_LWT__water_sediments")
+		{
+			Check_LWT__water_sediments("Check_LWT__fuel_quantity")
+		}					
+					
+		else if (next_action === "Check_LWT__fuel_quantity")
+		{
+			Check_LWT__fuel_quantity("End_of_Actions")
 			if (next_action === "End_of_Actions")
 			{
 				println "Finished State >" + state + " with next action flag >" + next_action
@@ -233,28 +280,94 @@ agent Pilot on AgentLayer{
 	// Visual Tire Functions
 	def Check_TireRightMainWheel__inflation(next_act : string)
 	{	
-		timehandler.create_action_duration(5, 2)
+		timehandler.create_action_duration(10, 10, "age_and_experience")
 		if (timehandler.hold_action_time(timehandler.action_duration))
 		{
 			println "Checking right Main Wheel Tire inflation"
 			println myAircraft.Get_TireRightMainWheel__inflation()
 			next_action = next_act
-		}
-			
+		}	
+	}
+	
+	def Check_TireLeftMainWheel__inflation(next_act : string)
+	{	
+		timehandler.create_action_duration(10, 10, "age_and_experience")
+		if (timehandler.hold_action_time(timehandler.action_duration))
+		{
+			println "Checking left Main Wheel Tire inflation"
+			println myAircraft.Get_TireLeftMainWheel__inflation
+			next_action = next_act
+		}	
+	}
+	
+	def Check_TireNoseWheel__inflation(next_act : string)
+	{	
+		timehandler.create_action_duration(10, 10, "age_and_experience")
+		if (timehandler.hold_action_time(timehandler.action_duration))
+		{
+			println "Checking Nose Wheel Tire inflation"
+			println myAircraft.Get_TireNoseWheel__inflation
+			next_action = next_act
+		}	
+	}
+	
+		
+	// Visual Fuel Tank Functions
+	def Check_RWT__fuel_quantity(next_act : string)
+	{
+		timehandler.create_action_duration(20, 20, "age_and_experience")
+		if (timehandler.hold_action_time(timehandler.action_duration))
+		{
+			println "Checking right wing tank fuel quantity"
+			println myAircraft.Get_RWT__fuel_quantity()
+			next_action = next_act
+		}	
+	}
+	
+	def Check_LWT__fuel_quantity(next_act : string)
+	{
+		timehandler.create_action_duration(20, 20, "age_and_experience")
+		if (timehandler.hold_action_time(timehandler.action_duration))
+		{
+			println "Checking left wing tank fuel quantity"
+			println myAircraft.Get_RWT__fuel_quantity()
+			next_action = next_act
+		}	
 	}
 	
 	def Check_RWT__water_sediments(next_act : string)
 	{
-		timehandler.create_action_duration(20, 10)
+		timehandler.create_action_duration(20, 20, "age_and_experience")
 		if (timehandler.hold_action_time(timehandler.action_duration))
 		{
 			println "Checking right wing tank for water sediments"
 			println myAircraft.Get_RWT__water_sediments()
 			next_action = next_act
-		}
-			
+		}	
 	}
 	
+	def Check_LWT__water_sediments(next_act : string)
+	{
+		timehandler.create_action_duration(20, 20, "age_and_experience")
+		if (timehandler.hold_action_time(timehandler.action_duration))
+		{
+			println "Checking left wing tank for water sediments"
+			println myAircraft.Get_LWT__water_sediments()
+			next_action = next_act
+		}	
+	}
+	
+	// Visual Engine Functions
+	def Check_Engine__oil(next_act : string)
+	{
+		timehandler.create_action_duration(20, 20, "age_and_experience")
+		if (timehandler.hold_action_time(timehandler.action_duration))
+		{
+			println "Checking Engine oil"
+			println myAircraft.Get_Engine__oil()
+			next_action = next_act
+		}
+	}
 	
 }
 
@@ -265,9 +378,28 @@ agent Pilot on AgentLayer{
 // -----Class for handling all time issues-----
 class TimeHandler
 {
+	//general values for timehandling
 	var action_run_time : integer =  0
 	var action_duration_time_set : bool = false
 	var action_duration : integer
+	
+	// pilot characteristics for time calculations
+	var pilot_age : integer
+	var pilot_flight_experience: integer
+	var pilot_age_max : integer
+	var pilot_age_min : integer
+	
+	def initialize_variables(p_age : integer, 
+		p_exp : integer,
+		p_age_max : integer,
+		p_age_min : integer
+	)
+	{
+		pilot_age = p_age
+		pilot_flight_experience = p_exp
+		pilot_age_max = p_age_max
+		pilot_age_min = p_age_min
+	}
 	
 	def hold_action_time(time_needed : integer): bool 
 	{
@@ -289,12 +421,20 @@ class TimeHandler
 		action_run_time = 0
 	}
 	
-	def create_action_duration(action_duration_base : integer, action_duration_extra : integer)
+	def create_action_duration(action_duration_base : integer, action_duration_extra : integer, mode : string)
 	{
 		if (action_duration_time_set === false)
 		{
-			action_duration_time_set = true
-			action_duration = action_duration_base + random(action_duration_extra)
+			action_duration_time_set = true			
+			if (mode === "age_and_experience")
+			{
+				var action_duration_extra_calc = action_duration_extra * (1 + (pilot_age / pilot_age_max) - pilot_flight_experience / (pilot_age_max - pilot_age_min) )
+				action_duration = action_duration_base + random(action_duration_extra_calc)
+			}
+			else
+			{
+				action_duration = action_duration_base + random(action_duration_extra)
+			}				
 		}
 	}
 }
