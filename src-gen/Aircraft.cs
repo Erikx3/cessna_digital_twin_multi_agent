@@ -42,12 +42,68 @@ namespace cessna_digital_twin {
 				if(System.Math.Abs(__Engine__oil - value) > 0.0000001) __Engine__oil = value;
 			}
 		}
+		private double __Engine__mixture_control
+			 = default(double);
+		public double Engine__mixture_control { 
+			get { return __Engine__mixture_control; }
+			set{
+				if(System.Math.Abs(__Engine__mixture_control - value) > 0.0000001) __Engine__mixture_control = value;
+			}
+		}
+		private double __Engine__throttle
+			 = default(double);
+		public double Engine__throttle { 
+			get { return __Engine__throttle; }
+			set{
+				if(System.Math.Abs(__Engine__throttle - value) > 0.0000001) __Engine__throttle = value;
+			}
+		}
+		private string __Engine__ignition_switch
+			 = default(string);
+		public string Engine__ignition_switch { 
+			get { return __Engine__ignition_switch; }
+			set{
+				if(__Engine__ignition_switch != value) __Engine__ignition_switch = value;
+			}
+		}
+		private double __Engine__RPM
+			 = default(double);
+		public double Engine__RPM { 
+			get { return __Engine__RPM; }
+			set{
+				if(System.Math.Abs(__Engine__RPM - value) > 0.0000001) __Engine__RPM = value;
+			}
+		}
+		private bool __Engine__running
+			 = default(bool);
+		public bool Engine__running { 
+			get { return __Engine__running; }
+			set{
+				if(__Engine__running != value) __Engine__running = value;
+			}
+		}
 		private int __Engine__oil_max
 			 = 6;
 		internal int Engine__oil_max { 
 			get { return __Engine__oil_max; }
 			set{
 				if(__Engine__oil_max != value) __Engine__oil_max = value;
+			}
+		}
+		private int __Engine__RPM_min
+			 = 1000;
+		internal int Engine__RPM_min { 
+			get { return __Engine__RPM_min; }
+			set{
+				if(__Engine__RPM_min != value) __Engine__RPM_min = value;
+			}
+		}
+		private int __Engine__RPM_max
+			 = 2500;
+		internal int Engine__RPM_max { 
+			get { return __Engine__RPM_max; }
+			set{
+				if(__Engine__RPM_max != value) __Engine__RPM_max = value;
 			}
 		}
 		private double __RWT__fuel_quantity
@@ -146,6 +202,22 @@ namespace cessna_digital_twin {
 				if(__TireNoseWheel__inflation_max != value) __TireNoseWheel__inflation_max = value;
 			}
 		}
+		private string __Brake__parking_brake
+			 = default(string);
+		public string Brake__parking_brake { 
+			get { return __Brake__parking_brake; }
+			set{
+				if(__Brake__parking_brake != value) __Brake__parking_brake = value;
+			}
+		}
+		private string __CIP__master_switch
+			 = default(string);
+		public string CIP__master_switch { 
+			get { return __CIP__master_switch; }
+			set{
+				if(__CIP__master_switch != value) __CIP__master_switch = value;
+			}
+		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public void update_general_values() 
 		{
@@ -159,8 +231,44 @@ namespace cessna_digital_twin {
 		public void initialize_Engine() 
 		{
 			{
-			Engine__oil = _Random.Next(4)
-			 + 3
+			Engine__oil = 3.1 + _Random.Next(3)
+			 + (_Random.Next(10)
+			 / 10.0);
+			Engine__mixture_control = _Random.Next(101)
+			 / 100.0;
+			Engine__throttle = _Random.Next(10)
+			 / 10.0;
+			Engine__ignition_switch = "OFF";
+			Engine__RPM = 0;
+			Engine__running = false
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void update_Engine() 
+		{
+			{
+			if(Equals(Engine__running, false)) {
+							{
+							if(Equals(Engine__ignition_switch, "START")) {
+											{
+											if(_Random.Next(100)
+											 >= 50) {
+															{
+															Engine__running = true
+															;}
+													;} 
+											;}
+									;} 
+							;}
+					;} ;
+			if(Equals(Engine__running, true)) {
+							{
+							Engine__RPM = Engine__RPM_min + (Engine__RPM_max - Engine__RPM_min) * Engine__throttle;
+							Engine__RPM = Engine__RPM + _Random.Next(21)
+							 - 10
+							;}
+					;} 
 			;}
 			return;
 		}
@@ -220,6 +328,22 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void initialize_Brake() 
+		{
+			{
+			Brake__parking_brake = "SET"
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void initialize_CIP() 
+		{
+			{
+			CIP__master_switch = "OFF"
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public System.Tuple<double,double> Get_position() {
 			{
 			return new System.Tuple<double,double>(this.Position.X,this.Position.Y)
@@ -227,6 +351,15 @@ namespace cessna_digital_twin {
 			}
 			
 			return default(System.Tuple<double,double>);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public bool Get_Engine__running() {
+			{
+			return Engine__running
+					;
+			}
+			
+			return default(bool);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public double Get_Engine__oil() {
@@ -300,6 +433,62 @@ namespace cessna_digital_twin {
 			
 			return default(int);;
 		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void CIP_Set_Engine__ignition_switch(
+		string input) {
+			{
+			Engine__ignition_switch = input
+			;}
+			
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void CIP_Apply_Engine__throttle(
+		double input) {
+			{
+			Engine__throttle = input;
+			if(Engine__throttle < 0) {
+							{
+							Engine__throttle = 0
+							;}
+					;} else {
+							if(Engine__throttle > 1) {
+											{
+											Engine__throttle = 1
+											;}
+									;} 
+						;}
+			;}
+			
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void CIP_Set__master_switch(
+		string input) {
+			{
+			CIP__master_switch = input
+			;}
+			
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void CIP_Set_Brake__parking_brake(
+		string input) {
+			{
+			Brake__parking_brake = input
+			;}
+			
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void CIP_Set_Engine__mixture_control(
+		double input) {
+			{
+			Engine__mixture_control = input
+			;}
+			
+			return;
+		}
 		internal bool _isAlive;
 		internal int _executionFrequency;
 		
@@ -346,7 +535,9 @@ namespace cessna_digital_twin {
 			initialize_RightWingTank();
 			initialize_LeftWingTank();
 			initialize_Tire();
-			initialize_Engine()
+			initialize_Engine();
+			initialize_Brake();
+			initialize_CIP()
 			;}
 		}
 		
@@ -354,7 +545,8 @@ namespace cessna_digital_twin {
 		{
 			{ if (!_isAlive) return; }
 			{
-			update_general_values()
+			update_general_values();
+			update_Engine()
 			;}
 		}
 		

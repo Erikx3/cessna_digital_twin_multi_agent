@@ -175,7 +175,7 @@ namespace cessna_digital_twin {
 																																			if(Equals(next_action, "End_of_Actions")) {
 																																							{
 																																							System.Console.WriteLine("Finished State >" + state + " with next action flag >" + next_action);;
-																																							state = "my_second_state";
+																																							state = "StartingEngine";
 																																							first_action_done = false
 																																							;}
 																																					;} 
@@ -188,6 +188,130 @@ namespace cessna_digital_twin {
 														;}
 										;}
 						;}
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void StartingEngine_action() 
+		{
+			{
+			if(Equals(first_action_done, false)) {
+							{
+							next_action = "Set_Brake__parking_brake";
+							Set_Brake__parking_brake("Set_Engine__mixture_control","SET");
+							if(Equals(next_action, "Set_Engine__mixture_control")) {
+											{
+											first_action_done = true
+											;}
+									;} 
+							;}
+					;} else {
+							if(Equals(next_action, "Set_Engine__mixture_control")) {
+											{
+											Set_Engine__mixture_control("Set_CIP__master_switch",0)
+											;}
+									;} else {
+											if(Equals(next_action, "Set_CIP__master_switch")) {
+															{
+															Set_CIP__master_switch("Apply_Engine__throttle","ON")
+															;}
+													;} else {
+															if(Equals(next_action, "Apply_Engine__throttle")) {
+																			{
+																			double throttle_value = 0.05 + (_Random.Next(11)
+																			 / 100.0);
+																			Apply_Engine__throttle("Set_Engine__ignition_switch",throttle_value)
+																			;}
+																	;} else {
+																			if(Equals(next_action, "Set_Engine__ignition_switch")) {
+																							{
+																							Set_Engine__ignition_switch("Check_Engine__running","START")
+																							;}
+																					;} 
+																		;}
+														;}
+										;}
+						;}
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void Apply_Engine__throttle(string next_act, double input) 
+		{
+			{
+			timehandler.create_action_duration(1,2,"age_and_experience");
+			if(timehandler.hold_action_time(timehandler.action_duration)
+			) {
+							{
+							System.Console.WriteLine("Apply throttle");;
+							myAircraft.CIP_Apply_Engine__throttle(input);
+							next_action = next_act
+							;}
+					;} 
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void Set_Engine__ignition_switch(string next_act, string input) 
+		{
+			{
+			timehandler.create_action_duration(1,2,"age_and_experience");
+			if(timehandler.hold_action_time(timehandler.action_duration)
+			) {
+							{
+							System.Console.WriteLine("Set ignition switch");;
+							myAircraft.CIP_Set_Engine__ignition_switch(input);
+							next_action = next_act
+							;}
+					;} 
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void Set_Brake__parking_brake(string next_act, string input) 
+		{
+			{
+			timehandler.create_action_duration(2,2,"age_and_experience");
+			if(timehandler.hold_action_time(timehandler.action_duration)
+			) {
+							{
+							System.Console.WriteLine("Set Parking Brake");;
+							myAircraft.CIP_Set_Brake__parking_brake(input);
+							next_action = next_act
+							;}
+					;} 
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void Set_Engine__mixture_control(string next_act, double input) 
+		{
+			{
+			timehandler.create_action_duration(5,5,"age_and_experience");
+			if(timehandler.hold_action_time(timehandler.action_duration)
+			) {
+							{
+							System.Console.WriteLine("Set Mixture Control");;
+							myAircraft.CIP_Set_Engine__mixture_control(input);
+							next_action = next_act
+							;}
+					;} 
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void Set_CIP__master_switch(string next_act, string input) 
+		{
+			{
+			timehandler.create_action_duration(2,2,"age_and_experience");
+			if(timehandler.hold_action_time(timehandler.action_duration)
+			) {
+							{
+							System.Console.WriteLine("Set Master Switch");;
+							myAircraft.CIP_Set__master_switch(input);
+							next_action = next_act
+							;}
+					;} 
 			;}
 			return;
 		}
@@ -311,6 +435,22 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public bool Check_Engine__running(string next_act) 
+		{
+			{
+			timehandler.create_action_duration(1,1,"age_and_experience");
+			if(timehandler.hold_action_time(timehandler.action_duration)
+			) {
+							{
+							System.Console.WriteLine("Checking Engine running");;
+							return myAircraft.Get_Engine__running();
+							next_action = next_act
+							;}
+					;} 
+			;}
+			return default(bool);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public void Check_Engine__oil(string next_act) 
 		{
 			{
@@ -361,32 +501,32 @@ namespace cessna_digital_twin {
 			double y_spawn = agentlayer.get_spawn_y_coord();
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget172_3962 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget278_6516 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object172_3962 = this;
+				var _object278_6516 = this;
 				
-				_AgentLayer._PilotEnvironment.PosAt(_object172_3962, 
-					_taget172_3962.Item1, _taget172_3962.Item2
+				_AgentLayer._PilotEnvironment.PosAt(_object278_6516, 
+					_taget278_6516.Item1, _taget278_6516.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
 			myAircraft = new Func<cessna_digital_twin.Aircraft>(() => {
-				Func<cessna_digital_twin.Aircraft, bool> _predicate175_4037 = null;
-				Func<cessna_digital_twin.Aircraft, bool> _predicateMod175_4037 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
+				Func<cessna_digital_twin.Aircraft, bool> _predicate281_6591 = null;
+				Func<cessna_digital_twin.Aircraft, bool> _predicateMod281_6591 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
 				{
 					if (_it?.ID == this.ID)
 					{
 						return false;
-					} else if (_predicate175_4037 != null)
+					} else if (_predicate281_6591 != null)
 					{
-						return _predicate175_4037.Invoke(_it);
+						return _predicate281_6591.Invoke(_it);
 					} else return true;
 				});
 				
-				const int _range175_4037 = -1;
-				var _source175_4037 = this.Position;
+				const int _range281_6591 = -1;
+				var _source281_6591 = this.Position;
 				
-				return _AgentLayer._AircraftEnvironment.Explore(_source175_4037, _range175_4037, 1, _predicateMod175_4037)?.FirstOrDefault();
+				return _AgentLayer._AircraftEnvironment.Explore(_source281_6591, _range281_6591, 1, _predicateMod281_6591)?.FirstOrDefault();
 			}).Invoke();
 			update_general_values();
 			state = "PreflightInspection";
@@ -405,7 +545,13 @@ namespace cessna_digital_twin {
 							{
 							PreflightInspection_action()
 							;}
-					;} ;
+					;} else {
+							if(Equals(state, "StartingEngine")) {
+											{
+											StartingEngine_action()
+											;}
+									;} 
+						;};
 			update_general_values()
 			;}
 		}
