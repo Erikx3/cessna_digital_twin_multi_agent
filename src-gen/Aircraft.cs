@@ -253,8 +253,9 @@ namespace cessna_digital_twin {
 							if(Equals(Engine__ignition_switch, "START")) {
 											{
 											if(_Random.Next(100)
-											 >= 50) {
+											 <= 40) {
 															{
+															System.Console.WriteLine("The engine started successfully.");;
 															Engine__running = true
 															;}
 													;} 

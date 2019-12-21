@@ -66,12 +66,12 @@ namespace cessna_digital_twin {
 				if(__timehandler != value) __timehandler = value;
 			}
 		}
-		private bool __first_action_done
+		private bool __first_action_set
 			 = false;
-		internal bool first_action_done { 
-			get { return __first_action_done; }
+		internal bool first_action_set { 
+			get { return __first_action_set; }
 			set{
-				if(__first_action_done != value) __first_action_done = value;
+				if(__first_action_set != value) __first_action_set = value;
 			}
 		}
 		private string __next_action
@@ -128,55 +128,136 @@ namespace cessna_digital_twin {
 		public void PreflightInspection_action() 
 		{
 			{
-			if(Equals(first_action_done, false)) {
+			if(Equals(first_action_set, false)) {
 							{
 							next_action = "Check_TireRightMainWheel__inflation";
-							Check_TireRightMainWheel__inflation("Check_RWT__water_sediments");
-							if(Equals(next_action, "Check_RWT__water_sediments")) {
+							first_action_set = true
+							;}
+					;} ;
+			if(Equals(next_action, "Check_TireRightMainWheel__inflation")) {
+							{
+							timehandler.create_action_duration(10,10,"age_and_experience");
+							if(timehandler.hold_action_time(timehandler.action_duration)
+							) {
 											{
-											first_action_done = true
+											int check_value = Check_TireRightMainWheel__inflation();
+											if(check_value >= 0) {
+															{
+															next_action = "Check_RWT__water_sediments"
+															;}
+													;} 
 											;}
 									;} 
 							;}
 					;} else {
 							if(Equals(next_action, "Check_RWT__water_sediments")) {
 											{
-											Check_RWT__water_sediments("Check_RWT__fuel_quantity")
+											timehandler.create_action_duration(20,20,"age_and_experience");
+											if(timehandler.hold_action_time(timehandler.action_duration)
+											) {
+															{
+															bool check_value = Check_RWT__water_sediments();
+															if(Equals(check_value, true) || Equals(check_value, false)) {
+																			{
+																			next_action = "Check_RWT__fuel_quantity"
+																			;}
+																	;} 
+															;}
+													;} 
 											;}
 									;} else {
 											if(Equals(next_action, "Check_RWT__fuel_quantity")) {
 															{
-															Check_RWT__fuel_quantity("Check_Engine__oil")
+															timehandler.create_action_duration(20,20,"age_and_experience");
+															if(timehandler.hold_action_time(timehandler.action_duration)
+															) {
+																			{
+																			double check_value = Check_RWT__fuel_quantity();
+																			if(check_value >= 0) {
+																							{
+																							next_action = "Check_Engine__oil"
+																							;}
+																					;} 
+																			;}
+																	;} 
 															;}
 													;} else {
 															if(Equals(next_action, "Check_Engine__oil")) {
 																			{
-																			Check_Engine__oil("Check_TireNoseWheel__inflation")
+																			timehandler.create_action_duration(20,20,"age_and_experience");
+																			if(timehandler.hold_action_time(timehandler.action_duration)
+																			) {
+																							{
+																							double check_value = Check_Engine__oil();
+																							if(check_value >= 0) {
+																											{
+																											next_action = "Check_TireNoseWheel__inflation"
+																											;}
+																									;} 
+																							;}
+																					;} 
 																			;}
 																	;} else {
 																			if(Equals(next_action, "Check_TireNoseWheel__inflation")) {
 																							{
-																							Check_TireNoseWheel__inflation("Check_TireLeftMainWheel__inflation")
+																							timehandler.create_action_duration(10,10,"age_and_experience");
+																							if(timehandler.hold_action_time(timehandler.action_duration)
+																							) {
+																											{
+																											int check_value = Check_TireNoseWheel__inflation();
+																											if(check_value >= 0) {
+																															{
+																															next_action = "Check_TireLeftMainWheel__inflation"
+																															;}
+																													;} 
+																											;}
+																									;} 
 																							;}
 																					;} else {
 																							if(Equals(next_action, "Check_TireLeftMainWheel__inflation")) {
 																											{
-																											Check_TireLeftMainWheel__inflation("Check_LWT__water_sediments")
+																											timehandler.create_action_duration(10,10,"age_and_experience");
+																											if(timehandler.hold_action_time(timehandler.action_duration)
+																											) {
+																															{
+																															int check_value = Check_TireLeftMainWheel__inflation();
+																															if(check_value >= 0) {
+																																			{
+																																			next_action = "Check_LWT__water_sediments"
+																																			;}
+																																	;} 
+																															;}
+																													;} 
 																											;}
 																									;} else {
 																											if(Equals(next_action, "Check_LWT__water_sediments")) {
 																															{
-																															Check_LWT__water_sediments("Check_LWT__fuel_quantity")
+																															timehandler.create_action_duration(20,20,"age_and_experience");
+																															if(timehandler.hold_action_time(timehandler.action_duration)
+																															) {
+																																			{
+																																			bool check_value = Check_LWT__water_sediments();
+																																			if(Equals(check_value, true) || Equals(check_value, false)) {
+																																							{
+																																							next_action = "Check_LWT__fuel_quantity"
+																																							;}
+																																					;} 
+																																			;}
+																																	;} 
 																															;}
 																													;} else {
 																															if(Equals(next_action, "Check_LWT__fuel_quantity")) {
 																																			{
-																																			Check_LWT__fuel_quantity("End_of_Actions");
-																																			if(Equals(next_action, "End_of_Actions")) {
+																																			timehandler.create_action_duration(20,20,"age_and_experience");
+																																			if(timehandler.hold_action_time(timehandler.action_duration)
+																																			) {
 																																							{
-																																							System.Console.WriteLine("Finished State >" + state + " with next action flag >" + next_action);;
-																																							state = "StartingEngine";
-																																							first_action_done = false
+																																							double check_value = Check_LWT__fuel_quantity();
+																																							if(check_value >= 0) {
+																																											{
+																																											next_action = "End_of_Actions"
+																																											;}
+																																									;} 
 																																							;}
 																																					;} 
 																																			;}
@@ -187,7 +268,15 @@ namespace cessna_digital_twin {
 																		;}
 														;}
 										;}
-						;}
+						;};
+			if(Equals(next_action, "End_of_Actions")) {
+							{
+							System.Console.WriteLine("Finished State -->" + state + " with next action flag -->" + next_action);;
+							state = "StartingEngine";
+							System.Console.WriteLine("Next state -->" + state);;
+							first_action_set = false
+							;}
+					;} 
 			;}
 			return;
 		}
@@ -195,39 +284,110 @@ namespace cessna_digital_twin {
 		public void StartingEngine_action() 
 		{
 			{
-			if(Equals(first_action_done, false)) {
+			if(Equals(first_action_set, false)) {
 							{
 							next_action = "Set_Brake__parking_brake";
-							Set_Brake__parking_brake("Set_Engine__mixture_control","SET");
-							if(Equals(next_action, "Set_Engine__mixture_control")) {
+							first_action_set = true
+							;}
+					;} ;
+			if(Equals(next_action, "Set_Brake__parking_brake")) {
+							{
+							timehandler.create_action_duration(4,2,"age_and_experience");
+							if(timehandler.hold_action_time(timehandler.action_duration)
+							) {
 											{
-											first_action_done = true
+											Set_Brake__parking_brake("SET");
+											next_action = "Set_Engine__mixture_control"
 											;}
 									;} 
 							;}
 					;} else {
 							if(Equals(next_action, "Set_Engine__mixture_control")) {
 											{
-											Set_Engine__mixture_control("Set_CIP__master_switch",0)
+											timehandler.create_action_duration(4,2,"age_and_experience");
+											if(timehandler.hold_action_time(timehandler.action_duration)
+											) {
+															{
+															Set_Engine__mixture_control(0);
+															next_action = "Set_CIP__master_switch"
+															;}
+													;} 
 											;}
 									;} else {
 											if(Equals(next_action, "Set_CIP__master_switch")) {
 															{
-															Set_CIP__master_switch("Apply_Engine__throttle","ON")
+															timehandler.create_action_duration(4,2,"age_and_experience");
+															if(timehandler.hold_action_time(timehandler.action_duration)
+															) {
+																			{
+																			Set_CIP__master_switch("ON");
+																			next_action = "Apply_Engine__throttle"
+																			;}
+																	;} 
 															;}
 													;} else {
 															if(Equals(next_action, "Apply_Engine__throttle")) {
 																			{
-																			double throttle_value = 0.05 + (_Random.Next(11)
-																			 / 100.0);
-																			Apply_Engine__throttle("Set_Engine__ignition_switch",throttle_value)
-																			;}
-																	;} else {
-																			if(Equals(next_action, "Set_Engine__ignition_switch")) {
+																			timehandler.create_action_duration(4,2,"age_and_experience");
+																			if(timehandler.hold_action_time(timehandler.action_duration)
+																			) {
 																							{
-																							Set_Engine__ignition_switch("Check_Engine__running","START")
+																							double throttle_value = 0.05 + (_Random.Next(11)
+																							 / 100.0);
+																							Apply_Engine__throttle(throttle_value);
+																							next_action = "Set_Engine__ignition_switch_START"
 																							;}
 																					;} 
+																			;}
+																	;} else {
+																			if(Equals(next_action, "Set_Engine__ignition_switch_START")) {
+																							{
+																							timehandler.create_action_duration(4,2,"age_and_experience");
+																							if(timehandler.hold_action_time(timehandler.action_duration)
+																							) {
+																											{
+																											Set_Engine__ignition_switch("START");
+																											next_action = "Check_Engine__running"
+																											;}
+																									;} 
+																							;}
+																					;} else {
+																							if(Equals(next_action, "Check_Engine__running")) {
+																											{
+																											timehandler.create_action_duration(1,0,"age_and_experience");
+																											if(timehandler.hold_action_time(timehandler.action_duration)
+																											) {
+																															{
+																															bool check_value = Check_Engine__running();
+																															if(Equals(check_value, true)) {
+																																			{
+																																			next_action = "Set_Engine__ignition_switch_BOTH"
+																																			;}
+																																	;} else {
+																																			if(Equals(check_value, false)) {
+																																							{
+																																							next_action = "Check_Engine__running"
+																																							;}
+																																					;} 
+																																		;}
+																															;}
+																													;} 
+																											;}
+																									;} else {
+																											if(Equals(next_action, "Set_Engine__ignition_switch_BOTH")) {
+																															{
+																															timehandler.create_action_duration(2,2,"age_and_experience");
+																															if(timehandler.hold_action_time(timehandler.action_duration)
+																															) {
+																																			{
+																																			Set_Engine__ignition_switch("BOTH");
+																																			next_action = "Check_Engine__oil_pressure"
+																																			;}
+																																	;} 
+																															;}
+																													;} 
+																										;}
+																						;}
 																		;}
 														;}
 										;}
@@ -236,236 +396,130 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Apply_Engine__throttle(string next_act, double input) 
+		public void Apply_Engine__throttle(double input) 
 		{
 			{
-			timehandler.create_action_duration(1,2,"age_and_experience");
-			if(timehandler.hold_action_time(timehandler.action_duration)
-			) {
-							{
-							System.Console.WriteLine("Apply throttle");;
-							myAircraft.CIP_Apply_Engine__throttle(input);
-							next_action = next_act
-							;}
-					;} 
+			System.Console.WriteLine("Apply throttle");;
+			myAircraft.CIP_Apply_Engine__throttle(input)
 			;}
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Set_Engine__ignition_switch(string next_act, string input) 
+		public void Set_Engine__ignition_switch(string input) 
 		{
 			{
-			timehandler.create_action_duration(1,2,"age_and_experience");
-			if(timehandler.hold_action_time(timehandler.action_duration)
-			) {
-							{
-							System.Console.WriteLine("Set ignition switch");;
-							myAircraft.CIP_Set_Engine__ignition_switch(input);
-							next_action = next_act
-							;}
-					;} 
+			System.Console.WriteLine("Set ignition switch to " + input);;
+			myAircraft.CIP_Set_Engine__ignition_switch(input)
 			;}
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Set_Brake__parking_brake(string next_act, string input) 
+		public void Set_Brake__parking_brake(string input) 
 		{
 			{
-			timehandler.create_action_duration(2,2,"age_and_experience");
-			if(timehandler.hold_action_time(timehandler.action_duration)
-			) {
-							{
-							System.Console.WriteLine("Set Parking Brake");;
-							myAircraft.CIP_Set_Brake__parking_brake(input);
-							next_action = next_act
-							;}
-					;} 
+			System.Console.WriteLine("Set Parking Brake to " + input);;
+			myAircraft.CIP_Set_Brake__parking_brake(input)
 			;}
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Set_Engine__mixture_control(string next_act, double input) 
+		public void Set_Engine__mixture_control(double input) 
 		{
 			{
-			timehandler.create_action_duration(5,5,"age_and_experience");
-			if(timehandler.hold_action_time(timehandler.action_duration)
-			) {
-							{
-							System.Console.WriteLine("Set Mixture Control");;
-							myAircraft.CIP_Set_Engine__mixture_control(input);
-							next_action = next_act
-							;}
-					;} 
+			System.Console.WriteLine("Set Mixture Control");;
+			myAircraft.CIP_Set_Engine__mixture_control(input)
 			;}
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Set_CIP__master_switch(string next_act, string input) 
+		public void Set_CIP__master_switch(string input) 
 		{
 			{
-			timehandler.create_action_duration(2,2,"age_and_experience");
-			if(timehandler.hold_action_time(timehandler.action_duration)
-			) {
-							{
-							System.Console.WriteLine("Set Master Switch");;
-							myAircraft.CIP_Set__master_switch(input);
-							next_action = next_act
-							;}
-					;} 
+			System.Console.WriteLine("Set Master Switch to " + input);;
+			myAircraft.CIP_Set__master_switch(input)
 			;}
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Check_TireRightMainWheel__inflation(string next_act) 
+		public int Check_TireRightMainWheel__inflation() 
 		{
 			{
-			timehandler.create_action_duration(10,10,"age_and_experience");
-			if(timehandler.hold_action_time(timehandler.action_duration)
-			) {
-							{
-							System.Console.WriteLine("Checking right Main Wheel Tire inflation");;
-							System.Console.WriteLine(myAircraft.Get_TireRightMainWheel__inflation()
-							);;
-							next_action = next_act
-							;}
-					;} 
+			System.Console.WriteLine("Checking right Main Wheel Tire inflation");;
+			return myAircraft.Get_TireRightMainWheel__inflation()
 			;}
-			return;
+			return default(int);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Check_TireLeftMainWheel__inflation(string next_act) 
+		public int Check_TireLeftMainWheel__inflation() 
 		{
 			{
-			timehandler.create_action_duration(10,10,"age_and_experience");
-			if(timehandler.hold_action_time(timehandler.action_duration)
-			) {
-							{
-							System.Console.WriteLine("Checking left Main Wheel Tire inflation");;
-							System.Console.WriteLine(myAircraft.Get_TireLeftMainWheel__inflation()
-							);;
-							next_action = next_act
-							;}
-					;} 
+			System.Console.WriteLine("Checking left Main Wheel Tire inflation");;
+			return myAircraft.Get_TireLeftMainWheel__inflation()
 			;}
-			return;
+			return default(int);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Check_TireNoseWheel__inflation(string next_act) 
+		public int Check_TireNoseWheel__inflation() 
 		{
 			{
-			timehandler.create_action_duration(10,10,"age_and_experience");
-			if(timehandler.hold_action_time(timehandler.action_duration)
-			) {
-							{
-							System.Console.WriteLine("Checking Nose Wheel Tire inflation");;
-							System.Console.WriteLine(myAircraft.Get_TireNoseWheel__inflation()
-							);;
-							next_action = next_act
-							;}
-					;} 
+			System.Console.WriteLine("Checking Nose Wheel Tire inflation");;
+			return myAircraft.Get_TireNoseWheel__inflation()
 			;}
-			return;
+			return default(int);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Check_RWT__fuel_quantity(string next_act) 
+		public double Check_RWT__fuel_quantity() 
 		{
 			{
-			timehandler.create_action_duration(20,20,"age_and_experience");
-			if(timehandler.hold_action_time(timehandler.action_duration)
-			) {
-							{
-							System.Console.WriteLine("Checking right wing tank fuel quantity");;
-							System.Console.WriteLine(myAircraft.Get_RWT__fuel_quantity()
-							);;
-							next_action = next_act
-							;}
-					;} 
+			System.Console.WriteLine("Checking right wing tank fuel quantity");;
+			return myAircraft.Get_RWT__fuel_quantity()
 			;}
-			return;
+			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Check_LWT__fuel_quantity(string next_act) 
+		public double Check_LWT__fuel_quantity() 
 		{
 			{
-			timehandler.create_action_duration(20,20,"age_and_experience");
-			if(timehandler.hold_action_time(timehandler.action_duration)
-			) {
-							{
-							System.Console.WriteLine("Checking left wing tank fuel quantity");;
-							System.Console.WriteLine(myAircraft.Get_RWT__fuel_quantity()
-							);;
-							next_action = next_act
-							;}
-					;} 
+			System.Console.WriteLine("Checking left wing tank fuel quantity");;
+			return myAircraft.Get_RWT__fuel_quantity()
 			;}
-			return;
+			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Check_RWT__water_sediments(string next_act) 
+		public bool Check_RWT__water_sediments() 
 		{
 			{
-			timehandler.create_action_duration(20,20,"age_and_experience");
-			if(timehandler.hold_action_time(timehandler.action_duration)
-			) {
-							{
-							System.Console.WriteLine("Checking right wing tank for water sediments");;
-							System.Console.WriteLine(myAircraft.Get_RWT__water_sediments()
-							);;
-							next_action = next_act
-							;}
-					;} 
-			;}
-			return;
-		}
-		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Check_LWT__water_sediments(string next_act) 
-		{
-			{
-			timehandler.create_action_duration(20,20,"age_and_experience");
-			if(timehandler.hold_action_time(timehandler.action_duration)
-			) {
-							{
-							System.Console.WriteLine("Checking left wing tank for water sediments");;
-							System.Console.WriteLine(myAircraft.Get_LWT__water_sediments()
-							);;
-							next_action = next_act
-							;}
-					;} 
-			;}
-			return;
-		}
-		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public bool Check_Engine__running(string next_act) 
-		{
-			{
-			timehandler.create_action_duration(1,1,"age_and_experience");
-			if(timehandler.hold_action_time(timehandler.action_duration)
-			) {
-							{
-							System.Console.WriteLine("Checking Engine running");;
-							return myAircraft.Get_Engine__running();
-							next_action = next_act
-							;}
-					;} 
+			System.Console.WriteLine("Checking right wing tank for water sediments");;
+			return myAircraft.Get_RWT__water_sediments()
 			;}
 			return default(bool);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Check_Engine__oil(string next_act) 
+		public bool Check_LWT__water_sediments() 
 		{
 			{
-			timehandler.create_action_duration(20,20,"age_and_experience");
-			if(timehandler.hold_action_time(timehandler.action_duration)
-			) {
-							{
-							System.Console.WriteLine("Checking Engine oil");;
-							System.Console.WriteLine(myAircraft.Get_Engine__oil()
-							);;
-							next_action = next_act
-							;}
-					;} 
+			System.Console.WriteLine("Checking left wing tank for water sediments");;
+			return myAircraft.Get_LWT__water_sediments()
 			;}
-			return;
+			return default(bool);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public bool Check_Engine__running() 
+		{
+			{
+			System.Console.WriteLine("Checking Engine running");;
+			return myAircraft.Get_Engine__running()
+			;}
+			return default(bool);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public double Check_Engine__oil() 
+		{
+			{
+			System.Console.WriteLine("Checking Engine oil");;
+			return myAircraft.Get_Engine__oil()
+			;}
+			return default(double);;
 		}
 		internal bool _isAlive;
 		internal int _executionFrequency;
@@ -501,32 +555,32 @@ namespace cessna_digital_twin {
 			double y_spawn = agentlayer.get_spawn_y_coord();
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget278_6516 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget279_6564 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object278_6516 = this;
+				var _object279_6564 = this;
 				
-				_AgentLayer._PilotEnvironment.PosAt(_object278_6516, 
-					_taget278_6516.Item1, _taget278_6516.Item2
+				_AgentLayer._PilotEnvironment.PosAt(_object279_6564, 
+					_taget279_6564.Item1, _taget279_6564.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
 			myAircraft = new Func<cessna_digital_twin.Aircraft>(() => {
-				Func<cessna_digital_twin.Aircraft, bool> _predicate281_6591 = null;
-				Func<cessna_digital_twin.Aircraft, bool> _predicateMod281_6591 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
+				Func<cessna_digital_twin.Aircraft, bool> _predicate282_6639 = null;
+				Func<cessna_digital_twin.Aircraft, bool> _predicateMod282_6639 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
 				{
 					if (_it?.ID == this.ID)
 					{
 						return false;
-					} else if (_predicate281_6591 != null)
+					} else if (_predicate282_6639 != null)
 					{
-						return _predicate281_6591.Invoke(_it);
+						return _predicate282_6639.Invoke(_it);
 					} else return true;
 				});
 				
-				const int _range281_6591 = -1;
-				var _source281_6591 = this.Position;
+				const int _range282_6639 = -1;
+				var _source282_6639 = this.Position;
 				
-				return _AgentLayer._AircraftEnvironment.Explore(_source281_6591, _range281_6591, 1, _predicateMod281_6591)?.FirstOrDefault();
+				return _AgentLayer._AircraftEnvironment.Explore(_source282_6639, _range282_6639, 1, _predicateMod282_6639)?.FirstOrDefault();
 			}).Invoke();
 			update_general_values();
 			state = "PreflightInspection";

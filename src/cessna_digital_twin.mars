@@ -109,8 +109,9 @@ agent Aircraft on AgentLayer{
 		{
 			if (Engine__ignition_switch === "START")
 			{
-				if (random(100) >= 50) // 50% chance for engine to start
+				if (random(100) <= 40) // 40% chance for engine to start
 				{
+					println "The engine started successfully."
 					Engine__running = true
 				}
 			}
@@ -146,7 +147,7 @@ agent Aircraft on AgentLayer{
 	
 	// -----Left Wing Tank (LWT)-----
 	observe var LWT__fuel_quantity : real // Litre
-	observe var LWT__water_sediments : bool 
+	observe var LWT__water_sediments : bool
 	var LWT__total_capacity : integer = 49 // Litre
 	
 	passive Get_LWT__fuel_quantity() => return LWT__fuel_quantity // return of fuel quantity "visual"
@@ -307,9 +308,11 @@ agent Pilot on AgentLayer{
 	observe var Longitude : real
 	observe var state : string
 	observe var current_activity : string
+	
 	var myAircraft : Aircraft // for accessing the real aircraft
 	var timehandler = new TimeHandler()
-	var first_action_done : bool = false // temporary auxiliary variable
+	var first_action_set : bool = false // temporary auxiliary variable
+	
 	var next_action : string
 	var age_max : integer = 75
 	var age_min : integer = 18
@@ -335,55 +338,124 @@ agent Pilot on AgentLayer{
 	def PreflightInspection_action()
 	{
 		// Flag for first action and architecture like this avoids loose of one tick
-		if (first_action_done === false)
+		if (first_action_set === false)
 		{
-			next_action ="Check_TireRightMainWheel__inflation"
-			Check_TireRightMainWheel__inflation("Check_RWT__water_sediments")
-			if (next_action === "Check_RWT__water_sediments")
-			{
-				first_action_done = true
-			}
+			next_action = "Check_TireRightMainWheel__inflation"
+			first_action_set = true
 		}
+		
+		if (next_action === "Check_TireRightMainWheel__inflation")
+		{
+			timehandler.create_action_duration(10, 10, "age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				var check_value = Check_TireRightMainWheel__inflation()
+				if (check_value >= 0) //TODO
+				{
+					next_action = "Check_RWT__water_sediments"
+				}
+			}
+			
+		}		
 		
 		else if (next_action === "Check_RWT__water_sediments")
 		{
-			Check_RWT__water_sediments("Check_RWT__fuel_quantity")
+			timehandler.create_action_duration(20, 20, "age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				var check_value = Check_RWT__water_sediments()
+				if (check_value === true or check_value === false) //TODO
+				{
+					next_action = "Check_RWT__fuel_quantity"
+				}
+			}
+			
 		}
 		
 		else if (next_action === "Check_RWT__fuel_quantity")
 		{
-			Check_RWT__fuel_quantity("Check_Engine__oil")
+			timehandler.create_action_duration(20, 20, "age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				var check_value = Check_RWT__fuel_quantity()
+				if (check_value >= 0) //TODO
+				{
+					next_action = "Check_Engine__oil"
+				}
+			}
 		}
-		
+				
 		else if (next_action === "Check_Engine__oil")
 		{
-			Check_Engine__oil("Check_TireNoseWheel__inflation")
+			timehandler.create_action_duration(20, 20, "age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				var check_value = Check_Engine__oil()
+				if (check_value >= 0) //TODO
+				{
+					next_action = "Check_TireNoseWheel__inflation"
+				}
+			}
 		}
 		
 		else if (next_action === "Check_TireNoseWheel__inflation")
 		{
-			Check_TireNoseWheel__inflation("Check_TireLeftMainWheel__inflation")
+			timehandler.create_action_duration(10, 10, "age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				var check_value = Check_TireNoseWheel__inflation()
+				if (check_value >= 0) //TODO
+				{
+					next_action = "Check_TireLeftMainWheel__inflation"
+				}
+			}
 		}
 		
 		else if (next_action === "Check_TireLeftMainWheel__inflation")
 		{
-			Check_TireLeftMainWheel__inflation("Check_LWT__water_sediments")
+			timehandler.create_action_duration(10, 10, "age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				var check_value = Check_TireLeftMainWheel__inflation()
+				if (check_value >= 0) //TODO
+				{
+					next_action = "Check_LWT__water_sediments"
+				}
+			}
 		}				
 		
 		else if(next_action === "Check_LWT__water_sediments")
 		{
-			Check_LWT__water_sediments("Check_LWT__fuel_quantity")
+			timehandler.create_action_duration(20, 20, "age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				var check_value = Check_LWT__water_sediments()
+				if (check_value === true or check_value === false) //TODO
+				{
+					next_action = "Check_LWT__fuel_quantity"
+				}
+			}
 		}					
 					
 		else if (next_action === "Check_LWT__fuel_quantity")
 		{
-			Check_LWT__fuel_quantity("End_of_Actions")
-			if (next_action === "End_of_Actions")
+			timehandler.create_action_duration(20, 20, "age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
-				println "Finished State >" + state + " with next action flag >" + next_action
-				state = "StartingEngine"
-				first_action_done = false
+				var check_value = Check_LWT__fuel_quantity()
+				if (check_value >= 0) //TODO
+				{
+					next_action = "End_of_Actions"
+				}
 			}
+		}
+			
+		if (next_action === "End_of_Actions")
+		{
+			println "Finished State -->" + state + " with next action flag -->" + next_action
+			state = "StartingEngine"
+			println "Next state -->" + state
+			first_action_set = false
 		}
 	}
 	
@@ -392,203 +464,184 @@ agent Pilot on AgentLayer{
 	//-----State Starting Engine-----
 	def StartingEngine_action()
 	{
-		if (first_action_done === false)
+		if (first_action_set === false)
 		{
-			next_action ="Set_Brake__parking_brake"
-			Set_Brake__parking_brake("Set_Engine__mixture_control", "SET")
-			if (next_action === "Set_Engine__mixture_control")
+			next_action = "Set_Brake__parking_brake"
+			first_action_set = true
+		}
+		
+		if (next_action === "Set_Brake__parking_brake")
+		{
+			timehandler.create_action_duration(4, 2, "age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
-				first_action_done = true
+				Set_Brake__parking_brake("SET")
+				next_action = "Set_Engine__mixture_control"
 			}
 		}
 		
 		else if (next_action === "Set_Engine__mixture_control")
 		{
-			Set_Engine__mixture_control("Set_CIP__master_switch", 0) // set to rich
+			timehandler.create_action_duration(4, 2, "age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				Set_Engine__mixture_control(0) // set to rich
+				next_action = "Set_CIP__master_switch"
+			}
 		}
 		
 		else if (next_action === "Set_CIP__master_switch")
 		{
-			Set_CIP__master_switch("Apply_Engine__throttle", "ON")
+			timehandler.create_action_duration(4, 2, "age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				Set_CIP__master_switch("ON")
+				next_action = "Apply_Engine__throttle"
+			}
 		}
 		
 		else if (next_action === "Apply_Engine__throttle")
 		{
-			var throttle_value = 0.05 + (random(11) / 100.0) // random idle value
-			Apply_Engine__throttle("Set_Engine__ignition_switch", throttle_value)
+			timehandler.create_action_duration(4, 2, "age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				var throttle_value = 0.05 + (random(11) / 100.0) // random idle value
+				Apply_Engine__throttle(throttle_value)
+				next_action = "Set_Engine__ignition_switch_START"
+			}
 		}
 		
-		else if (next_action === "Set_Engine__ignition_switch")
+		else if (next_action === "Set_Engine__ignition_switch_START")
 		{
-			Set_Engine__ignition_switch("Check_Engine__running", "START")
+			timehandler.create_action_duration(4, 2, "age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				Set_Engine__ignition_switch("START")
+				next_action = "Check_Engine__running"
+			}
+		}
+		
+		else if (next_action === "Check_Engine__running")
+		{
+			timehandler.create_action_duration(1, 0, "age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				var check_value = Check_Engine__running()
+				if (check_value === true)
+				{
+					next_action = "Set_Engine__ignition_switch_BOTH" //TODO
+				}
+				else if (check_value === false)
+				{
+					next_action = "Check_Engine__running"
+				}
+			}
+		}
+			
+		else if (next_action === "Set_Engine__ignition_switch_BOTH")
+		{
+			timehandler.create_action_duration(2, 2, "age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				Set_Engine__ignition_switch("BOTH")
+				next_action = "Check_Engine__oil_pressure"
+			}
 		}
 	}
 	
 	
 	
 	//-----Control_Input_Panel(CIP) Functions-----
-	def Apply_Engine__throttle(next_act : string, input : real)
+	def Apply_Engine__throttle(input : real)
 	{
-		timehandler.create_action_duration(1, 2, "age_and_experience")
-		if (timehandler.hold_action_time(timehandler.action_duration))
-		{
-			println "Apply throttle"
-			myAircraft.CIP_Apply_Engine__throttle(input)
-			next_action = next_act
-		}
+		println "Apply throttle"
+		myAircraft.CIP_Apply_Engine__throttle(input)
 	}
 	
-	def Set_Engine__ignition_switch(next_act : string, input : string)
+	def Set_Engine__ignition_switch(input : string)
 	{
-		timehandler.create_action_duration(1, 2, "age_and_experience")
-		if (timehandler.hold_action_time(timehandler.action_duration))
-		{
-			println "Set ignition switch"
-			myAircraft.CIP_Set_Engine__ignition_switch(input)
-			next_action = next_act
-		}
+		println "Set ignition switch to " + input
+		myAircraft.CIP_Set_Engine__ignition_switch(input)
 	}
 	
 	
-	def Set_Brake__parking_brake(next_act : string, input : string)
+	def Set_Brake__parking_brake(input : string)
 	{
-		timehandler.create_action_duration(2, 2, "age_and_experience")
-		if (timehandler.hold_action_time(timehandler.action_duration))
-		{
-			println "Set Parking Brake"
-			myAircraft.CIP_Set_Brake__parking_brake(input)
-			next_action = next_act
-		}
+		println "Set Parking Brake to " + input
+		myAircraft.CIP_Set_Brake__parking_brake(input)
 	}
 	
-	def Set_Engine__mixture_control(next_act : string, input : real)
+	def Set_Engine__mixture_control(input : real)
 	{
-		timehandler.create_action_duration(5, 5, "age_and_experience")
-		if (timehandler.hold_action_time(timehandler.action_duration))
-		{
-			println "Set Mixture Control"
-			myAircraft.CIP_Set_Engine__mixture_control(input)
-			next_action = next_act
-		}
+		println "Set Mixture Control"
+		myAircraft.CIP_Set_Engine__mixture_control(input)
 	}
 	
-	def Set_CIP__master_switch(next_act : string, input : string)
+	def Set_CIP__master_switch(input : string)
 	{
-		timehandler.create_action_duration(2, 2, "age_and_experience")
-		if (timehandler.hold_action_time(timehandler.action_duration))
-		{
-			println "Set Master Switch"
-			myAircraft.CIP_Set__master_switch(input)
-			next_action = next_act
-		}
+		println "Set Master Switch to " + input
+		myAircraft.CIP_Set__master_switch(input)
 	}
 	
 	//-----Visual Tire Functions------
-	def Check_TireRightMainWheel__inflation(next_act : string)
+	def Check_TireRightMainWheel__inflation()
 	{	
-		timehandler.create_action_duration(10, 10, "age_and_experience")
-		if (timehandler.hold_action_time(timehandler.action_duration))
-		{
-			println "Checking right Main Wheel Tire inflation"
-			println myAircraft.Get_TireRightMainWheel__inflation()
-			next_action = next_act
-		}	
+		println "Checking right Main Wheel Tire inflation"
+		return myAircraft.Get_TireRightMainWheel__inflation()
 	}
 	
-	def Check_TireLeftMainWheel__inflation(next_act : string)
+	def Check_TireLeftMainWheel__inflation()
 	{	
-		timehandler.create_action_duration(10, 10, "age_and_experience")
-		if (timehandler.hold_action_time(timehandler.action_duration))
-		{
-			println "Checking left Main Wheel Tire inflation"
-			println myAircraft.Get_TireLeftMainWheel__inflation
-			next_action = next_act
-		}	
+		println "Checking left Main Wheel Tire inflation"
+		return myAircraft.Get_TireLeftMainWheel__inflation
 	}
 	
-	def Check_TireNoseWheel__inflation(next_act : string)
+	def Check_TireNoseWheel__inflation()
 	{	
-		timehandler.create_action_duration(10, 10, "age_and_experience")
-		if (timehandler.hold_action_time(timehandler.action_duration))
-		{
-			println "Checking Nose Wheel Tire inflation"
-			println myAircraft.Get_TireNoseWheel__inflation
-			next_action = next_act
-		}	
+		println "Checking Nose Wheel Tire inflation"
+		return myAircraft.Get_TireNoseWheel__inflation
 	}
 	
 		
 	//------Visual Fuel Tank Functions------
-	def Check_RWT__fuel_quantity(next_act : string)
+	def Check_RWT__fuel_quantity()
 	{
-		timehandler.create_action_duration(20, 20, "age_and_experience")
-		if (timehandler.hold_action_time(timehandler.action_duration))
-		{
-			println "Checking right wing tank fuel quantity"
-			println myAircraft.Get_RWT__fuel_quantity()
-			next_action = next_act
-		}	
+		println "Checking right wing tank fuel quantity"
+		return myAircraft.Get_RWT__fuel_quantity()
 	}
 	
-	def Check_LWT__fuel_quantity(next_act : string)
+	def Check_LWT__fuel_quantity()
 	{
-		timehandler.create_action_duration(20, 20, "age_and_experience")
-		if (timehandler.hold_action_time(timehandler.action_duration))
-		{
-			println "Checking left wing tank fuel quantity"
-			println myAircraft.Get_RWT__fuel_quantity()
-			next_action = next_act
-		}	
+		println "Checking left wing tank fuel quantity"
+		return myAircraft.Get_RWT__fuel_quantity()
 	}
 	
-	def Check_RWT__water_sediments(next_act : string)
+	def Check_RWT__water_sediments()
 	{
-		timehandler.create_action_duration(20, 20, "age_and_experience")
-		if (timehandler.hold_action_time(timehandler.action_duration))
-		{
-			println "Checking right wing tank for water sediments"
-			println myAircraft.Get_RWT__water_sediments()
-			next_action = next_act
-		}	
+		println "Checking right wing tank for water sediments"
+		return myAircraft.Get_RWT__water_sediments()
 	}
 	
-	def Check_LWT__water_sediments(next_act : string)
+	def Check_LWT__water_sediments()
 	{
-		timehandler.create_action_duration(20, 20, "age_and_experience")
-		if (timehandler.hold_action_time(timehandler.action_duration))
-		{
-			println "Checking left wing tank for water sediments"
-			println myAircraft.Get_LWT__water_sediments()
-			next_action = next_act
-		}	
+		println "Checking left wing tank for water sediments"
+		return myAircraft.Get_LWT__water_sediments()
 	}
 	
 	//------Visual (or acoustic) Engine Functions------
-	def Check_Engine__running(next_act : string) : bool
+	def Check_Engine__running()
 	{
-		timehandler.create_action_duration(1, 1, "age_and_experience")
-		if (timehandler.hold_action_time(timehandler.action_duration))
-		{
-			println "Checking Engine running"
-			return myAircraft.Get_Engine__running()
-			next_action = next_act
-		}
+		println "Checking Engine running"
+		return myAircraft.Get_Engine__running()
 	}
 	
-	def Check_Engine__oil(next_act : string)
+	def Check_Engine__oil()
 	{
-		timehandler.create_action_duration(20, 20, "age_and_experience")
-		if (timehandler.hold_action_time(timehandler.action_duration))
-		{
-			println "Checking Engine oil"
-			println myAircraft.Get_Engine__oil()
-			next_action = next_act
-		}
+		println "Checking Engine oil"
+		return myAircraft.Get_Engine__oil()
 	}
 	
 }
-
-
 
 
 
