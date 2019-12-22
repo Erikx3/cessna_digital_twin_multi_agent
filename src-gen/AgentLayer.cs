@@ -62,8 +62,48 @@ namespace cessna_digital_twin {
 				if(System.Math.Abs(__spawn_ycor - value) > 0.0000001) __spawn_ycor = value;
 			}
 		}
+		private bool __message_on_frequency
+			 = false;
+		internal bool message_on_frequency { 
+			get { return __message_on_frequency; }
+			set{
+				if(__message_on_frequency != value) __message_on_frequency = value;
+			}
+		}
+		private string __sender_identifier
+			 = "";
+		internal string sender_identifier { 
+			get { return __sender_identifier; }
+			set{
+				if(__sender_identifier != value) __sender_identifier = value;
+			}
+		}
+		private string __receiver
+			 = "";
+		internal string receiver { 
+			get { return __receiver; }
+			set{
+				if(__receiver != value) __receiver = value;
+			}
+		}
+		private string __message_type
+			 = "";
+		internal string message_type { 
+			get { return __message_type; }
+			set{
+				if(__message_type != value) __message_type = value;
+			}
+		}
+		private Mars.Components.Common.MarsList<System.Object> __message_information_list
+			 = (new Mars.Components.Common.MarsList<System.Object>() {  });
+		internal Mars.Components.Common.MarsList<System.Object> message_information_list { 
+			get { return __message_information_list; }
+			set{
+				if(__message_information_list != value) __message_information_list = value;
+			}
+		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void update_spawn_coord() 
+		public void Update_spawn_coord() 
 		{
 			{
 			spawn_xcor = spawn_xcor + _Random.Next(5)
@@ -74,7 +114,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public double get_spawn_x_coord() 
+		public double Get_spawn_x_coord() 
 		{
 			{
 			return spawn_xcor
@@ -82,12 +122,76 @@ namespace cessna_digital_twin {
 			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public double get_spawn_y_coord() 
+		public double Get_spawn_y_coord() 
 		{
 			{
 			return spawn_ycor
 			;}
 			return default(double);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public string Listen_receiver_on_frequency() 
+		{
+			{
+			return receiver
+					;
+			}
+			return default(string);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public string Listen_sender_identifier_on_frequency() 
+		{
+			{
+			return sender_identifier
+					;
+			}
+			return default(string);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public string Listen_message_type_on_frequency() 
+		{
+			{
+			return message_type
+					;
+			}
+			return default(string);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public Mars.Components.Common.MarsList<System.Object> Listen_message_information_list_on_frequency() 
+		{
+			{
+			return message_information_list
+					;
+			}
+			return default(Mars.Components.Common.MarsList<System.Object>);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void Communicate_on_frequency(string _sender_identifier, string _receiver, string _message_type, Mars.Components.Common.MarsList<System.Object> _message_information_list) 
+		{
+			{
+			if(Equals(message_on_frequency, false)) {
+							{
+							sender_identifier = _sender_identifier;
+							receiver = _receiver;
+							message_type = _message_type;
+							message_information_list = _message_information_list;
+							message_on_frequency = true
+							;}
+					;} 
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void Clear_frequency() 
+		{
+			{
+			message_on_frequency = false;
+			sender_identifier = "";
+			receiver = "";
+			message_type = "";
+			message_information_list = (new Mars.Components.Common.MarsList<System.Object>() {  })
+			;}
+			return;
 		}
 		public AgentLayer (
 		AirportStadeLayer _airportstadelayer, 

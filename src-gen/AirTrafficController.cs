@@ -18,6 +18,22 @@ namespace cessna_digital_twin {
 		private static readonly Mars.Common.Logging.ILogger _Logger = 
 					Mars.Common.Logging.LoggerFactory.GetLogger(typeof(AirTrafficController));
 		private readonly System.Random _Random = new System.Random();
+		private string __identifier
+			 = default(string);
+		public string identifier { 
+			get { return __identifier; }
+			set{
+				if(__identifier != value) __identifier = value;
+			}
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void initialize_general_values() 
+		{
+			{
+			identifier = "Tower"
+			;}
+			return;
+		}
 		internal bool _isAlive;
 		internal int _executionFrequency;
 		
@@ -47,7 +63,8 @@ namespace cessna_digital_twin {
 			_isAlive = true;
 			_executionFrequency = freq;
 			{
-			}
+			initialize_general_values()
+			;}
 		}
 		
 		public void Tick()

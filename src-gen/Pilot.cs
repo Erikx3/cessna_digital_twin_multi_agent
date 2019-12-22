@@ -611,36 +611,36 @@ namespace cessna_digital_twin {
 			_isAlive = true;
 			_executionFrequency = freq;
 			{
-			double x_spawn = agentlayer.get_spawn_x_coord();
-			double y_spawn = agentlayer.get_spawn_y_coord();
+			double x_spawn = agentlayer.Get_spawn_x_coord();
+			double y_spawn = agentlayer.Get_spawn_y_coord();
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget335_8945 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget372_10115 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object335_8945 = this;
+				var _object372_10115 = this;
 				
-				_AgentLayer._PilotEnvironment.PosAt(_object335_8945, 
-					_taget335_8945.Item1, _taget335_8945.Item2
+				_AgentLayer._PilotEnvironment.PosAt(_object372_10115, 
+					_taget372_10115.Item1, _taget372_10115.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
 			myAircraft = new Func<cessna_digital_twin.Aircraft>(() => {
-				Func<cessna_digital_twin.Aircraft, bool> _predicate339_9101 = null;
-				Func<cessna_digital_twin.Aircraft, bool> _predicateMod339_9101 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
+				Func<cessna_digital_twin.Aircraft, bool> _predicate376_10271 = null;
+				Func<cessna_digital_twin.Aircraft, bool> _predicateMod376_10271 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
 				{
 					if (_it?.ID == this.ID)
 					{
 						return false;
-					} else if (_predicate339_9101 != null)
+					} else if (_predicate376_10271 != null)
 					{
-						return _predicate339_9101.Invoke(_it);
+						return _predicate376_10271.Invoke(_it);
 					} else return true;
 				});
 				
-				const int _range339_9101 = -1;
-				var _source339_9101 = this.Position;
+				const int _range376_10271 = -1;
+				var _source376_10271 = this.Position;
 				
-				return _AgentLayer._AircraftEnvironment.Explore(_source339_9101, _range339_9101, 1, _predicateMod339_9101)?.FirstOrDefault();
+				return _AgentLayer._AircraftEnvironment.Explore(_source376_10271, _range376_10271, 1, _predicateMod376_10271)?.FirstOrDefault();
 			}).Invoke();
 			myAircraft_callsign = myAircraft.Get_callsign();
 			update_general_values();
