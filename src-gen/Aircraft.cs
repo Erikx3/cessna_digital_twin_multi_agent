@@ -42,6 +42,22 @@ namespace cessna_digital_twin {
 				if(System.Math.Abs(__Engine__oil - value) > 0.0000001) __Engine__oil = value;
 			}
 		}
+		private double __Engine__oil_pressure
+			 = default(double);
+		public double Engine__oil_pressure { 
+			get { return __Engine__oil_pressure; }
+			set{
+				if(System.Math.Abs(__Engine__oil_pressure - value) > 0.0000001) __Engine__oil_pressure = value;
+			}
+		}
+		private double __Engine__oil_temperature
+			 = default(double);
+		public double Engine__oil_temperature { 
+			get { return __Engine__oil_temperature; }
+			set{
+				if(System.Math.Abs(__Engine__oil_temperature - value) > 0.0000001) __Engine__oil_temperature = value;
+			}
+		}
 		private double __Engine__mixture_control
 			 = default(double);
 		public double Engine__mixture_control { 
@@ -88,6 +104,62 @@ namespace cessna_digital_twin {
 			get { return __Engine__oil_max; }
 			set{
 				if(__Engine__oil_max != value) __Engine__oil_max = value;
+			}
+		}
+		private int __Engine__oil_normal
+			 = 5;
+		internal int Engine__oil_normal { 
+			get { return __Engine__oil_normal; }
+			set{
+				if(__Engine__oil_normal != value) __Engine__oil_normal = value;
+			}
+		}
+		private int __Engine__oil_min
+			 = 4;
+		internal int Engine__oil_min { 
+			get { return __Engine__oil_min; }
+			set{
+				if(__Engine__oil_min != value) __Engine__oil_min = value;
+			}
+		}
+		private int __Engine__oil_pressure_normal_min
+			 = 205000;
+		internal int Engine__oil_pressure_normal_min { 
+			get { return __Engine__oil_pressure_normal_min; }
+			set{
+				if(__Engine__oil_pressure_normal_min != value) __Engine__oil_pressure_normal_min = value;
+			}
+		}
+		private int __Engine__oil_pressure_normal_max
+			 = 410000;
+		internal int Engine__oil_pressure_normal_max { 
+			get { return __Engine__oil_pressure_normal_max; }
+			set{
+				if(__Engine__oil_pressure_normal_max != value) __Engine__oil_pressure_normal_max = value;
+			}
+		}
+		private int __Engine__oil_pressure_min
+			 = 70000;
+		internal int Engine__oil_pressure_min { 
+			get { return __Engine__oil_pressure_min; }
+			set{
+				if(__Engine__oil_pressure_min != value) __Engine__oil_pressure_min = value;
+			}
+		}
+		private int __Engine__oil_temperature_normal_min
+			 = 38;
+		internal int Engine__oil_temperature_normal_min { 
+			get { return __Engine__oil_temperature_normal_min; }
+			set{
+				if(__Engine__oil_temperature_normal_min != value) __Engine__oil_temperature_normal_min = value;
+			}
+		}
+		private int __Engine__oil_temperature_normal_max
+			 = 116;
+		internal int Engine__oil_temperature_normal_max { 
+			get { return __Engine__oil_temperature_normal_max; }
+			set{
+				if(__Engine__oil_temperature_normal_max != value) __Engine__oil_temperature_normal_max = value;
 			}
 		}
 		private int __Engine__RPM_min
@@ -240,7 +312,9 @@ namespace cessna_digital_twin {
 			 / 10.0;
 			Engine__ignition_switch = "OFF";
 			Engine__RPM = 0;
-			Engine__running = false
+			Engine__running = false;
+			Engine__oil_pressure = 101325;
+			Engine__oil_temperature = 15
 			;}
 			return;
 		}
@@ -250,6 +324,7 @@ namespace cessna_digital_twin {
 			{
 			if(Equals(Engine__running, false)) {
 							{
+							initialize_Engine();
 							if(Equals(Engine__ignition_switch, "START")) {
 											{
 											if(_Random.Next(100)
@@ -267,7 +342,17 @@ namespace cessna_digital_twin {
 							{
 							Engine__RPM = Engine__RPM_min + (Engine__RPM_max - Engine__RPM_min) * Engine__throttle;
 							Engine__RPM = Engine__RPM + _Random.Next(21)
-							 - 10
+							 - 10;
+							int temp_Engine__oil_pressure_normal_half = (Engine__oil_pressure_normal_max + Engine__oil_pressure_normal_min) / 2;
+							int temp_Engine__oil_temperature_normal_half = (Engine__oil_temperature_normal_max + Engine__oil_temperature_normal_min) / 2;
+							Engine__oil_pressure = temp_Engine__oil_pressure_normal_half;
+							Engine__oil_temperature = temp_Engine__oil_temperature_normal_half;
+							if(Engine__oil < Engine__oil_normal) {
+											{
+											Engine__oil_pressure = Engine__oil_pressure - ((temp_Engine__oil_pressure_normal_half - Engine__oil_pressure_normal_min) * (Engine__oil_normal - Engine__oil));
+											Engine__oil_temperature = Engine__oil_temperature + ((Engine__oil_temperature_normal_max - temp_Engine__oil_temperature_normal_half) * (Engine__oil_normal - Engine__oil))
+											;}
+									;} 
 							;}
 					;} 
 			;}
@@ -489,6 +574,22 @@ namespace cessna_digital_twin {
 			;}
 			
 			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public double IP_Get_Engine__oil_pressure() {
+			{
+			return Engine__oil_pressure
+			;}
+			
+			return default(double);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public double IP_Get_Engine__oil_temperature() {
+			{
+			return Engine__oil_temperature
+			;}
+			
+			return default(double);;
 		}
 		internal bool _isAlive;
 		internal int _executionFrequency;

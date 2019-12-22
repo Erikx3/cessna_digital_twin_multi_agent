@@ -381,19 +381,71 @@ namespace cessna_digital_twin {
 																															) {
 																																			{
 																																			Set_Engine__ignition_switch("BOTH");
-																																			next_action = "Check_Engine__oil_pressure"
+																																			next_action = "Check_Instrument_Engine__oil_pressure"
 																																			;}
 																																	;} 
 																															;}
-																													;} 
+																													;} else {
+																															if(Equals(next_action, "Check_Instrument_Engine__oil_pressure")) {
+																																			{
+																																			timehandler.create_action_duration(30,2,"age_and_experience");
+																																			if(timehandler.hold_action_time(timehandler.action_duration)
+																																			) {
+																																							{
+																																							Check_Instrument_Engine__oil_pressure();
+																																							next_action = "Check_Instrument_Engine__oil_temperature"
+																																							;}
+																																					;} 
+																																			;}
+																																	;} else {
+																																			if(Equals(next_action, "Check_Instrument_Engine__oil_temperature")) {
+																																							{
+																																							timehandler.create_action_duration(3,2,"age_and_experience");
+																																							if(timehandler.hold_action_time(timehandler.action_duration)
+																																							) {
+																																											{
+																																											Check_Instrument_Engine__oil_temperature();
+																																											next_action = "End_of_action"
+																																											;}
+																																									;} 
+																																							;}
+																																					;} 
+																																		;}
+																														;}
 																										;}
 																						;}
 																		;}
 														;}
 										;}
-						;}
+						;};
+			if(Equals(next_action, "End_of_Actions")) {
+							{
+							System.Console.WriteLine("Finished State -->" + state + " with next action flag -->" + next_action);;
+							state = "NextState";
+							System.Console.WriteLine("Next state -->" + state);;
+							first_action_set = false
+							;}
+					;} 
 			;}
 			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public double Check_Instrument_Engine__oil_pressure() 
+		{
+			{
+			System.Console.WriteLine("Checking Engine oil pressure instrument");;
+			return myAircraft.IP_Get_Engine__oil_pressure()
+			;}
+			return default(double);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public double Check_Instrument_Engine__oil_temperature() 
+		{
+			{
+			System.Console.WriteLine("Checking Engine oil temperature instrument");;
+			return myAircraft.IP_Get_Engine__oil_temperature()
+			;}
+			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public void Apply_Engine__throttle(double input) 
@@ -555,32 +607,32 @@ namespace cessna_digital_twin {
 			double y_spawn = agentlayer.get_spawn_y_coord();
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget279_6564 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget321_8637 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object279_6564 = this;
+				var _object321_8637 = this;
 				
-				_AgentLayer._PilotEnvironment.PosAt(_object279_6564, 
-					_taget279_6564.Item1, _taget279_6564.Item2
+				_AgentLayer._PilotEnvironment.PosAt(_object321_8637, 
+					_taget321_8637.Item1, _taget321_8637.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
 			myAircraft = new Func<cessna_digital_twin.Aircraft>(() => {
-				Func<cessna_digital_twin.Aircraft, bool> _predicate282_6639 = null;
-				Func<cessna_digital_twin.Aircraft, bool> _predicateMod282_6639 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
+				Func<cessna_digital_twin.Aircraft, bool> _predicate324_8712 = null;
+				Func<cessna_digital_twin.Aircraft, bool> _predicateMod324_8712 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
 				{
 					if (_it?.ID == this.ID)
 					{
 						return false;
-					} else if (_predicate282_6639 != null)
+					} else if (_predicate324_8712 != null)
 					{
-						return _predicate282_6639.Invoke(_it);
+						return _predicate324_8712.Invoke(_it);
 					} else return true;
 				});
 				
-				const int _range282_6639 = -1;
-				var _source282_6639 = this.Position;
+				const int _range324_8712 = -1;
+				var _source324_8712 = this.Position;
 				
-				return _AgentLayer._AircraftEnvironment.Explore(_source282_6639, _range282_6639, 1, _predicateMod282_6639)?.FirstOrDefault();
+				return _AgentLayer._AircraftEnvironment.Explore(_source324_8712, _range324_8712, 1, _predicateMod324_8712)?.FirstOrDefault();
 			}).Invoke();
 			update_general_values();
 			state = "PreflightInspection";

@@ -77,6 +77,8 @@ agent Aircraft on AgentLayer{
 	
 	// -----Engine-----
 	observe var Engine__oil : real  // litre
+	observe var Engine__oil_pressure : real // normal between 205000 and 410000 Pa
+	observe var Engine__oil_temperature : real // normal between 38°C and 116°C
 	observe var Engine__mixture_control : real  // percentage RICH 0..1 LEAN
 	observe var Engine__throttle : real  // percentage NO THROTTLE 0..1 FULL THROTTLE
 	observe var Engine__ignition_switch : string  // "OFF", "L", "R", "BOTH" or "START"
@@ -85,13 +87,22 @@ agent Aircraft on AgentLayer{
 	
 	//Settings
 	var Engine__oil_max : integer = 6
-	var Engine__RPM_min : integer = 1000  // when running
-	var Engine__RPM_max : integer = 2500  // when running
+	var Engine__oil_normal : integer = 5
+	var Engine__oil_min : integer = 4
+	var Engine__oil_pressure_normal_min = 205000
+	var Engine__oil_pressure_normal_max = 410000
+	var Engine__oil_pressure_min = 70000
+	var Engine__oil_temperature_normal_min = 38
+	var Engine__oil_temperature_normal_max = 116
+	var Engine__RPM_min : integer = 1000  // when running during ground
+	var Engine__RPM_max : integer = 2500  // when running during ground
 	
-	//TODO
-	//observe var Engine__fuel_consumption : real
-	//observe var Engine__oil_pressure : integer
-	//observe var Engine__oil_temperature : integer
+	//TODO, dependent on throttle settings!
+	//observe var Engine__fuel_consumption : real 
+	//observe var Engine__oil_pump_condition : bool
+	//observe var Engine__oil_pressure_gauge_condition : bool
+	//observe var Engine__oil_leakage : real
+	
 	
 	def initialize_Engine()
 	{
@@ -101,12 +112,15 @@ agent Aircraft on AgentLayer{
 		Engine__ignition_switch = "OFF"
 		Engine__RPM = 0
 		Engine__running = false
+		Engine__oil_pressure = 101325
+		Engine__oil_temperature = 15 		
 	}
 	
 	def update_Engine()
 	{
 		if (Engine__running === false)
 		{
+			initialize_Engine() // force default values
 			if (Engine__ignition_switch === "START")
 			{
 				if (random(100) <= 40) // 40% chance for engine to start
@@ -119,8 +133,23 @@ agent Aircraft on AgentLayer{
 		
 		if (Engine__running === true)
 		{
+			//Engine RPM TODO: Add speed dependency, since RPM changes with aircraft speed with paper
 			Engine__RPM = Engine__RPM_min + (Engine__RPM_max - Engine__RPM_min) * Engine__throttle
 			Engine__RPM = Engine__RPM + random(21) - 10 // for random deviations
+			
+			//Engine Oil TODO: Make dependent on and engine__oil_pump
+			var temp_Engine__oil_pressure_normal_half = (Engine__oil_pressure_normal_max + Engine__oil_pressure_normal_min) / 2
+			var temp_Engine__oil_temperature_normal_half = (Engine__oil_temperature_normal_max + Engine__oil_temperature_normal_min) / 2
+			Engine__oil_pressure = temp_Engine__oil_pressure_normal_half // Normal Operations
+			Engine__oil_temperature = temp_Engine__oil_temperature_normal_half //TODO: maybe add dependence to throttle here at least
+			if (Engine__oil < Engine__oil_normal)
+			{
+				//TODO: Add effect on Engine failure
+				Engine__oil_pressure = Engine__oil_pressure - ((temp_Engine__oil_pressure_normal_half - Engine__oil_pressure_normal_min) * (Engine__oil_normal - Engine__oil))
+				Engine__oil_temperature = Engine__oil_temperature + ((Engine__oil_temperature_normal_max - temp_Engine__oil_temperature_normal_half) * (Engine__oil_normal - Engine__oil))
+			}
+			
+			
 		}
 	}
 	
@@ -217,7 +246,7 @@ agent Aircraft on AgentLayer{
 	
 	
 	//-----Control_Input_Panel(CIP)-----
-	// Interface for pilot input when sitting in Aircraft
+	// Interface for pilot input when sitting in Aircraft for giving Input
 	
 	// master switch here, since placing in other classes difficult
 	observe var CIP__master_switch : string // "ON" or "OFF"
@@ -231,7 +260,7 @@ agent Aircraft on AgentLayer{
 	{
 		Engine__ignition_switch = input
 	}
-	
+
 	passive CIP_Apply_Engine__throttle(input: real)
 	{
 		Engine__throttle = input
@@ -263,6 +292,19 @@ agent Aircraft on AgentLayer{
 	}
 	
 	
+	
+	//-----Instrument_Panel(IP)-----
+	// Interface for pilot input when sitting in Aircraft for reading Instruments
+	
+	passive IP_Get_Engine__oil_pressure()
+	{
+		return Engine__oil_pressure()
+	}
+	
+	passive IP_Get_Engine__oil_temperature()
+	{
+		return Engine__oil_temperature()
+	}
 }
 
 
@@ -544,9 +586,53 @@ agent Pilot on AgentLayer{
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				Set_Engine__ignition_switch("BOTH")
-				next_action = "Check_Engine__oil_pressure"
+				next_action = "Check_Instrument_Engine__oil_pressure"
 			}
 		}
+		
+		else if (next_action === "Check_Instrument_Engine__oil_pressure")
+		{
+			timehandler.create_action_duration(30, 2, "age_and_experience") // includes holding pattern
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				Check_Instrument_Engine__oil_pressure()
+				next_action = "Check_Instrument_Engine__oil_temperature"
+			}
+		}
+		
+		else if (next_action === "Check_Instrument_Engine__oil_temperature")
+		{
+			timehandler.create_action_duration(3, 2, "age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				Check_Instrument_Engine__oil_temperature()
+				next_action = "End_of_action"
+			}
+		}
+		
+		if (next_action === "End_of_Actions")
+		{
+			println "Finished State -->" + state + " with next action flag -->" + next_action
+			state = "NextState"
+			println "Next state -->" + state
+			first_action_set = false
+		}
+		
+	}
+	
+	
+	
+	//-----Instrument Panel(IP) Functions-----
+	def Check_Instrument_Engine__oil_pressure()
+	{
+		println "Checking Engine oil pressure instrument"
+		return myAircraft.IP_Get_Engine__oil_pressure()
+	}
+	
+	def Check_Instrument_Engine__oil_temperature()
+	{
+		println "Checking Engine oil temperature instrument"
+		return myAircraft.IP_Get_Engine__oil_temperature()
 	}
 	
 	
