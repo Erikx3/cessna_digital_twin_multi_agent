@@ -34,6 +34,14 @@ namespace cessna_digital_twin {
 				if(System.Math.Abs(__Longitude - value) > 0.0000001) __Longitude = value;
 			}
 		}
+		private string __Callsign
+			 = default(string);
+		public string Callsign { 
+			get { return __Callsign; }
+			set{
+				if(__Callsign != value) __Callsign = value;
+			}
+		}
 		private double __Engine__oil
 			 = default(double);
 		public double Engine__oil { 
@@ -291,6 +299,29 @@ namespace cessna_digital_twin {
 			}
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void initialize_general_values() 
+		{
+			{
+			double x_spawn = agentlayer.get_spawn_x_coord();
+			double y_spawn = agentlayer.get_spawn_y_coord();
+			new System.Func<System.Tuple<double,double>>(() => {
+				
+				var _taget66_1264 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				
+				var _object66_1264 = this;
+				
+				_AgentLayer._AircraftEnvironment.PosAt(_object66_1264, 
+					_taget66_1264.Item1, _taget66_1264.Item2
+				);
+				return new Tuple<double, double>(Position.X, Position.Y);
+			}).Invoke();
+			Callsign = "Cessna" + _Random.Next(10000);
+			Longitude = this.Position.X;
+			Latitude = this.Position.Y
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public void update_general_values() 
 		{
 			{
@@ -319,12 +350,22 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void Set_Engine__not_running_values() 
+		{
+			{
+			Engine__RPM = 0;
+			Engine__oil_pressure = 101325;
+			Engine__oil_temperature = 15
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public void update_Engine() 
 		{
 			{
 			if(Equals(Engine__running, false)) {
 							{
-							initialize_Engine();
+							Set_Engine__not_running_values();
 							if(Equals(Engine__ignition_switch, "START")) {
 											{
 											if(_Random.Next(100)
@@ -437,6 +478,15 @@ namespace cessna_digital_twin {
 			}
 			
 			return default(System.Tuple<double,double>);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public string Get_callsign() {
+			{
+			return Callsign
+					;
+			}
+			
+			return default(string);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public bool Get_Engine__running() {
@@ -620,20 +670,7 @@ namespace cessna_digital_twin {
 			_isAlive = true;
 			_executionFrequency = freq;
 			{
-			double x_spawn = agentlayer.get_spawn_x_coord();
-			double y_spawn = agentlayer.get_spawn_y_coord();
-			new System.Func<System.Tuple<double,double>>(() => {
-				
-				var _taget38_632 = new System.Tuple<double,double>(x_spawn,y_spawn);
-				
-				var _object38_632 = this;
-				
-				_AgentLayer._AircraftEnvironment.PosAt(_object38_632, 
-					_taget38_632.Item1, _taget38_632.Item2
-				);
-				return new Tuple<double, double>(Position.X, Position.Y);
-			}).Invoke();
-			update_general_values();
+			initialize_general_values();
 			initialize_RightWingTank();
 			initialize_LeftWingTank();
 			initialize_Tire();

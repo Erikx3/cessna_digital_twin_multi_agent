@@ -34,6 +34,14 @@ namespace cessna_digital_twin {
 				if(System.Math.Abs(__Longitude - value) > 0.0000001) __Longitude = value;
 			}
 		}
+		private string __myAircraft_callsign
+			 = default(string);
+		public string myAircraft_callsign { 
+			get { return __myAircraft_callsign; }
+			set{
+				if(__myAircraft_callsign != value) __myAircraft_callsign = value;
+			}
+		}
 		private string __state
 			 = default(string);
 		public string state { 
@@ -607,33 +615,34 @@ namespace cessna_digital_twin {
 			double y_spawn = agentlayer.get_spawn_y_coord();
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget321_8637 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget335_8945 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object321_8637 = this;
+				var _object335_8945 = this;
 				
-				_AgentLayer._PilotEnvironment.PosAt(_object321_8637, 
-					_taget321_8637.Item1, _taget321_8637.Item2
+				_AgentLayer._PilotEnvironment.PosAt(_object335_8945, 
+					_taget335_8945.Item1, _taget335_8945.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
 			myAircraft = new Func<cessna_digital_twin.Aircraft>(() => {
-				Func<cessna_digital_twin.Aircraft, bool> _predicate324_8712 = null;
-				Func<cessna_digital_twin.Aircraft, bool> _predicateMod324_8712 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
+				Func<cessna_digital_twin.Aircraft, bool> _predicate339_9101 = null;
+				Func<cessna_digital_twin.Aircraft, bool> _predicateMod339_9101 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
 				{
 					if (_it?.ID == this.ID)
 					{
 						return false;
-					} else if (_predicate324_8712 != null)
+					} else if (_predicate339_9101 != null)
 					{
-						return _predicate324_8712.Invoke(_it);
+						return _predicate339_9101.Invoke(_it);
 					} else return true;
 				});
 				
-				const int _range324_8712 = -1;
-				var _source324_8712 = this.Position;
+				const int _range339_9101 = -1;
+				var _source339_9101 = this.Position;
 				
-				return _AgentLayer._AircraftEnvironment.Explore(_source324_8712, _range324_8712, 1, _predicateMod324_8712)?.FirstOrDefault();
+				return _AgentLayer._AircraftEnvironment.Explore(_source339_9101, _range339_9101, 1, _predicateMod339_9101)?.FirstOrDefault();
 			}).Invoke();
+			myAircraft_callsign = myAircraft.Get_callsign();
 			update_general_values();
 			state = "PreflightInspection";
 			age = age_min + _Random.Next((age_max - age_min) + 1);

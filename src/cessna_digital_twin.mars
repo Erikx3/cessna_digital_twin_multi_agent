@@ -33,11 +33,7 @@ agent Aircraft on AgentLayer{
 	
 	initialize
 	{
-		var x_spawn = agentlayer.get_spawn_x_coord()
-		var y_spawn = agentlayer.get_spawn_y_coord()
-		pos at #(x_spawn, y_spawn)
-		
-		update_general_values() // also used for initialization so far
+		initialize_general_values()
 		initialize_RightWingTank()
 		initialize_LeftWingTank()
 		initialize_Tire()
@@ -58,8 +54,21 @@ agent Aircraft on AgentLayer{
 	// -----General Values and Functions-----
 	observe var Latitude : real
 	observe var Longitude : real
+	observe var Callsign : string
+	// TODO: Think about this
 	//observe var passive_activity: string // activity by pilot is more precise
 	//observe var malfunction_notification // maybe add something like this or think about it
+	
+	def initialize_general_values()
+	{
+		var x_spawn = agentlayer.get_spawn_x_coord()
+		var y_spawn = agentlayer.get_spawn_y_coord()
+		pos at #(x_spawn, y_spawn)
+		
+		Callsign = "Cessna" + random(10000)
+		Longitude = xcor
+		Latitude = ycor
+	}
 	
 	def update_general_values()
 	{
@@ -68,7 +77,7 @@ agent Aircraft on AgentLayer{
 	}
 	
 	passive Get_position() => return #(xcor, ycor) // for returning the position of the aircraft
-	
+	passive Get_callsign() => return Callsign
 	
 	
 	//-----Aircraft(Movement and Physics)-----
@@ -116,11 +125,18 @@ agent Aircraft on AgentLayer{
 		Engine__oil_temperature = 15 		
 	}
 	
+	def Set_Engine__not_running_values()
+	{
+		Engine__RPM = 0
+		Engine__oil_pressure = 101325
+		Engine__oil_temperature = 15
+	}
+	
 	def update_Engine()
 	{
 		if (Engine__running === false)
 		{
-			initialize_Engine() // force default values
+			Set_Engine__not_running_values()
 			if (Engine__ignition_switch === "START")
 			{
 				if (random(100) <= 40) // 40% chance for engine to start
@@ -309,8 +325,6 @@ agent Aircraft on AgentLayer{
 
 
 
-
-
 agent Pilot on AgentLayer{
 		
 	initialize
@@ -321,7 +335,9 @@ agent Pilot on AgentLayer{
 		pos at #(x_spawn, y_spawn)
 		
 		//General Initialization
+		//TODO: Add redundancy for making sure, not two pilots controlling 1 Aircraft
 		myAircraft = nearest Aircraft // assign aircraft only ones
+		myAircraft_callsign = myAircraft.Get_callsign() // save aircraft callsign
 		update_general_values() // so first row of csv is not empty
 		state = "PreflightInspection" // first state so far
 		
@@ -348,6 +364,7 @@ agent Pilot on AgentLayer{
 	//-----General Values and functions (Settings)-----
 	observe var Latitude : real
 	observe var Longitude : real
+	observe var myAircraft_callsign : string
 	observe var state : string
 	observe var current_activity : string
 	
@@ -363,9 +380,7 @@ agent Pilot on AgentLayer{
 	//-----General Pilot Values and functions-----
 	observe var age: integer // years
 	observe var flight_experience : integer // years
-	
-	
-	
+		
 	
 	def update_general_values()
 	{
@@ -796,3 +811,16 @@ class TimeHandler
 		}
 	}
 }
+
+agent AirTrafficController on AgentLayer
+	{			
+		initialize
+		{
+			
+		}
+		
+		tick
+		{
+			
+		}
+	}
