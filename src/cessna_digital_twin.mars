@@ -706,14 +706,11 @@ agent Pilot on AgentLayer{
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				var temp_receiver = agentlayer.Listen_receiver_on_frequency()
-				println "temp_receiver from pilot: " + temp_receiver
 				if (temp_receiver === myAircraft_callsign)
 				{
 					ground_path = agentlayer.Listen_message_information_list_on_frequency()
 					next_action = "Clear_frequency"
 					println "Listen on frequency successful"
-					println "-----received List with-----"
-					println ground_path.Get(0)
 				}
 				//TODO: Add retry, when message seems to not have reach Tower
 			}
@@ -872,7 +869,6 @@ agent AirTrafficController on AgentLayer
 				if (timehandler.hold_action_time(timehandler.action_duration))
 				{
 					var temp_receiver = agentlayer.Listen_receiver_on_frequency()
-					println "temp_receiver from ATC: " + temp_receiver
 					if (temp_receiver === identifier)
 					{
 						state = "Communicate_on_frequency"

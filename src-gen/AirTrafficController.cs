@@ -101,12 +101,12 @@ namespace cessna_digital_twin {
 			double y_spawn = agentlayer.Get_spawn_y_coord();
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget864_24333 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget861_24197 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object864_24333 = this;
+				var _object861_24197 = this;
 				
-				_AgentLayer._AirTrafficControllerEnvironment.PosAt(_object864_24333, 
-					_taget864_24333.Item1, _taget864_24333.Item2
+				_AgentLayer._AirTrafficControllerEnvironment.PosAt(_object861_24197, 
+					_taget861_24197.Item1, _taget861_24197.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke()
@@ -124,7 +124,6 @@ namespace cessna_digital_twin {
 							) {
 											{
 											string temp_receiver = agentlayer.Listen_receiver_on_frequency();
-											System.Console.WriteLine("temp_receiver from ATC: " + temp_receiver);;
 											if(Equals(temp_receiver, identifier)) {
 															{
 															state = "Communicate_on_frequency";

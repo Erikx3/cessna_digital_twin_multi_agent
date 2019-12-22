@@ -475,15 +475,11 @@ namespace cessna_digital_twin {
 											) {
 															{
 															string temp_receiver = agentlayer.Listen_receiver_on_frequency();
-															System.Console.WriteLine("temp_receiver from pilot: " + temp_receiver);;
 															if(Equals(temp_receiver, myAircraft_callsign)) {
 																			{
 																			ground_path = agentlayer.Listen_message_information_list_on_frequency();
 																			next_action = "Clear_frequency";
-																			System.Console.WriteLine("Listen on frequency successful");;
-																			System.Console.WriteLine("-----received List with-----");;
-																			System.Console.WriteLine(ground_path.Get(0)
-																			);
+																			System.Console.WriteLine("Listen on frequency successful");
 																			;}
 																	;} 
 															;}
