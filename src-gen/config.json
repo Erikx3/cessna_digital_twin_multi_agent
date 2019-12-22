@@ -36,6 +36,10 @@
             "count":1,
             // Deactivate the output for the Observer agent
             //"outputFrequency": -1
+        },
+        {
+            "name":"AirTrafficController",
+            "count":1,
         }
     ]
 }

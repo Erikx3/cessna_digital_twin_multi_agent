@@ -82,6 +82,14 @@ namespace cessna_digital_twin {
 				if(__first_action_set != value) __first_action_set = value;
 			}
 		}
+		private Mars.Components.Common.MarsList<System.Object> __ground_path
+			 = default(Mars.Components.Common.MarsList<System.Object>);
+		internal Mars.Components.Common.MarsList<System.Object> ground_path { 
+			get { return __ground_path; }
+			set{
+				if(__ground_path != value) __ground_path = value;
+			}
+		}
 		private string __next_action
 			 = default(string);
 		internal string next_action { 
@@ -144,11 +152,11 @@ namespace cessna_digital_twin {
 					;} ;
 			if(Equals(next_action, "Check_TireRightMainWheel__inflation")) {
 							{
-							timehandler.create_action_duration(10,10,"age_and_experience");
+							timehandler.create_action_duration(10,10,"pilot_age_and_experience");
 							if(timehandler.hold_action_time(timehandler.action_duration)
 							) {
 											{
-											int check_value = Check_TireRightMainWheel__inflation();
+											int check_value = Check_Visual_TireRightMainWheel__inflation();
 											if(check_value >= 0) {
 															{
 															next_action = "Check_RWT__water_sediments"
@@ -160,11 +168,11 @@ namespace cessna_digital_twin {
 					;} else {
 							if(Equals(next_action, "Check_RWT__water_sediments")) {
 											{
-											timehandler.create_action_duration(20,20,"age_and_experience");
+											timehandler.create_action_duration(20,20,"pilot_age_and_experience");
 											if(timehandler.hold_action_time(timehandler.action_duration)
 											) {
 															{
-															bool check_value = Check_RWT__water_sediments();
+															bool check_value = Check_Visual_RWT__water_sediments();
 															if(Equals(check_value, true) || Equals(check_value, false)) {
 																			{
 																			next_action = "Check_RWT__fuel_quantity"
@@ -176,11 +184,11 @@ namespace cessna_digital_twin {
 									;} else {
 											if(Equals(next_action, "Check_RWT__fuel_quantity")) {
 															{
-															timehandler.create_action_duration(20,20,"age_and_experience");
+															timehandler.create_action_duration(20,20,"pilot_age_and_experience");
 															if(timehandler.hold_action_time(timehandler.action_duration)
 															) {
 																			{
-																			double check_value = Check_RWT__fuel_quantity();
+																			double check_value = Check_Visual_RWT__fuel_quantity();
 																			if(check_value >= 0) {
 																							{
 																							next_action = "Check_Engine__oil"
@@ -192,11 +200,11 @@ namespace cessna_digital_twin {
 													;} else {
 															if(Equals(next_action, "Check_Engine__oil")) {
 																			{
-																			timehandler.create_action_duration(20,20,"age_and_experience");
+																			timehandler.create_action_duration(20,20,"pilot_age_and_experience");
 																			if(timehandler.hold_action_time(timehandler.action_duration)
 																			) {
 																							{
-																							double check_value = Check_Engine__oil();
+																							double check_value = Check_Visual_Engine__oil();
 																							if(check_value >= 0) {
 																											{
 																											next_action = "Check_TireNoseWheel__inflation"
@@ -208,11 +216,11 @@ namespace cessna_digital_twin {
 																	;} else {
 																			if(Equals(next_action, "Check_TireNoseWheel__inflation")) {
 																							{
-																							timehandler.create_action_duration(10,10,"age_and_experience");
+																							timehandler.create_action_duration(10,10,"pilot_age_and_experience");
 																							if(timehandler.hold_action_time(timehandler.action_duration)
 																							) {
 																											{
-																											int check_value = Check_TireNoseWheel__inflation();
+																											int check_value = Check_Visual_TireNoseWheel__inflation();
 																											if(check_value >= 0) {
 																															{
 																															next_action = "Check_TireLeftMainWheel__inflation"
@@ -224,11 +232,11 @@ namespace cessna_digital_twin {
 																					;} else {
 																							if(Equals(next_action, "Check_TireLeftMainWheel__inflation")) {
 																											{
-																											timehandler.create_action_duration(10,10,"age_and_experience");
+																											timehandler.create_action_duration(10,10,"pilot_age_and_experience");
 																											if(timehandler.hold_action_time(timehandler.action_duration)
 																											) {
 																															{
-																															int check_value = Check_TireLeftMainWheel__inflation();
+																															int check_value = Check_Visual_TireLeftMainWheel__inflation();
 																															if(check_value >= 0) {
 																																			{
 																																			next_action = "Check_LWT__water_sediments"
@@ -240,11 +248,11 @@ namespace cessna_digital_twin {
 																									;} else {
 																											if(Equals(next_action, "Check_LWT__water_sediments")) {
 																															{
-																															timehandler.create_action_duration(20,20,"age_and_experience");
+																															timehandler.create_action_duration(20,20,"pilot_age_and_experience");
 																															if(timehandler.hold_action_time(timehandler.action_duration)
 																															) {
 																																			{
-																																			bool check_value = Check_LWT__water_sediments();
+																																			bool check_value = Check_Visual_LWT__water_sediments();
 																																			if(Equals(check_value, true) || Equals(check_value, false)) {
 																																							{
 																																							next_action = "Check_LWT__fuel_quantity"
@@ -256,11 +264,11 @@ namespace cessna_digital_twin {
 																													;} else {
 																															if(Equals(next_action, "Check_LWT__fuel_quantity")) {
 																																			{
-																																			timehandler.create_action_duration(20,20,"age_and_experience");
+																																			timehandler.create_action_duration(20,20,"pilot_age_and_experience");
 																																			if(timehandler.hold_action_time(timehandler.action_duration)
 																																			) {
 																																							{
-																																							double check_value = Check_LWT__fuel_quantity();
+																																							double check_value = Check_Visual_LWT__fuel_quantity();
 																																							if(check_value >= 0) {
 																																											{
 																																											next_action = "End_of_Actions"
@@ -300,7 +308,7 @@ namespace cessna_digital_twin {
 					;} ;
 			if(Equals(next_action, "Set_Brake__parking_brake")) {
 							{
-							timehandler.create_action_duration(4,2,"age_and_experience");
+							timehandler.create_action_duration(4,2,"pilot_age_and_experience");
 							if(timehandler.hold_action_time(timehandler.action_duration)
 							) {
 											{
@@ -312,7 +320,7 @@ namespace cessna_digital_twin {
 					;} else {
 							if(Equals(next_action, "Set_Engine__mixture_control")) {
 											{
-											timehandler.create_action_duration(4,2,"age_and_experience");
+											timehandler.create_action_duration(4,2,"pilot_age_and_experience");
 											if(timehandler.hold_action_time(timehandler.action_duration)
 											) {
 															{
@@ -324,7 +332,7 @@ namespace cessna_digital_twin {
 									;} else {
 											if(Equals(next_action, "Set_CIP__master_switch")) {
 															{
-															timehandler.create_action_duration(4,2,"age_and_experience");
+															timehandler.create_action_duration(4,2,"pilot_age_and_experience");
 															if(timehandler.hold_action_time(timehandler.action_duration)
 															) {
 																			{
@@ -336,7 +344,7 @@ namespace cessna_digital_twin {
 													;} else {
 															if(Equals(next_action, "Apply_Engine__throttle")) {
 																			{
-																			timehandler.create_action_duration(4,2,"age_and_experience");
+																			timehandler.create_action_duration(4,2,"pilot_age_and_experience");
 																			if(timehandler.hold_action_time(timehandler.action_duration)
 																			) {
 																							{
@@ -350,7 +358,7 @@ namespace cessna_digital_twin {
 																	;} else {
 																			if(Equals(next_action, "Set_Engine__ignition_switch_START")) {
 																							{
-																							timehandler.create_action_duration(4,2,"age_and_experience");
+																							timehandler.create_action_duration(4,2,"pilot_age_and_experience");
 																							if(timehandler.hold_action_time(timehandler.action_duration)
 																							) {
 																											{
@@ -362,11 +370,11 @@ namespace cessna_digital_twin {
 																					;} else {
 																							if(Equals(next_action, "Check_Engine__running")) {
 																											{
-																											timehandler.create_action_duration(1,0,"age_and_experience");
+																											timehandler.create_action_duration(1,0,"pilot_age_and_experience");
 																											if(timehandler.hold_action_time(timehandler.action_duration)
 																											) {
 																															{
-																															bool check_value = Check_Engine__running();
+																															bool check_value = Check_Visual_Engine__running();
 																															if(Equals(check_value, true)) {
 																																			{
 																																			next_action = "Set_Engine__ignition_switch_BOTH"
@@ -384,7 +392,7 @@ namespace cessna_digital_twin {
 																									;} else {
 																											if(Equals(next_action, "Set_Engine__ignition_switch_BOTH")) {
 																															{
-																															timehandler.create_action_duration(2,2,"age_and_experience");
+																															timehandler.create_action_duration(2,2,"pilot_age_and_experience");
 																															if(timehandler.hold_action_time(timehandler.action_duration)
 																															) {
 																																			{
@@ -396,7 +404,7 @@ namespace cessna_digital_twin {
 																													;} else {
 																															if(Equals(next_action, "Check_Instrument_Engine__oil_pressure")) {
 																																			{
-																																			timehandler.create_action_duration(30,2,"age_and_experience");
+																																			timehandler.create_action_duration(30,2,"pilot_age_and_experience");
 																																			if(timehandler.hold_action_time(timehandler.action_duration)
 																																			) {
 																																							{
@@ -408,12 +416,12 @@ namespace cessna_digital_twin {
 																																	;} else {
 																																			if(Equals(next_action, "Check_Instrument_Engine__oil_temperature")) {
 																																							{
-																																							timehandler.create_action_duration(3,2,"age_and_experience");
+																																							timehandler.create_action_duration(3,2,"pilot_age_and_experience");
 																																							if(timehandler.hold_action_time(timehandler.action_duration)
 																																							) {
 																																											{
 																																											Check_Instrument_Engine__oil_temperature();
-																																											next_action = "End_of_action"
+																																											next_action = "End_of_Actions"
 																																											;}
 																																									;} 
 																																							;}
@@ -429,7 +437,78 @@ namespace cessna_digital_twin {
 			if(Equals(next_action, "End_of_Actions")) {
 							{
 							System.Console.WriteLine("Finished State -->" + state + " with next action flag -->" + next_action);;
-							state = "NextState";
+							state = "TakeOffPreparationRequest";
+							System.Console.WriteLine("Next state -->" + state);;
+							first_action_set = false
+							;}
+					;} 
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void TakeOffPreparationRequest_action() 
+		{
+			{
+			if(Equals(first_action_set, false)) {
+							{
+							next_action = "Communicate_on_frequency";
+							first_action_set = true
+							;}
+					;} ;
+			if(Equals(next_action, "Communicate_on_frequency")) {
+							{
+							timehandler.create_action_duration(2,2,"pilot_age_and_experience");
+							if(timehandler.hold_action_time(timehandler.action_duration)
+							) {
+											{
+											agentlayer.Communicate_on_frequency(myAircraft_callsign,"Tower","RequestTakeOffPreparationPoint",(new Mars.Components.Common.MarsList<System.Object>() {  }));
+											System.Console.WriteLine("Communicating on frequency");;
+											next_action = "Listen_receiver_on_frequency"
+											;}
+									;} 
+							;}
+					;} else {
+							if(Equals(next_action, "Listen_receiver_on_frequency")) {
+											{
+											timehandler.create_action_duration(2,2,"pilot_age_and_experience");
+											if(timehandler.hold_action_time(timehandler.action_duration)
+											) {
+															{
+															string temp_receiver = agentlayer.Listen_receiver_on_frequency();
+															System.Console.WriteLine("temp_receiver from pilot: " + temp_receiver);;
+															if(Equals(temp_receiver, myAircraft_callsign)) {
+																			{
+																			ground_path = agentlayer.Listen_message_information_list_on_frequency();
+																			next_action = "Clear_frequency";
+																			System.Console.WriteLine("Listen on frequency successful");;
+																			System.Console.WriteLine("-----received List with-----");;
+																			System.Console.WriteLine(ground_path.Get(0)
+																			);
+																			;}
+																	;} 
+															;}
+													;} 
+											;}
+									;} else {
+											if(Equals(next_action, "Clear_frequency")) {
+															{
+															timehandler.create_action_duration(2,2,"pilot_age_and_experience");
+															if(timehandler.hold_action_time(timehandler.action_duration)
+															) {
+																			{
+																			agentlayer.Clear_frequency();
+																			System.Console.WriteLine("Clear on frequency successful");;
+																			next_action = "End_of_Actions"
+																			;}
+																	;} 
+															;}
+													;} 
+										;}
+						;};
+			if(Equals(next_action, "End_of_Actions")) {
+							{
+							System.Console.WriteLine("Finished State -->" + state + " with next action flag -->" + next_action);;
+							state = "NextStateTaxiingIGuess";
 							System.Console.WriteLine("Next state -->" + state);;
 							first_action_set = false
 							;}
@@ -501,7 +580,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public int Check_TireRightMainWheel__inflation() 
+		public int Check_Visual_TireRightMainWheel__inflation() 
 		{
 			{
 			System.Console.WriteLine("Checking right Main Wheel Tire inflation");;
@@ -510,7 +589,7 @@ namespace cessna_digital_twin {
 			return default(int);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public int Check_TireLeftMainWheel__inflation() 
+		public int Check_Visual_TireLeftMainWheel__inflation() 
 		{
 			{
 			System.Console.WriteLine("Checking left Main Wheel Tire inflation");;
@@ -519,7 +598,7 @@ namespace cessna_digital_twin {
 			return default(int);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public int Check_TireNoseWheel__inflation() 
+		public int Check_Visual_TireNoseWheel__inflation() 
 		{
 			{
 			System.Console.WriteLine("Checking Nose Wheel Tire inflation");;
@@ -528,7 +607,7 @@ namespace cessna_digital_twin {
 			return default(int);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public double Check_RWT__fuel_quantity() 
+		public double Check_Visual_RWT__fuel_quantity() 
 		{
 			{
 			System.Console.WriteLine("Checking right wing tank fuel quantity");;
@@ -537,7 +616,7 @@ namespace cessna_digital_twin {
 			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public double Check_LWT__fuel_quantity() 
+		public double Check_Visual_LWT__fuel_quantity() 
 		{
 			{
 			System.Console.WriteLine("Checking left wing tank fuel quantity");;
@@ -546,7 +625,7 @@ namespace cessna_digital_twin {
 			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public bool Check_RWT__water_sediments() 
+		public bool Check_Visual_RWT__water_sediments() 
 		{
 			{
 			System.Console.WriteLine("Checking right wing tank for water sediments");;
@@ -555,7 +634,7 @@ namespace cessna_digital_twin {
 			return default(bool);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public bool Check_LWT__water_sediments() 
+		public bool Check_Visual_LWT__water_sediments() 
 		{
 			{
 			System.Console.WriteLine("Checking left wing tank for water sediments");;
@@ -564,7 +643,7 @@ namespace cessna_digital_twin {
 			return default(bool);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public bool Check_Engine__running() 
+		public bool Check_Visual_Engine__running() 
 		{
 			{
 			System.Console.WriteLine("Checking Engine running");;
@@ -573,7 +652,7 @@ namespace cessna_digital_twin {
 			return default(bool);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public double Check_Engine__oil() 
+		public double Check_Visual_Engine__oil() 
 		{
 			{
 			System.Console.WriteLine("Checking Engine oil");;
@@ -615,32 +694,32 @@ namespace cessna_digital_twin {
 			double y_spawn = agentlayer.Get_spawn_y_coord();
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget372_10115 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget372_10201 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object372_10115 = this;
+				var _object372_10201 = this;
 				
-				_AgentLayer._PilotEnvironment.PosAt(_object372_10115, 
-					_taget372_10115.Item1, _taget372_10115.Item2
+				_AgentLayer._PilotEnvironment.PosAt(_object372_10201, 
+					_taget372_10201.Item1, _taget372_10201.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
 			myAircraft = new Func<cessna_digital_twin.Aircraft>(() => {
-				Func<cessna_digital_twin.Aircraft, bool> _predicate376_10271 = null;
-				Func<cessna_digital_twin.Aircraft, bool> _predicateMod376_10271 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
+				Func<cessna_digital_twin.Aircraft, bool> _predicate376_10357 = null;
+				Func<cessna_digital_twin.Aircraft, bool> _predicateMod376_10357 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
 				{
 					if (_it?.ID == this.ID)
 					{
 						return false;
-					} else if (_predicate376_10271 != null)
+					} else if (_predicate376_10357 != null)
 					{
-						return _predicate376_10271.Invoke(_it);
+						return _predicate376_10357.Invoke(_it);
 					} else return true;
 				});
 				
-				const int _range376_10271 = -1;
-				var _source376_10271 = this.Position;
+				const int _range376_10357 = -1;
+				var _source376_10357 = this.Position;
 				
-				return _AgentLayer._AircraftEnvironment.Explore(_source376_10271, _range376_10271, 1, _predicateMod376_10271)?.FirstOrDefault();
+				return _AgentLayer._AircraftEnvironment.Explore(_source376_10357, _range376_10357, 1, _predicateMod376_10357)?.FirstOrDefault();
 			}).Invoke();
 			myAircraft_callsign = myAircraft.Get_callsign();
 			update_general_values();
@@ -665,7 +744,13 @@ namespace cessna_digital_twin {
 											{
 											StartingEngine_action()
 											;}
-									;} 
+									;} else {
+											if(Equals(state, "TakeOffPreparationRequest")) {
+															{
+															TakeOffPreparationRequest_action()
+															;}
+													;} 
+										;}
 						;};
 			update_general_values()
 			;}

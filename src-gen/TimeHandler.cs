@@ -119,7 +119,7 @@ namespace cessna_digital_twin {
 			if(Equals(action_duration_time_set, false)) {
 							{
 							action_duration_time_set = true;
-							if(Equals(mode, "age_and_experience")) {
+							if(Equals(mode, "pilot_age_and_experience")) {
 											{
 											int action_duration_extra_calc = action_duration_extra * (1 + (pilot_age / pilot_age_max) - pilot_flight_experience / (pilot_age_max - pilot_age_min));
 											action_duration = action_duration_base + _Random.Next(action_duration_extra_calc)

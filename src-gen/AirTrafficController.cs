@@ -26,11 +26,44 @@ namespace cessna_digital_twin {
 				if(__identifier != value) __identifier = value;
 			}
 		}
+		private string __state
+			 = default(string);
+		public string state { 
+			get { return __state; }
+			set{
+				if(__state != value) __state = value;
+			}
+		}
+		private string __message_type_received
+			 = default(string);
+		public string message_type_received { 
+			get { return __message_type_received; }
+			set{
+				if(__message_type_received != value) __message_type_received = value;
+			}
+		}
+		private string __callsign_received
+			 = default(string);
+		public string callsign_received { 
+			get { return __callsign_received; }
+			set{
+				if(__callsign_received != value) __callsign_received = value;
+			}
+		}
+		private cessna_digital_twin.TimeHandler __timehandler
+			 = new cessna_digital_twin.TimeHandler();
+		internal cessna_digital_twin.TimeHandler timehandler { 
+			get { return __timehandler; }
+			set{
+				if(__timehandler != value) __timehandler = value;
+			}
+		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public void initialize_general_values() 
 		{
 			{
-			identifier = "Tower"
+			identifier = "Tower";
+			state = "Listen_on_frequency"
 			;}
 			return;
 		}
@@ -63,7 +96,20 @@ namespace cessna_digital_twin {
 			_isAlive = true;
 			_executionFrequency = freq;
 			{
-			initialize_general_values()
+			initialize_general_values();
+			double x_spawn = agentlayer.Get_spawn_x_coord();
+			double y_spawn = agentlayer.Get_spawn_y_coord();
+			new System.Func<System.Tuple<double,double>>(() => {
+				
+				var _taget864_24333 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				
+				var _object864_24333 = this;
+				
+				_AgentLayer._AirTrafficControllerEnvironment.PosAt(_object864_24333, 
+					_taget864_24333.Item1, _taget864_24333.Item2
+				);
+				return new Tuple<double, double>(Position.X, Position.Y);
+			}).Invoke()
 			;}
 		}
 		
@@ -71,7 +117,44 @@ namespace cessna_digital_twin {
 		{
 			{ if (!_isAlive) return; }
 			{
-			}
+			if(Equals(state, "Listen_on_frequency")) {
+							{
+							timehandler.create_action_duration(2,2,"None");
+							if(timehandler.hold_action_time(timehandler.action_duration)
+							) {
+											{
+											string temp_receiver = agentlayer.Listen_receiver_on_frequency();
+											System.Console.WriteLine("temp_receiver from ATC: " + temp_receiver);;
+											if(Equals(temp_receiver, identifier)) {
+															{
+															state = "Communicate_on_frequency";
+															message_type_received = agentlayer.Listen_message_type_on_frequency();
+															callsign_received = agentlayer.Listen_sender_identifier_on_frequency()
+															;}
+													;} 
+											;}
+									;} 
+							;}
+					;} else {
+							if(Equals(state, "Communicate_on_frequency")) {
+											{
+											timehandler.create_action_duration(2,2,"None");
+											if(timehandler.hold_action_time(timehandler.action_duration)
+											) {
+															{
+															agentlayer.Clear_frequency();
+															if(Equals(message_type_received, "RequestTakeOffPreparationPoint")) {
+																			{
+																			agentlayer.Communicate_on_frequency(identifier,callsign_received,"AnswerTakeOffPreparationPoint",(new Mars.Components.Common.MarsList<System.Object>() { "This should be in the list!!!",true }));
+																			state = "Listen_on_frequency"
+																			;}
+																	;} 
+															;}
+													;} 
+											;}
+									;} 
+						;}
+			;}
 		}
 		
 		public System.Guid ID { get; }

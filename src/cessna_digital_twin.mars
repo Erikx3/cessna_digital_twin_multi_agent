@@ -212,6 +212,7 @@ agent Aircraft on AgentLayer{
 	
 	
 	// -----Right Wing Tank (RWT)-----
+	// Note: Right - and LeftWingTank (RWT&LWT)
 	observe var RWT__fuel_quantity : real 
 	observe var RWT__water_sediments : bool
 	var RWT__total_capacity : integer = 49 // Litre
@@ -224,8 +225,6 @@ agent Aircraft on AgentLayer{
 		RWT__fuel_quantity = random(RWT__total_capacity+1)
 		RWT__water_sediments = false
 	}
-	
-	
 	
 	// -----Left Wing Tank (LWT)-----
 	observe var LWT__fuel_quantity : real // Litre
@@ -362,6 +361,7 @@ agent Aircraft on AgentLayer{
 
 
 
+// -----Agent Pilot flying the aircraft-----
 agent Pilot on AgentLayer{
 		
 	initialize
@@ -394,6 +394,10 @@ agent Pilot on AgentLayer{
 			StartingEngine_action()
 		}
 		
+		else if (state === "TakeOffPreparationRequest"){
+			TakeOffPreparationRequest_action()
+		}
+		
 		update_general_values()
 	}
 	
@@ -408,6 +412,7 @@ agent Pilot on AgentLayer{
 	var myAircraft : Aircraft // for accessing the real aircraft
 	var timehandler = new TimeHandler()
 	var first_action_set : bool = false // temporary auxiliary variable
+	var ground_path : List<Object> // for saving taxi instructions
 	
 	var next_action : string
 	var age_max : integer = 75
@@ -440,10 +445,10 @@ agent Pilot on AgentLayer{
 		
 		if (next_action === "Check_TireRightMainWheel__inflation")
 		{
-			timehandler.create_action_duration(10, 10, "age_and_experience")
+			timehandler.create_action_duration(10, 10, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
-				var check_value = Check_TireRightMainWheel__inflation()
+				var check_value = Check_Visual_TireRightMainWheel__inflation()
 				if (check_value >= 0) //TODO
 				{
 					next_action = "Check_RWT__water_sediments"
@@ -454,10 +459,10 @@ agent Pilot on AgentLayer{
 		
 		else if (next_action === "Check_RWT__water_sediments")
 		{
-			timehandler.create_action_duration(20, 20, "age_and_experience")
+			timehandler.create_action_duration(20, 20, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
-				var check_value = Check_RWT__water_sediments()
+				var check_value = Check_Visual_RWT__water_sediments()
 				if (check_value === true or check_value === false) //TODO
 				{
 					next_action = "Check_RWT__fuel_quantity"
@@ -468,10 +473,10 @@ agent Pilot on AgentLayer{
 		
 		else if (next_action === "Check_RWT__fuel_quantity")
 		{
-			timehandler.create_action_duration(20, 20, "age_and_experience")
+			timehandler.create_action_duration(20, 20, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
-				var check_value = Check_RWT__fuel_quantity()
+				var check_value = Check_Visual_RWT__fuel_quantity()
 				if (check_value >= 0) //TODO
 				{
 					next_action = "Check_Engine__oil"
@@ -481,10 +486,10 @@ agent Pilot on AgentLayer{
 				
 		else if (next_action === "Check_Engine__oil")
 		{
-			timehandler.create_action_duration(20, 20, "age_and_experience")
+			timehandler.create_action_duration(20, 20, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
-				var check_value = Check_Engine__oil()
+				var check_value = Check_Visual_Engine__oil()
 				if (check_value >= 0) //TODO
 				{
 					next_action = "Check_TireNoseWheel__inflation"
@@ -494,10 +499,10 @@ agent Pilot on AgentLayer{
 		
 		else if (next_action === "Check_TireNoseWheel__inflation")
 		{
-			timehandler.create_action_duration(10, 10, "age_and_experience")
+			timehandler.create_action_duration(10, 10, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
-				var check_value = Check_TireNoseWheel__inflation()
+				var check_value = Check_Visual_TireNoseWheel__inflation()
 				if (check_value >= 0) //TODO
 				{
 					next_action = "Check_TireLeftMainWheel__inflation"
@@ -507,10 +512,10 @@ agent Pilot on AgentLayer{
 		
 		else if (next_action === "Check_TireLeftMainWheel__inflation")
 		{
-			timehandler.create_action_duration(10, 10, "age_and_experience")
+			timehandler.create_action_duration(10, 10, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
-				var check_value = Check_TireLeftMainWheel__inflation()
+				var check_value = Check_Visual_TireLeftMainWheel__inflation()
 				if (check_value >= 0) //TODO
 				{
 					next_action = "Check_LWT__water_sediments"
@@ -520,10 +525,10 @@ agent Pilot on AgentLayer{
 		
 		else if(next_action === "Check_LWT__water_sediments")
 		{
-			timehandler.create_action_duration(20, 20, "age_and_experience")
+			timehandler.create_action_duration(20, 20, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
-				var check_value = Check_LWT__water_sediments()
+				var check_value = Check_Visual_LWT__water_sediments()
 				if (check_value === true or check_value === false) //TODO
 				{
 					next_action = "Check_LWT__fuel_quantity"
@@ -533,10 +538,10 @@ agent Pilot on AgentLayer{
 					
 		else if (next_action === "Check_LWT__fuel_quantity")
 		{
-			timehandler.create_action_duration(20, 20, "age_and_experience")
+			timehandler.create_action_duration(20, 20, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
-				var check_value = Check_LWT__fuel_quantity()
+				var check_value = Check_Visual_LWT__fuel_quantity()
 				if (check_value >= 0) //TODO
 				{
 					next_action = "End_of_Actions"
@@ -566,7 +571,7 @@ agent Pilot on AgentLayer{
 		
 		if (next_action === "Set_Brake__parking_brake")
 		{
-			timehandler.create_action_duration(4, 2, "age_and_experience")
+			timehandler.create_action_duration(4, 2, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				Set_Brake__parking_brake("SET")
@@ -576,7 +581,7 @@ agent Pilot on AgentLayer{
 		
 		else if (next_action === "Set_Engine__mixture_control")
 		{
-			timehandler.create_action_duration(4, 2, "age_and_experience")
+			timehandler.create_action_duration(4, 2, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				Set_Engine__mixture_control(0) // set to rich
@@ -586,7 +591,7 @@ agent Pilot on AgentLayer{
 		
 		else if (next_action === "Set_CIP__master_switch")
 		{
-			timehandler.create_action_duration(4, 2, "age_and_experience")
+			timehandler.create_action_duration(4, 2, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				Set_CIP__master_switch("ON")
@@ -596,7 +601,7 @@ agent Pilot on AgentLayer{
 		
 		else if (next_action === "Apply_Engine__throttle")
 		{
-			timehandler.create_action_duration(4, 2, "age_and_experience")
+			timehandler.create_action_duration(4, 2, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				var throttle_value = 0.05 + (random(11) / 100.0) // random idle value
@@ -607,7 +612,7 @@ agent Pilot on AgentLayer{
 		
 		else if (next_action === "Set_Engine__ignition_switch_START")
 		{
-			timehandler.create_action_duration(4, 2, "age_and_experience")
+			timehandler.create_action_duration(4, 2, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				Set_Engine__ignition_switch("START")
@@ -617,10 +622,10 @@ agent Pilot on AgentLayer{
 		
 		else if (next_action === "Check_Engine__running")
 		{
-			timehandler.create_action_duration(1, 0, "age_and_experience")
+			timehandler.create_action_duration(1, 0, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
-				var check_value = Check_Engine__running()
+				var check_value = Check_Visual_Engine__running()
 				if (check_value === true)
 				{
 					next_action = "Set_Engine__ignition_switch_BOTH" //TODO
@@ -634,7 +639,7 @@ agent Pilot on AgentLayer{
 			
 		else if (next_action === "Set_Engine__ignition_switch_BOTH")
 		{
-			timehandler.create_action_duration(2, 2, "age_and_experience")
+			timehandler.create_action_duration(2, 2, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				Set_Engine__ignition_switch("BOTH")
@@ -644,7 +649,7 @@ agent Pilot on AgentLayer{
 		
 		else if (next_action === "Check_Instrument_Engine__oil_pressure")
 		{
-			timehandler.create_action_duration(30, 2, "age_and_experience") // includes holding pattern
+			timehandler.create_action_duration(30, 2, "pilot_age_and_experience") // includes holding pattern
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				Check_Instrument_Engine__oil_pressure()
@@ -654,23 +659,87 @@ agent Pilot on AgentLayer{
 		
 		else if (next_action === "Check_Instrument_Engine__oil_temperature")
 		{
-			timehandler.create_action_duration(3, 2, "age_and_experience")
+			timehandler.create_action_duration(3, 2, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				Check_Instrument_Engine__oil_temperature()
-				next_action = "End_of_action"
+				next_action = "End_of_Actions"
 			}
 		}
 		
 		if (next_action === "End_of_Actions")
 		{
 			println "Finished State -->" + state + " with next action flag -->" + next_action
-			state = "NextState"
+			state = "TakeOffPreparationRequest"
 			println "Next state -->" + state
 			first_action_set = false
 		}
 		
 	}
+	
+	
+	
+	
+	//-----State TakeOffPreparationRequest-----
+	def TakeOffPreparationRequest_action()
+	{
+		if (first_action_set === false)
+		{
+			next_action = "Communicate_on_frequency"
+			first_action_set = true
+		}
+		
+		if (next_action === "Communicate_on_frequency")
+		{
+			timehandler.create_action_duration(2, 2, "pilot_age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				agentlayer.Communicate_on_frequency(myAircraft_callsign, "Tower", "RequestTakeOffPreparationPoint", #[])
+				println "Communicating on frequency"
+				next_action = "Listen_receiver_on_frequency"
+			}
+		}
+		
+		else if (next_action === "Listen_receiver_on_frequency")
+		{
+			timehandler.create_action_duration(2, 2, "pilot_age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				var temp_receiver = agentlayer.Listen_receiver_on_frequency()
+				println "temp_receiver from pilot: " + temp_receiver
+				if (temp_receiver === myAircraft_callsign)
+				{
+					ground_path = agentlayer.Listen_message_information_list_on_frequency()
+					next_action = "Clear_frequency"
+					println "Listen on frequency successful"
+					println "-----received List with-----"
+					println ground_path.Get(0)
+				}
+				//TODO: Add retry, when message seems to not have reach Tower
+			}
+		}
+		
+		// to make sure that message is not instantly deleted and simulate processing time and blockage
+		else if (next_action === "Clear_frequency")
+		{
+			timehandler.create_action_duration(2, 2, "pilot_age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				agentlayer.Clear_frequency()
+				println "Clear on frequency successful"
+				next_action = "End_of_Actions"
+			}
+		}
+		
+		if (next_action === "End_of_Actions")
+		{
+			println "Finished State -->" + state + " with next action flag -->" + next_action
+			state = "NextStateTaxiingIGuess"
+			println "Next state -->" + state
+			first_action_set = false
+		}
+	}
+	
 	
 	
 	
@@ -722,19 +791,19 @@ agent Pilot on AgentLayer{
 	}
 	
 	//-----Visual Tire Functions------
-	def Check_TireRightMainWheel__inflation()
+	def Check_Visual_TireRightMainWheel__inflation()
 	{	
 		println "Checking right Main Wheel Tire inflation"
 		return myAircraft.Get_TireRightMainWheel__inflation()
 	}
 	
-	def Check_TireLeftMainWheel__inflation()
+	def Check_Visual_TireLeftMainWheel__inflation()
 	{	
 		println "Checking left Main Wheel Tire inflation"
 		return myAircraft.Get_TireLeftMainWheel__inflation
 	}
 	
-	def Check_TireNoseWheel__inflation()
+	def Check_Visual_TireNoseWheel__inflation()
 	{	
 		println "Checking Nose Wheel Tire inflation"
 		return myAircraft.Get_TireNoseWheel__inflation
@@ -742,44 +811,108 @@ agent Pilot on AgentLayer{
 	
 		
 	//------Visual Fuel Tank Functions------
-	def Check_RWT__fuel_quantity()
+	// Note: Right - and LeftWingTank (RWT&LWT)
+	def Check_Visual_RWT__fuel_quantity()
 	{
 		println "Checking right wing tank fuel quantity"
 		return myAircraft.Get_RWT__fuel_quantity()
 	}
 	
-	def Check_LWT__fuel_quantity()
+	def Check_Visual_LWT__fuel_quantity()
 	{
 		println "Checking left wing tank fuel quantity"
 		return myAircraft.Get_RWT__fuel_quantity()
 	}
 	
-	def Check_RWT__water_sediments()
+	def Check_Visual_RWT__water_sediments()
 	{
 		println "Checking right wing tank for water sediments"
 		return myAircraft.Get_RWT__water_sediments()
 	}
 	
-	def Check_LWT__water_sediments()
+	def Check_Visual_LWT__water_sediments()
 	{
 		println "Checking left wing tank for water sediments"
 		return myAircraft.Get_LWT__water_sediments()
 	}
 	
 	//------Visual (or acoustic) Engine Functions------
-	def Check_Engine__running()
+	def Check_Visual_Engine__running()
 	{
 		println "Checking Engine running"
 		return myAircraft.Get_Engine__running()
 	}
 	
-	def Check_Engine__oil()
+	def Check_Visual_Engine__oil()
 	{
 		println "Checking Engine oil"
 		return myAircraft.Get_Engine__oil()
 	}
 	
 }
+
+
+//-----Agent AirTrafficController sitting in tower and answering requests-----
+agent AirTrafficController on AgentLayer
+	{	
+		initialize
+		{
+			initialize_general_values()
+			// Spawn TODO: Tower Coordinaten und ihn im Kreis laufen lassen ;D
+			var x_spawn = agentlayer.Get_spawn_x_coord()
+			var y_spawn = agentlayer.Get_spawn_y_coord()
+			pos at #(x_spawn, y_spawn)
+		}
+		
+		tick
+		{
+			if (state === "Listen_on_frequency")
+			{
+				timehandler.create_action_duration(2, 2, "None")
+				if (timehandler.hold_action_time(timehandler.action_duration))
+				{
+					var temp_receiver = agentlayer.Listen_receiver_on_frequency()
+					println "temp_receiver from ATC: " + temp_receiver
+					if (temp_receiver === identifier)
+					{
+						state = "Communicate_on_frequency"
+						message_type_received = agentlayer.Listen_message_type_on_frequency()
+						callsign_received = agentlayer.Listen_sender_identifier_on_frequency()
+					}
+				}
+			}
+			
+			else if (state === "Communicate_on_frequency")
+			{
+				timehandler.create_action_duration(2, 2, "None")
+				if (timehandler.hold_action_time(timehandler.action_duration))
+				{
+					agentlayer.Clear_frequency() // Tower always able to answer or Clear Frequency, when request insufficient
+					if (message_type_received === "RequestTakeOffPreparationPoint")
+					{
+						agentlayer.Communicate_on_frequency(identifier, callsign_received, "AnswerTakeOffPreparationPoint", #["This should be in the list!!!", true])
+						state = "Listen_on_frequency"
+					}
+				}
+			}
+		}
+		
+		//-----General Values and functions (Settings)-----
+		observe var identifier : string  // only Tower ATC so far
+		observe var state : string
+		observe var message_type_received : string
+		observe var callsign_received : string
+		var timehandler = new TimeHandler()
+		
+		
+		def initialize_general_values()
+		{
+			identifier = "Tower"
+			state = "Listen_on_frequency"
+		}
+		
+	}
+
 
 
 
@@ -836,7 +969,7 @@ class TimeHandler
 		if (action_duration_time_set === false)
 		{
 			action_duration_time_set = true			
-			if (mode === "age_and_experience")
+			if (mode === "pilot_age_and_experience")
 			{
 				var action_duration_extra_calc = action_duration_extra * (1 + (pilot_age / pilot_age_max) - pilot_flight_experience / (pilot_age_max - pilot_age_min) )
 				action_duration = action_duration_base + random(action_duration_extra_calc)
@@ -848,24 +981,3 @@ class TimeHandler
 		}
 	}
 }
-
-agent AirTrafficController on AgentLayer
-	{	
-		initialize
-		{
-			initialize_general_values()
-		}
-		
-		tick
-		{
-			
-		}
-		
-		//-----General Values and functions (Settings)-----
-		observe var identifier : string  // only Tower ATC so far
-		
-		def initialize_general_values()
-		{
-			identifier = "Tower"
-		}
-	}
