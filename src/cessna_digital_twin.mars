@@ -702,21 +702,23 @@ agent Pilot on AgentLayer{
 		
 		else if (next_action === "Listen_receiver_on_frequency")
 		{
-			timehandler.create_action_duration(2, 2, "pilot_age_and_experience")
+			var temp_receiver = agentlayer.Listen_receiver_on_frequency()
+			if (temp_receiver === myAircraft_callsign)
+			{
+				ground_path = agentlayer.Listen_message_information_list_on_frequency()
+				next_action = "Clear_frequency"
+				println "Listen on frequency successful"
+			}
+			
+			//retry contacting tower after a specific period of time
+			timehandler.create_action_duration(10, 5, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
-				var temp_receiver = agentlayer.Listen_receiver_on_frequency()
-				if (temp_receiver === myAircraft_callsign)
-				{
-					ground_path = agentlayer.Listen_message_information_list_on_frequency()
-					next_action = "Clear_frequency"
-					println "Listen on frequency successful"
-				}
-				//TODO: Add retry, when message seems to not have reach Tower
+				next_action = "Communicate_on_frequency"
 			}
 		}
 		
-		// to make sure that message is not instantly deleted and simulate processing time and blockage
+		// to make sure that message is not instantly deleted and simulate processing time of incoming message and blockage
 		else if (next_action === "Clear_frequency")
 		{
 			timehandler.create_action_duration(2, 2, "pilot_age_and_experience")

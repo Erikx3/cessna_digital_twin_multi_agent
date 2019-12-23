@@ -470,18 +470,19 @@ namespace cessna_digital_twin {
 					;} else {
 							if(Equals(next_action, "Listen_receiver_on_frequency")) {
 											{
-											timehandler.create_action_duration(2,2,"pilot_age_and_experience");
+											string temp_receiver = agentlayer.Listen_receiver_on_frequency();
+											if(Equals(temp_receiver, myAircraft_callsign)) {
+															{
+															ground_path = agentlayer.Listen_message_information_list_on_frequency();
+															next_action = "Clear_frequency";
+															System.Console.WriteLine("Listen on frequency successful");
+															;}
+													;} ;
+											timehandler.create_action_duration(10,5,"pilot_age_and_experience");
 											if(timehandler.hold_action_time(timehandler.action_duration)
 											) {
 															{
-															string temp_receiver = agentlayer.Listen_receiver_on_frequency();
-															if(Equals(temp_receiver, myAircraft_callsign)) {
-																			{
-																			ground_path = agentlayer.Listen_message_information_list_on_frequency();
-																			next_action = "Clear_frequency";
-																			System.Console.WriteLine("Listen on frequency successful");
-																			;}
-																	;} 
+															next_action = "Communicate_on_frequency"
 															;}
 													;} 
 											;}

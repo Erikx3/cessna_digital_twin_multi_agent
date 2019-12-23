@@ -1,1 +1,214 @@
-{"type":"FeatureCollection","features":[{"type":"Feature","id":"way/31109711","properties":{"aeroway":"apron"},"geometry":{"type":"Polygon","coordinates":[[[9.4987928,53.560392],[9.5004438,53.5600254],[9.5009108,53.5599218],[9.5009964,53.5600579],[9.4988785,53.5605282],[9.4987928,53.560392]]]}},{"type":"Feature","id":"way/164595700","properties":{"aeroway":"apron"},"geometry":{"type":"Polygon","coordinates":[[[9.4917313,53.5620207],[9.4931347,53.5617051],[9.4931723,53.5617791],[9.4930007,53.5618573],[9.4929749,53.5618978],[9.4918865,53.5621254],[9.4917689,53.562117],[9.4917313,53.5620207]]]}},{"type":"Feature","id":"way/164596965","properties":{"building":"yes"},"geometry":{"type":"Polygon","coordinates":[[[9.5010006,53.5594063],[9.5008274,53.5594374],[9.5008015,53.5593865],[9.5009747,53.5593554],[9.5010006,53.5594063]]]}},{"type":"Feature","id":"way/164596966","properties":{"aeroway":"hangar","building":"yes"},"geometry":{"type":"Polygon","coordinates":[[[9.5009733,53.5591611],[9.5012854,53.5591369],[9.5013057,53.5592294],[9.5009936,53.5592536],[9.5009733,53.5591611]]]}},{"type":"Feature","id":"way/164596967","properties":{"building":"yes"},"geometry":{"type":"Polygon","coordinates":[[[9.5020519,53.559652],[9.502005,53.5595515],[9.5021515,53.5595274],[9.5021983,53.5596279],[9.5020519,53.559652]]]}},{"type":"Feature","id":"way/164596968","properties":{"aeroway":"hangar","building":"yes"},"geometry":{"type":"Polygon","coordinates":[[[9.5010266,53.5598288],[9.5009795,53.5597363],[9.5008938,53.5595679],[9.5008274,53.5594374],[9.5010006,53.5594063],[9.5014174,53.5593315],[9.5016166,53.5597229],[9.5010266,53.5598288]]]}},{"type":"Feature","id":"way/29320125","properties":{"aeroway":"taxiway"},"geometry":{"type":"LineString","coordinates":[[9.5028175,53.5603097],[9.5048527,53.5598626],[9.5046714,53.5597239],[9.5044877,53.5595613],[9.5043157,53.5594584],[9.5041687,53.5594248],[9.5018283,53.559911],[9.5010603,53.5600816],[9.4994287,53.5604441],[9.4934248,53.5617509],[9.4931937,53.5618008],[9.4930632,53.5618664],[9.4930261,53.5619488],[9.4930324,53.562018],[9.4930903,53.5620665],[9.4931671,53.5621049],[9.4932789,53.5621333],[9.493448,53.5621513],[9.4936651,53.5621639],[9.4939417,53.562171],[9.494201,53.5621611],[9.494446,53.5621252]]}},{"type":"Feature","id":"way/29320131","properties":{"aeroway":"taxiway"},"geometry":{"type":"LineString","coordinates":[[9.4994287,53.5604441],[9.4997571,53.5609712]]}},{"type":"Feature","id":"way/33547335","properties":{"aeroway":"runway","ele":19,"heading":"107;287","length":650,"maxweight":5.7,"ref":"11/29","surface":"concrete","width":15},"geometry":{"type":"LineString","coordinates":[[9.494446,53.5621252],[9.4997571,53.5609712],[9.5028175,53.5603097]]}},{"type":"Feature","id":"way/164596975","properties":{"aeroway":"taxiway"},"geometry":{"type":"LineString","coordinates":[[9.5008743,53.5597559],[9.5009795,53.5597363]]}},{"type":"Feature","id":"way/164596976","properties":{"aeroway":"taxiway"},"geometry":{"type":"LineString","coordinates":[[9.5007782,53.5595878],[9.5008938,53.5595679]]}},{"type":"Feature","id":"way/164596977","properties":{"aeroway":"taxiway"},"geometry":{"type":"LineString","coordinates":[[9.5018283,53.559911],[9.5015638,53.5593116]]}},{"type":"Feature","id":"way/164596978","properties":{"aeroway":"taxiway"},"geometry":{"type":"LineString","coordinates":[[9.5010603,53.5600816],[9.5008743,53.5597559],[9.5007782,53.5595878],[9.5006908,53.5594348]]}},{"type":"Feature","id":"node/345754349","properties":{"aeroway":"aerodrome","frequency":"123.000 MHz","icao":"EDHS","name":"Flugplatz Stade","website":"http://www.flugplatz-stade.de/","wikidata":"Q1433878","wikipedia":"de:Flugplatz Stade"},"geometry":{"type":"Point","coordinates":[9.5000352,53.5605559]}},{"type":"Feature","id":"node/1762134196","properties":{"aeroway":"helipad","maxweight":"10.0"},"geometry":{"type":"Point","coordinates":[9.492375,53.5619472]}}]}
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "id": "way/29320125",
+            "properties": {
+                "aeroway": "taxiway"
+            },
+            "geometry": {
+                "type": "LineString",
+                "coordinates": [
+                    [
+                        9.5028175,
+                        53.5603097
+                    ],
+                    [
+                        9.5048527,
+                        53.5598626
+                    ],
+                    [
+                        9.5046714,
+                        53.5597239
+                    ],
+                    [
+                        9.5044877,
+                        53.5595613
+                    ],
+                    [
+                        9.5043157,
+                        53.5594584
+                    ],
+                    [
+                        9.5041687,
+                        53.5594248
+                    ],
+                    [
+                        9.5018283,
+                        53.559911
+                    ],
+                    [
+                        9.5010603,
+                        53.5600816
+                    ],
+                    [
+                        9.4994287,
+                        53.5604441
+                    ],
+                    [
+                        9.4934248,
+                        53.5617509
+                    ],
+                    [
+                        9.4931937,
+                        53.5618008
+                    ],
+                    [
+                        9.4930632,
+                        53.5618664
+                    ],
+                    [
+                        9.4930261,
+                        53.5619488
+                    ],
+                    [
+                        9.4930324,
+                        53.562018
+                    ],
+                    [
+                        9.4930903,
+                        53.5620665
+                    ],
+                    [
+                        9.4931671,
+                        53.5621049
+                    ],
+                    [
+                        9.4932789,
+                        53.5621333
+                    ],
+                    [
+                        9.493448,
+                        53.5621513
+                    ],
+                    [
+                        9.4936651,
+                        53.5621639
+                    ],
+                    [
+                        9.4939417,
+                        53.562171
+                    ],
+                    [
+                        9.494201,
+                        53.5621611
+                    ],
+                    [
+                        9.494446,
+                        53.5621252
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "id": "way/29320131",
+            "properties": {
+                "aeroway": "taxiway"
+            },
+            "geometry": {
+                "type": "LineString",
+                "coordinates": [
+                    [
+                        9.4994287,
+                        53.5604441
+                    ],
+                    [
+                        9.4997571,
+                        53.5609712
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "id": "way/33547335",
+            "properties": {
+                "aeroway": "runway",
+                "ele": 19,
+                "heading": "107;287",
+                "length": 650,
+                "maxweight": 5.7,
+                "ref": "11/29",
+                "surface": "concrete",
+                "width": 15
+            },
+            "geometry": {
+                "type": "LineString",
+                "coordinates": [
+                    [
+                        9.494446,
+                        53.5621252
+                    ],
+                    [
+                        9.4997571,
+                        53.5609712
+                    ],
+                    [
+                        9.5028175,
+                        53.5603097
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "id": "node/345754349",
+            "properties": {
+                "aeroway": "aerodrome",
+                "frequency": "123.000 MHz",
+                "icao": "EDHS",
+                "name": "Flugplatz Stade",
+                "website": "http://www.flugplatz-stade.de/",
+                "wikidata": "Q1433878",
+                "wikipedia": "de:Flugplatz Stade"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    9.5000352,
+                    53.5605559
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "id": "way/31109711",
+            "properties": {
+                "aeroway": "apron"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            9.4987928,
+                            53.560392
+                        ],
+                        [
+                            9.5004438,
+                            53.5600254
+                        ],
+                        [
+                            9.5009108,
+                            53.5599218
+                        ],
+                        [
+                            9.5009964,
+                            53.5600579
+                        ],
+                        [
+                            9.4988785,
+                            53.5605282
+                        ],
+                        [
+                            9.4987928,
+                            53.560392
+                        ]
+                    ]
+                ]
+            }
+        }
+    ]
+}
