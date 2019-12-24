@@ -762,8 +762,11 @@ agent Pilot on AgentLayer{
 	
 	//-----State Taxiing in general-----
 	// TODO: Important Note: Before entering Taxi State, define the "normal" State after Taxiing
+	//help variable:
+	var active_taxi_point_number = 0
 	def Taxiing_action()
 	{
+		var taxi_path_points = taxi_path.Size()
 		if (first_action_set === false)
 		{
 			next_action = "Set_Brake__parking_brake"
@@ -783,7 +786,22 @@ agent Pilot on AgentLayer{
 		
 		else if (next_action === "Taxiing")
 		{
-			println "Taxi Action follows now :D"
+			var active_taxi_point = taxi_path.Get(active_taxi_point_number)
+			move myAircraft 5 to active_taxi_point
+			println "-----Taxiing-----"
+			println "taxi_path_points : " + taxi_path_points
+			println "active_taxi_point_number : " + active_taxi_point_number
+			
+			if (taxi_path_points === (active_taxi_point_number + 1))
+			{
+				next_action = "End_of_Actions"				
+			}
+			else
+			{
+				active_taxi_point_number = active_taxi_point_number + 1
+			}
+			
+			
 		}
 		
 		if (next_action === "End_of_Actions")
@@ -975,6 +993,29 @@ agent AirTrafficController on AgentLayer
 	}
 
 
+
+
+// -----Class with helper functions-----
+class HelperFunctions
+{
+	def haversine(point1 : Tuple<real, real>, point2: Tuple<real, real>)
+	{
+		//Note: Math functions in Mars are using DEGREES [°], DO NOT CONVERT!
+		//Note2: In GeoJson and Mars the order is (Lon[°], Lat[°])!
+		var lon1 = point1.Item1
+		var lat1 = point1.Item2
+		var lon2 = point2.Item1
+		var lat2 = point2.Item2
+		
+				
+		//var delta_lat = lat2 - lat1
+		//dLat = radians(lat2 - lat1)
+		//dLon = radians(lon2 - lon1)
+		//lat1 = radians(lat1)
+		//lat2 = radians(lat2)		
+		
+	}
+}
 
 
 // -----Class for handling all time issues-----

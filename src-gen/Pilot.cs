@@ -130,6 +130,14 @@ namespace cessna_digital_twin {
 				if(__flight_experience != value) __flight_experience = value;
 			}
 		}
+		private int __active_taxi_point_number
+			 = 0;
+		internal int active_taxi_point_number { 
+			get { return __active_taxi_point_number; }
+			set{
+				if(__active_taxi_point_number != value) __active_taxi_point_number = value;
+			}
+		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public void go_to_next_state(string _state) 
 		{
@@ -523,6 +531,7 @@ namespace cessna_digital_twin {
 		public void Taxiing_action() 
 		{
 			{
+			int taxi_path_points = taxi_path.Size();
 			if(Equals(first_action_set, false)) {
 							{
 							next_action = "Set_Brake__parking_brake";
@@ -544,7 +553,36 @@ namespace cessna_digital_twin {
 					;} else {
 							if(Equals(next_action, "Taxiing")) {
 											{
-											System.Console.WriteLine("Taxi Action follows now :D");
+											System.Tuple<double,double> active_taxi_point = taxi_path.Get(active_taxi_point_number);
+											new System.Func<Tuple<double,double>>(() => {
+												
+												var _speed790_22469 = 5
+											;
+												
+												var _entity790_22469 = myAircraft;
+												
+												Func<double[], bool> _predicate790_22469 = null;
+												
+												var _target790_22469 = active_taxi_point;
+												_AgentLayer._AircraftEnvironment.MoveTo(_entity790_22469,
+													 _target790_22469.Item1, _target790_22469.Item2, 
+													_speed790_22469, 
+													_predicate790_22469);
+												
+												return new Tuple<double, double>(Position.X, Position.Y);
+											}).Invoke();
+											System.Console.WriteLine("-----Taxiing-----");;
+											System.Console.WriteLine("taxi_path_points : " + taxi_path_points);;
+											System.Console.WriteLine("active_taxi_point_number : " + active_taxi_point_number);;
+											if(Equals(taxi_path_points, (active_taxi_point_number + 1))) {
+															{
+															next_action = "End_of_Actions"
+															;}
+													;} else {
+															{
+															active_taxi_point_number = active_taxi_point_number + 1
+															;}
+														;}
 											;}
 									;} 
 						;};

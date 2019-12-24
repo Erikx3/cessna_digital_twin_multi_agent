@@ -13,8 +13,8 @@
         "options": {
             "delimiter": ";",
             "numberFormat" : "G",
-            //"decimal": ".",
-            //"format": "en-EN"
+           // "decimal": ".",
+           // "format": "en-EN"
         }
     },
     "layers": [
