@@ -58,12 +58,21 @@ namespace cessna_digital_twin {
 				if(__timehandler != value) __timehandler = value;
 			}
 		}
+		private Mars.Components.Common.MarsList<System.Tuple<double,double>> __groundpath
+			 = default(Mars.Components.Common.MarsList<System.Tuple<double,double>>);
+		internal Mars.Components.Common.MarsList<System.Tuple<double,double>> groundpath { 
+			get { return __groundpath; }
+			set{
+				if(__groundpath != value) __groundpath = value;
+			}
+		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public void initialize_general_values() 
 		{
 			{
 			identifier = "Tower";
-			state = "Listen_on_frequency"
+			state = "Listen_on_frequency";
+			groundpath = (new Mars.Components.Common.MarsList<System.Tuple<double,double>>() { new System.Tuple<double,double>(9.4994287,53.5604441),new System.Tuple<double,double>(9.4934248,53.5617509),new System.Tuple<double,double>(9.4931937,53.5618008),new System.Tuple<double,double>(9.4930632,53.5618664) })
 			;}
 			return;
 		}
@@ -101,12 +110,12 @@ namespace cessna_digital_twin {
 			double y_spawn = agentlayer.Get_spawn_y_coord();
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget863_24256 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget919_25668 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object863_24256 = this;
+				var _object919_25668 = this;
 				
-				_AgentLayer._AirTrafficControllerEnvironment.PosAt(_object863_24256, 
-					_taget863_24256.Item1, _taget863_24256.Item2
+				_AgentLayer._AirTrafficControllerEnvironment.PosAt(_object919_25668, 
+					_taget919_25668.Item1, _taget919_25668.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke()
@@ -144,7 +153,7 @@ namespace cessna_digital_twin {
 															agentlayer.Clear_frequency();
 															if(Equals(message_type_received, "RequestTakeOffPreparationPoint")) {
 																			{
-																			agentlayer.Communicate_on_frequency(identifier,callsign_received,"AnswerTakeOffPreparationPoint",(new Mars.Components.Common.MarsList<System.Object>() { "This should be in the list!!!",true }));
+																			agentlayer.Communicate_taxipath_on_frequency(identifier,callsign_received,"AnswerTakeOffPreparationPoint",groundpath);
 																			state = "Listen_on_frequency"
 																			;}
 																	;} 

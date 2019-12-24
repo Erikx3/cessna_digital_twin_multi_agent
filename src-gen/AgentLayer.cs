@@ -94,12 +94,12 @@ namespace cessna_digital_twin {
 				if(__message_type != value) __message_type = value;
 			}
 		}
-		private Mars.Components.Common.MarsList<System.Object> __message_information_list
-			 = (new Mars.Components.Common.MarsList<System.Object>() {  });
-		internal Mars.Components.Common.MarsList<System.Object> message_information_list { 
-			get { return __message_information_list; }
+		private Mars.Components.Common.MarsList<System.Tuple<double,double>> __message_information_path
+			 = default(Mars.Components.Common.MarsList<System.Tuple<double,double>>);
+		internal Mars.Components.Common.MarsList<System.Tuple<double,double>> message_information_path { 
+			get { return __message_information_path; }
 			set{
-				if(__message_information_list != value) __message_information_list = value;
+				if(__message_information_path != value) __message_information_path = value;
 			}
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
@@ -157,16 +157,16 @@ namespace cessna_digital_twin {
 			return default(string);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public Mars.Components.Common.MarsList<System.Object> Listen_message_information_list_on_frequency() 
+		public Mars.Components.Common.MarsList<System.Tuple<double,double>> Listen_message_information_path_on_frequency() 
 		{
 			{
-			return message_information_list
+			return message_information_path
 					;
 			}
-			return default(Mars.Components.Common.MarsList<System.Object>);;
+			return default(Mars.Components.Common.MarsList<System.Tuple<double,double>>);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Communicate_on_frequency(string _sender_identifier, string _receiver, string _message_type, Mars.Components.Common.MarsList<System.Object> _message_information_list) 
+		public void Communicate_taxipath_on_frequency(string _sender_identifier, string _receiver, string _message_type, Mars.Components.Common.MarsList<System.Tuple<double,double>> _message_information_path) 
 		{
 			{
 			if(Equals(message_on_frequency, false)) {
@@ -174,7 +174,22 @@ namespace cessna_digital_twin {
 							sender_identifier = _sender_identifier;
 							receiver = _receiver;
 							message_type = _message_type;
-							message_information_list = _message_information_list;
+							message_information_path = _message_information_path;
+							message_on_frequency = true
+							;}
+					;} 
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void Communicate_request_on_frequency(string _sender_identifier, string _receiver, string _message_type) 
+		{
+			{
+			if(Equals(message_on_frequency, false)) {
+							{
+							sender_identifier = _sender_identifier;
+							receiver = _receiver;
+							message_type = _message_type;
 							message_on_frequency = true
 							;}
 					;} 
@@ -189,7 +204,7 @@ namespace cessna_digital_twin {
 			sender_identifier = "";
 			receiver = "";
 			message_type = "";
-			message_information_list = (new Mars.Components.Common.MarsList<System.Object>() {  })
+			message_information_path = (new Mars.Components.Common.MarsList<System.Tuple<double,double>>() { new System.Tuple<double,double>(0.0,0.0) })
 			;}
 			return;
 		}

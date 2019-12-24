@@ -32,21 +32,33 @@ layer AgentLayer as agentlayer
 	var receiver = ""
 	var message_type = ""
 	// either information is at first place "0" or contains multiple information as e.g. flight_path
-	var message_information_list = #[]
+	var message_information_path : List<Tuple<real, real>>
 	
 	def Listen_receiver_on_frequency() => return receiver
 	def Listen_sender_identifier_on_frequency() => return sender_identifier
 	def Listen_message_type_on_frequency() => return message_type
-	def Listen_message_information_list_on_frequency() => return message_information_list
+	def Listen_message_information_path_on_frequency() => return message_information_path 
 	
-	def Communicate_on_frequency(_sender_identifier : string, _receiver : string, _message_type : string, _message_information_list : List<Object>)
+	def Communicate_taxipath_on_frequency(_sender_identifier : string, _receiver : string, _message_type : string, _message_information_path  : List<Tuple<real, real>>)
 	{
 		if (message_on_frequency === false)
 		{
 			sender_identifier = _sender_identifier
 			receiver = _receiver
 			message_type = _message_type
-			message_information_list = _message_information_list
+			message_information_path  = _message_information_path 
+			
+			message_on_frequency = true
+		}		
+	}
+	
+	def Communicate_request_on_frequency(_sender_identifier : string, _receiver : string, _message_type : string)
+	{
+		if (message_on_frequency === false)
+		{
+			sender_identifier = _sender_identifier
+			receiver = _receiver
+			message_type = _message_type
 			
 			message_on_frequency = true
 		}		
@@ -58,7 +70,7 @@ layer AgentLayer as agentlayer
 		sender_identifier = ""
 		receiver = ""
 		message_type = ""
-		message_information_list = #[]
+		message_information_path = #[#(0.0, 0.0)]
 	}
 	
 }
@@ -398,6 +410,10 @@ agent Pilot on AgentLayer{
 			TakeOffPreparationRequest_action()
 		}
 		
+		else if (state === "Taxiing"){
+			Taxiing_action()
+		}
+		
 		update_general_values()
 	}
 	
@@ -412,11 +428,17 @@ agent Pilot on AgentLayer{
 	var myAircraft : Aircraft // for accessing the real aircraft
 	var timehandler = new TimeHandler()
 	var first_action_set : bool = false // temporary auxiliary variable
-	var ground_path : List<Object> // for saving taxi instructions
+	var taxi_path : List<Tuple<real, real>> // for saving taxi instructions
 	
 	var next_action : string
 	var age_max : integer = 75
 	var age_min : integer = 18
+	
+	def go_to_next_state(_state : string)
+	{
+		state = _state
+		first_action_set = false
+	}
 	
 	
 	//-----General Pilot Values and functions-----
@@ -552,9 +574,8 @@ agent Pilot on AgentLayer{
 		if (next_action === "End_of_Actions")
 		{
 			println "Finished State -->" + state + " with next action flag -->" + next_action
-			state = "StartingEngine"
+			go_to_next_state("StartingEngine")
 			println "Next state -->" + state
-			first_action_set = false
 		}
 	}
 	
@@ -670,9 +691,8 @@ agent Pilot on AgentLayer{
 		if (next_action === "End_of_Actions")
 		{
 			println "Finished State -->" + state + " with next action flag -->" + next_action
-			state = "TakeOffPreparationRequest"
+			go_to_next_state("TakeOffPreparationRequest")
 			println "Next state -->" + state
-			first_action_set = false
 		}
 		
 	}
@@ -685,16 +705,16 @@ agent Pilot on AgentLayer{
 	{
 		if (first_action_set === false)
 		{
-			next_action = "Communicate_on_frequency"
+			next_action = "Set_Brake__parking_brake"
 			first_action_set = true
 		}
 		
-		if (next_action === "Communicate_on_frequency")
+		if (next_action === "Set_Brake__parking_brake")
 		{
 			timehandler.create_action_duration(2, 2, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
-				agentlayer.Communicate_on_frequency(myAircraft_callsign, "Tower", "RequestTakeOffPreparationPoint", #[])
+				agentlayer.Communicate_request_on_frequency(myAircraft_callsign, "Tower", "RequestTakeOffPreparationPoint")
 				println "Communicating on frequency"
 				next_action = "Listen_receiver_on_frequency"
 			}
@@ -705,7 +725,7 @@ agent Pilot on AgentLayer{
 			var temp_receiver = agentlayer.Listen_receiver_on_frequency()
 			if (temp_receiver === myAircraft_callsign)
 			{
-				ground_path = agentlayer.Listen_message_information_list_on_frequency()
+				taxi_path = agentlayer.Listen_message_information_path_on_frequency()
 				next_action = "Clear_frequency"
 				println "Listen on frequency successful"
 			}
@@ -733,10 +753,46 @@ agent Pilot on AgentLayer{
 		if (next_action === "End_of_Actions")
 		{
 			println "Finished State -->" + state + " with next action flag -->" + next_action
+			go_to_next_state("Taxiing")
+			println "Next state -->" + state
+		}
+	}
+	
+	
+	
+	//-----State Taxiing in general-----
+	// TODO: Important Note: Before entering Taxi State, define the "normal" State after Taxiing
+	def Taxiing_action()
+	{
+		if (first_action_set === false)
+		{
+			next_action = "Set_Brake__parking_brake"
+			first_action_set = true
+		}
+		
+		if (next_action === "Set_Brake__parking_brake")
+		{
+			timehandler.create_action_duration(2, 2, "pilot_age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				Set_Brake__parking_brake("OFF")
+				println "Set braking park"
+				next_action = "Taxiing"
+			}
+		}
+		
+		else if (next_action === "Taxiing")
+		{
+			println "Taxi Action follows now :D"
+		}
+		
+		if (next_action === "End_of_Actions")
+		{
+			println "Finished State -->" + state + " with next action flag -->" + next_action
 			state = "NextStateTaxiingIGuess"
 			println "Next state -->" + state
 			first_action_set = false
-		}
+		}	
 	}
 	
 	
@@ -888,7 +944,8 @@ agent AirTrafficController on AgentLayer
 					agentlayer.Clear_frequency() // Tower always able to answer or Clear Frequency, when request insufficient
 					if (message_type_received === "RequestTakeOffPreparationPoint")
 					{
-						agentlayer.Communicate_on_frequency(identifier, callsign_received, "AnswerTakeOffPreparationPoint", #["This should be in the list!!!", true])
+						//TODO: Add a information retrieval for ATC
+						agentlayer.Communicate_taxipath_on_frequency(identifier, callsign_received, "AnswerTakeOffPreparationPoint", groundpath)
 						state = "Listen_on_frequency"
 					}
 				}
@@ -902,11 +959,17 @@ agent AirTrafficController on AgentLayer
 		observe var callsign_received : string
 		var timehandler = new TimeHandler()
 		
+		//TODO: Add a information retrieval for ATC
+		var groundpath : List<Tuple<real, real>>
+		
 		
 		def initialize_general_values()
 		{
 			identifier = "Tower"
 			state = "Listen_on_frequency"
+			
+			//TODO: Add a information retrieval for ATC
+			groundpath = #[#(9.4994287, 53.5604441), #(9.4934248,53.5617509), #(9.4931937,53.5618008), #(9.4930632,53.5618664)]
 		}
 		
 	}

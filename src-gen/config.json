@@ -6,7 +6,7 @@
         //"deltaTUnit": "seconds",
         
         // To simulate with only the steps
-        "steps": 300,
+        "steps": 400,
         
         "deltaT": 1,
         "output": "csv",

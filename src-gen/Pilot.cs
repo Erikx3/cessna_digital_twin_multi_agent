@@ -82,12 +82,12 @@ namespace cessna_digital_twin {
 				if(__first_action_set != value) __first_action_set = value;
 			}
 		}
-		private Mars.Components.Common.MarsList<System.Object> __ground_path
-			 = default(Mars.Components.Common.MarsList<System.Object>);
-		internal Mars.Components.Common.MarsList<System.Object> ground_path { 
-			get { return __ground_path; }
+		private Mars.Components.Common.MarsList<System.Tuple<double,double>> __taxi_path
+			 = default(Mars.Components.Common.MarsList<System.Tuple<double,double>>);
+		internal Mars.Components.Common.MarsList<System.Tuple<double,double>> taxi_path { 
+			get { return __taxi_path; }
 			set{
-				if(__ground_path != value) __ground_path = value;
+				if(__taxi_path != value) __taxi_path = value;
 			}
 		}
 		private string __next_action
@@ -129,6 +129,15 @@ namespace cessna_digital_twin {
 			set{
 				if(__flight_experience != value) __flight_experience = value;
 			}
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void go_to_next_state(string _state) 
+		{
+			{
+			state = _state;
+			first_action_set = false
+			;}
+			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public void update_general_values() 
@@ -288,9 +297,8 @@ namespace cessna_digital_twin {
 			if(Equals(next_action, "End_of_Actions")) {
 							{
 							System.Console.WriteLine("Finished State -->" + state + " with next action flag -->" + next_action);;
-							state = "StartingEngine";
-							System.Console.WriteLine("Next state -->" + state);;
-							first_action_set = false
+							go_to_next_state("StartingEngine");
+							System.Console.WriteLine("Next state -->" + state);
 							;}
 					;} 
 			;}
@@ -437,9 +445,8 @@ namespace cessna_digital_twin {
 			if(Equals(next_action, "End_of_Actions")) {
 							{
 							System.Console.WriteLine("Finished State -->" + state + " with next action flag -->" + next_action);;
-							state = "TakeOffPreparationRequest";
-							System.Console.WriteLine("Next state -->" + state);;
-							first_action_set = false
+							go_to_next_state("TakeOffPreparationRequest");
+							System.Console.WriteLine("Next state -->" + state);
 							;}
 					;} 
 			;}
@@ -451,17 +458,17 @@ namespace cessna_digital_twin {
 			{
 			if(Equals(first_action_set, false)) {
 							{
-							next_action = "Communicate_on_frequency";
+							next_action = "Set_Brake__parking_brake";
 							first_action_set = true
 							;}
 					;} ;
-			if(Equals(next_action, "Communicate_on_frequency")) {
+			if(Equals(next_action, "Set_Brake__parking_brake")) {
 							{
 							timehandler.create_action_duration(2,2,"pilot_age_and_experience");
 							if(timehandler.hold_action_time(timehandler.action_duration)
 							) {
 											{
-											agentlayer.Communicate_on_frequency(myAircraft_callsign,"Tower","RequestTakeOffPreparationPoint",(new Mars.Components.Common.MarsList<System.Object>() {  }));
+											agentlayer.Communicate_request_on_frequency(myAircraft_callsign,"Tower","RequestTakeOffPreparationPoint");
 											System.Console.WriteLine("Communicating on frequency");;
 											next_action = "Listen_receiver_on_frequency"
 											;}
@@ -473,7 +480,7 @@ namespace cessna_digital_twin {
 											string temp_receiver = agentlayer.Listen_receiver_on_frequency();
 											if(Equals(temp_receiver, myAircraft_callsign)) {
 															{
-															ground_path = agentlayer.Listen_message_information_list_on_frequency();
+															taxi_path = agentlayer.Listen_message_information_path_on_frequency();
 															next_action = "Clear_frequency";
 															System.Console.WriteLine("Listen on frequency successful");
 															;}
@@ -501,6 +508,45 @@ namespace cessna_digital_twin {
 															;}
 													;} 
 										;}
+						;};
+			if(Equals(next_action, "End_of_Actions")) {
+							{
+							System.Console.WriteLine("Finished State -->" + state + " with next action flag -->" + next_action);;
+							go_to_next_state("Taxiing");
+							System.Console.WriteLine("Next state -->" + state);
+							;}
+					;} 
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void Taxiing_action() 
+		{
+			{
+			if(Equals(first_action_set, false)) {
+							{
+							next_action = "Set_Brake__parking_brake";
+							first_action_set = true
+							;}
+					;} ;
+			if(Equals(next_action, "Set_Brake__parking_brake")) {
+							{
+							timehandler.create_action_duration(2,2,"pilot_age_and_experience");
+							if(timehandler.hold_action_time(timehandler.action_duration)
+							) {
+											{
+											Set_Brake__parking_brake("OFF");
+											System.Console.WriteLine("Set braking park");;
+											next_action = "Taxiing"
+											;}
+									;} 
+							;}
+					;} else {
+							if(Equals(next_action, "Taxiing")) {
+											{
+											System.Console.WriteLine("Taxi Action follows now :D");
+											;}
+									;} 
 						;};
 			if(Equals(next_action, "End_of_Actions")) {
 							{
@@ -691,32 +737,32 @@ namespace cessna_digital_twin {
 			double y_spawn = agentlayer.Get_spawn_y_coord();
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget372_10201 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget384_10568 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object372_10201 = this;
+				var _object384_10568 = this;
 				
-				_AgentLayer._PilotEnvironment.PosAt(_object372_10201, 
-					_taget372_10201.Item1, _taget372_10201.Item2
+				_AgentLayer._PilotEnvironment.PosAt(_object384_10568, 
+					_taget384_10568.Item1, _taget384_10568.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
 			myAircraft = new Func<cessna_digital_twin.Aircraft>(() => {
-				Func<cessna_digital_twin.Aircraft, bool> _predicate376_10357 = null;
-				Func<cessna_digital_twin.Aircraft, bool> _predicateMod376_10357 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
+				Func<cessna_digital_twin.Aircraft, bool> _predicate388_10724 = null;
+				Func<cessna_digital_twin.Aircraft, bool> _predicateMod388_10724 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
 				{
 					if (_it?.ID == this.ID)
 					{
 						return false;
-					} else if (_predicate376_10357 != null)
+					} else if (_predicate388_10724 != null)
 					{
-						return _predicate376_10357.Invoke(_it);
+						return _predicate388_10724.Invoke(_it);
 					} else return true;
 				});
 				
-				const int _range376_10357 = -1;
-				var _source376_10357 = this.Position;
+				const int _range388_10724 = -1;
+				var _source388_10724 = this.Position;
 				
-				return _AgentLayer._AircraftEnvironment.Explore(_source376_10357, _range376_10357, 1, _predicateMod376_10357)?.FirstOrDefault();
+				return _AgentLayer._AircraftEnvironment.Explore(_source388_10724, _range388_10724, 1, _predicateMod388_10724)?.FirstOrDefault();
 			}).Invoke();
 			myAircraft_callsign = myAircraft.Get_callsign();
 			update_general_values();
@@ -746,7 +792,13 @@ namespace cessna_digital_twin {
 															{
 															TakeOffPreparationRequest_action()
 															;}
-													;} 
+													;} else {
+															if(Equals(state, "Taxiing")) {
+																			{
+																			Taxiing_action()
+																			;}
+																	;} 
+														;}
 										;}
 						;};
 			update_general_values()
