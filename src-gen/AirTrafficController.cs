@@ -72,7 +72,7 @@ namespace cessna_digital_twin {
 			{
 			identifier = "Tower";
 			state = "Listen_on_frequency";
-			groundpath = (new Mars.Components.Common.MarsList<System.Tuple<double,double>>() { new System.Tuple<double,double>(9.4994287,53.5604441),new System.Tuple<double,double>(9.4934248,53.5617509),new System.Tuple<double,double>(9.4931937,53.5618008),new System.Tuple<double,double>(9.4930632,53.5618664) })
+			groundpath = (new Mars.Components.Common.MarsList<System.Tuple<double,double>>() { new System.Tuple<double,double>(9.4994287,53.5604441),new System.Tuple<double,double>(9.4934248,53.5617509),new System.Tuple<double,double>(9.4931937,53.5618008),new System.Tuple<double,double>(9.4930632,53.5618664),new System.Tuple<double,double>(9.4930261,53.5619488),new System.Tuple<double,double>(9.4930324,53.562018),new System.Tuple<double,double>(9.4930903,53.5620665),new System.Tuple<double,double>(9.4931671,53.5621049),new System.Tuple<double,double>(9.4932789,53.5621333),new System.Tuple<double,double>(9.493448,53.5621513),new System.Tuple<double,double>(9.4936651,53.5621639),new System.Tuple<double,double>(9.4939417,53.562171) })
 			;}
 			return;
 		}
@@ -110,12 +110,12 @@ namespace cessna_digital_twin {
 			double y_spawn = agentlayer.Get_spawn_y_coord();
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget959_26615 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget953_26618 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object959_26615 = this;
+				var _object953_26618 = this;
 				
-				_AgentLayer._AirTrafficControllerEnvironment.PosAt(_object959_26615, 
-					_taget959_26615.Item1, _taget959_26615.Item2
+				_AgentLayer._AirTrafficControllerEnvironment.PosAt(_object953_26618, 
+					_taget953_26618.Item1, _taget953_26618.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke()

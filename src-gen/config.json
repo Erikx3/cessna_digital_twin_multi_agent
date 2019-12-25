@@ -6,15 +6,15 @@
         //"deltaTUnit": "seconds",
         
         // To simulate with only the steps
-        "steps": 600,
+        "steps": 500,
         
         "deltaT": 1,
         "output": "csv",
         "options": {
-            "delimiter": ",",
+            "delimiter": ";",
             "numberFormat" : "G",
            // "decimal": ".",
-           "format": "en-EN"
+           //"format": "en-EN"
         }
     },
     "layers": [

@@ -398,6 +398,8 @@ agent Pilot on AgentLayer{
 		
 	tick
 	{	
+		update_general_values()
+		
 		if (state === "PreflightInspection"){
 			PreflightInspection_action()
 		}
@@ -413,8 +415,6 @@ agent Pilot on AgentLayer{
 		else if (state === "Taxiing"){
 			Taxiing_action()
 		}
-		
-		update_general_values()
 	}
 	
 	
@@ -443,14 +443,10 @@ agent Pilot on AgentLayer{
 	
 	def update_general_values()
 	{
+		pos at(myAircraft.Get_position())
 		Longitude = xcor
 		Latitude = ycor
 		current_activity = next_action
-	}
-	
-	def myPosition()
-	{
-		return #(xcor, ycor)
 	}
 	
 	
@@ -795,20 +791,20 @@ agent Pilot on AgentLayer{
 		{
 			var active_taxi_point = taxi_path.Get(active_taxi_point_number)
 			
-			move myAircraft 50 to active_taxi_point
+			move myAircraft 5 to active_taxi_point
 			
 			println "-----Taxiing-----"
 			println "taxi_path_points : " + taxi_path_points
 			println "active_taxi_point_number : " + active_taxi_point_number
 			println "My Position : "
-			println myPosition()
+			println myAircraft.Get_position()
 			println "active_taxi_point : "
 			println active_taxi_point
-
-			var distance_to_next_point = formula.haversine(myPosition(), active_taxi_point)
+			
+			var distance_to_next_point = formula.haversine(myAircraft.Get_position(), active_taxi_point)
 			println "distance: " + distance_to_next_point
 			
-			if (distance_to_next_point < 100)
+			if (distance_to_next_point < 10)
 			{
 				if (taxi_path_points === (active_taxi_point_number + 1))
 				{
@@ -819,8 +815,6 @@ agent Pilot on AgentLayer{
 					active_taxi_point_number = active_taxi_point_number + 1
 				}
 			}
-
-			
 			
 		}
 		
@@ -1008,7 +1002,7 @@ agent AirTrafficController on AgentLayer
 			state = "Listen_on_frequency"
 			
 			//TODO: Add a information retrieval for ATC
-			groundpath = #[#(9.4994287, 53.5604441), #(9.4934248,53.5617509), #(9.4931937,53.5618008), #(9.4930632,53.5618664)]
+			groundpath = #[#(9.4994287, 53.5604441), #(9.4934248,53.5617509), #(9.4931937,53.5618008), #(9.4930632,53.5618664), #(9.4930261,53.5619488), #(9.4930324,53.562018),#(9.4930903,53.5620665),#(9.4931671,53.5621049),#(9.4932789,53.5621333),#(9.493448,53.5621513),#(9.4936651,53.5621639),#(9.4939417,53.562171)]
 		}
 		
 	}

@@ -159,19 +159,23 @@ namespace cessna_digital_twin {
 		public void update_general_values() 
 		{
 			{
+			new System.Func<System.Tuple<double,double>>(() => {
+				
+				var _taget446_12312 = (myAircraft.Get_position()
+				);
+				
+				var _object446_12312 = this;
+				
+				_AgentLayer._PilotEnvironment.PosAt(_object446_12312, 
+					_taget446_12312.Item1, _taget446_12312.Item2
+				);
+				return new Tuple<double, double>(Position.X, Position.Y);
+			}).Invoke();
 			Longitude = this.Position.X;
 			Latitude = this.Position.Y;
 			current_activity = next_action
 			;}
 			return;
-		}
-		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public System.Tuple<double,double> myPosition() 
-		{
-			{
-			return new System.Tuple<double,double>(this.Position.X,this.Position.Y)
-			;}
-			return default(System.Tuple<double,double>);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public void PreflightInspection_action() 
@@ -572,18 +576,18 @@ namespace cessna_digital_twin {
 											System.Tuple<double,double> active_taxi_point = taxi_path.Get(active_taxi_point_number);
 											new System.Func<Tuple<double,double>>(() => {
 												
-												var _speed798_22560 = 50
+												var _speed794_22543 = 5
 											;
 												
-												var _entity798_22560 = myAircraft;
+												var _entity794_22543 = myAircraft;
 												
-												Func<double[], bool> _predicate798_22560 = null;
+												Func<double[], bool> _predicate794_22543 = null;
 												
-												var _target798_22560 = active_taxi_point;
-												_AgentLayer._AircraftEnvironment.MoveTo(_entity798_22560,
-													 _target798_22560.Item1, _target798_22560.Item2, 
-													_speed798_22560, 
-													_predicate798_22560);
+												var _target794_22543 = active_taxi_point;
+												_AgentLayer._AircraftEnvironment.MoveTo(_entity794_22543,
+													 _target794_22543.Item1, _target794_22543.Item2, 
+													_speed794_22543, 
+													_predicate794_22543);
 												
 												return new Tuple<double, double>(Position.X, Position.Y);
 											}).Invoke();
@@ -591,12 +595,14 @@ namespace cessna_digital_twin {
 											System.Console.WriteLine("taxi_path_points : " + taxi_path_points);;
 											System.Console.WriteLine("active_taxi_point_number : " + active_taxi_point_number);;
 											System.Console.WriteLine("My Position : ");;
-											System.Console.WriteLine(myPosition());;
+											System.Console.WriteLine(myAircraft.Get_position()
+											);;
 											System.Console.WriteLine("active_taxi_point : ");;
 											System.Console.WriteLine(active_taxi_point);;
-											double distance_to_next_point = formula.haversine(myPosition(),active_taxi_point);
+											double distance_to_next_point = formula.haversine(myAircraft.Get_position(),
+											active_taxi_point);
 											System.Console.WriteLine("distance: " + distance_to_next_point);;
-											if(distance_to_next_point < 100) {
+											if(distance_to_next_point < 10) {
 															{
 															if(Equals(taxi_path_points, (active_taxi_point_number + 1))) {
 																			{
@@ -842,6 +848,7 @@ namespace cessna_digital_twin {
 		{
 			{ if (!_isAlive) return; }
 			{
+			update_general_values();
 			if(Equals(state, "PreflightInspection")) {
 							{
 							PreflightInspection_action()
@@ -864,8 +871,7 @@ namespace cessna_digital_twin {
 																	;} 
 														;}
 										;}
-						;};
-			update_general_values()
+						;}
 			;}
 		}
 		
