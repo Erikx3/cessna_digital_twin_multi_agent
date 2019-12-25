@@ -74,6 +74,14 @@ namespace cessna_digital_twin {
 				if(__timehandler != value) __timehandler = value;
 			}
 		}
+		private cessna_digital_twin.Formula __formula
+			 = new cessna_digital_twin.Formula();
+		internal cessna_digital_twin.Formula formula { 
+			get { return __formula; }
+			set{
+				if(__formula != value) __formula = value;
+			}
+		}
 		private bool __first_action_set
 			 = false;
 		internal bool first_action_set { 
@@ -156,6 +164,14 @@ namespace cessna_digital_twin {
 			current_activity = next_action
 			;}
 			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public System.Tuple<double,double> myPosition() 
+		{
+			{
+			return new System.Tuple<double,double>(this.Position.X,this.Position.Y)
+			;}
+			return default(System.Tuple<double,double>);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public void PreflightInspection_action() 
@@ -556,33 +572,43 @@ namespace cessna_digital_twin {
 											System.Tuple<double,double> active_taxi_point = taxi_path.Get(active_taxi_point_number);
 											new System.Func<Tuple<double,double>>(() => {
 												
-												var _speed790_22469 = 5
+												var _speed798_22560 = 50
 											;
 												
-												var _entity790_22469 = myAircraft;
+												var _entity798_22560 = myAircraft;
 												
-												Func<double[], bool> _predicate790_22469 = null;
+												Func<double[], bool> _predicate798_22560 = null;
 												
-												var _target790_22469 = active_taxi_point;
-												_AgentLayer._AircraftEnvironment.MoveTo(_entity790_22469,
-													 _target790_22469.Item1, _target790_22469.Item2, 
-													_speed790_22469, 
-													_predicate790_22469);
+												var _target798_22560 = active_taxi_point;
+												_AgentLayer._AircraftEnvironment.MoveTo(_entity798_22560,
+													 _target798_22560.Item1, _target798_22560.Item2, 
+													_speed798_22560, 
+													_predicate798_22560);
 												
 												return new Tuple<double, double>(Position.X, Position.Y);
 											}).Invoke();
 											System.Console.WriteLine("-----Taxiing-----");;
 											System.Console.WriteLine("taxi_path_points : " + taxi_path_points);;
 											System.Console.WriteLine("active_taxi_point_number : " + active_taxi_point_number);;
-											if(Equals(taxi_path_points, (active_taxi_point_number + 1))) {
+											System.Console.WriteLine("My Position : ");;
+											System.Console.WriteLine(myPosition());;
+											System.Console.WriteLine("active_taxi_point : ");;
+											System.Console.WriteLine(active_taxi_point);;
+											double distance_to_next_point = formula.haversine(myPosition(),active_taxi_point);
+											System.Console.WriteLine("distance: " + distance_to_next_point);;
+											if(distance_to_next_point < 100) {
 															{
-															next_action = "End_of_Actions"
+															if(Equals(taxi_path_points, (active_taxi_point_number + 1))) {
+																			{
+																			next_action = "End_of_Actions"
+																			;}
+																	;} else {
+																			{
+																			active_taxi_point_number = active_taxi_point_number + 1
+																			;}
+																		;}
 															;}
-													;} else {
-															{
-															active_taxi_point_number = active_taxi_point_number + 1
-															;}
-														;}
+													;} 
 											;}
 									;} 
 						;};

@@ -52,3 +52,8 @@
 [ERROR] 2019-12-14 15:59:13,838 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
 [ERROR] 2019-12-14 15:59:13,838 | Mars.Core.SimulationStarter.SimulationStarter - One or more errors occurred. (Object reference not set to an instance of an object.) 
 [ERROR] 2019-12-14 15:59:13,838 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2019-12-25 11:21:11,986 | Mars.Core.SimulationStarter.SimulationStarter - MARS simulation execution crashed by IOException 
+[ERROR] 2019-12-25 11:21:12,009 | Mars.Core.SimulationStarter.SimulationStarter - Exception message: 
+[ERROR] 2019-12-25 11:21:12,009 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2019-12-25 11:21:12,009 | Mars.Core.SimulationStarter.SimulationStarter - The process cannot access the file 'C:\Users\eriks\Google Drive\Bachelorarbeit\02_Eclipse_Workspace\cessna_digital_twin\src-gen\Pilot.csv' because it is being used by another process. 
+[ERROR] 2019-12-25 11:21:12,010 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 

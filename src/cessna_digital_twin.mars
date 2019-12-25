@@ -427,6 +427,7 @@ agent Pilot on AgentLayer{
 	
 	var myAircraft : Aircraft // for accessing the real aircraft
 	var timehandler = new TimeHandler()
+	var formula = new Formula()
 	var first_action_set : bool = false // temporary auxiliary variable
 	var taxi_path : List<Tuple<real, real>> // for saving taxi instructions
 	
@@ -440,18 +441,25 @@ agent Pilot on AgentLayer{
 		first_action_set = false
 	}
 	
-	
-	//-----General Pilot Values and functions-----
-	observe var age: integer // years
-	observe var flight_experience : integer // years
-		
-	
 	def update_general_values()
 	{
 		Longitude = xcor
 		Latitude = ycor
 		current_activity = next_action
 	}
+	
+	def myPosition()
+	{
+		return #(xcor, ycor)
+	}
+	
+	
+	//-----General Pilot Values and functions-----
+	observe var age: integer // years
+	observe var flight_experience : integer // years
+		
+	
+
 		
 	
 	
@@ -759,7 +767,6 @@ agent Pilot on AgentLayer{
 	}
 	
 	
-	
 	//-----State Taxiing in general-----
 	// TODO: Important Note: Before entering Taxi State, define the "normal" State after Taxiing
 	//help variable:
@@ -787,19 +794,32 @@ agent Pilot on AgentLayer{
 		else if (next_action === "Taxiing")
 		{
 			var active_taxi_point = taxi_path.Get(active_taxi_point_number)
-			move myAircraft 5 to active_taxi_point
+			
+			move myAircraft 50 to active_taxi_point
+			
 			println "-----Taxiing-----"
 			println "taxi_path_points : " + taxi_path_points
 			println "active_taxi_point_number : " + active_taxi_point_number
+			println "My Position : "
+			println myPosition()
+			println "active_taxi_point : "
+			println active_taxi_point
+
+			var distance_to_next_point = formula.haversine(myPosition(), active_taxi_point)
+			println "distance: " + distance_to_next_point
 			
-			if (taxi_path_points === (active_taxi_point_number + 1))
+			if (distance_to_next_point < 100)
 			{
-				next_action = "End_of_Actions"				
+				if (taxi_path_points === (active_taxi_point_number + 1))
+				{
+					next_action = "End_of_Actions"				
+				}
+				else
+				{
+					active_taxi_point_number = active_taxi_point_number + 1
+				}
 			}
-			else
-			{
-				active_taxi_point_number = active_taxi_point_number + 1
-			}
+
 			
 			
 		}
@@ -925,6 +945,8 @@ agent Pilot on AgentLayer{
 }
 
 
+
+
 //-----Agent AirTrafficController sitting in tower and answering requests-----
 agent AirTrafficController on AgentLayer
 	{	
@@ -980,7 +1002,6 @@ agent AirTrafficController on AgentLayer
 		//TODO: Add a information retrieval for ATC
 		var groundpath : List<Tuple<real, real>>
 		
-		
 		def initialize_general_values()
 		{
 			identifier = "Tower"
@@ -996,24 +1017,37 @@ agent AirTrafficController on AgentLayer
 
 
 // -----Class with helper functions-----
-class HelperFunctions
+class Formula
 {
 	def haversine(point1 : Tuple<real, real>, point2: Tuple<real, real>)
 	{
-		//Note: Math functions in Mars are using DEGREES [°], DO NOT CONVERT!
-		//Note2: In GeoJson and Mars the order is (Lon[°], Lat[°])!
-		var lon1 = point1.Item1
-		var lat1 = point1.Item2
-		var lon2 = point2.Item1
-		var lat2 = point2.Item2
+		//Returns the distance between two points
+		//Note: Math functions in Mars are using RADIANS [rad]
+		//Input assumed: In GeoJson and Mars the order is (Lon[°], Lat[°])!
+		var rad_factor = Constants.Pi / 180
+		var lon1 = point1.Item1() * rad_factor
+		var lat1 = point1.Item2() * rad_factor
+		var lon2 = point2.Item1() * rad_factor
+		var lat2 = point2.Item2() * rad_factor
 		
-				
-		//var delta_lat = lat2 - lat1
-		//dLat = radians(lat2 - lat1)
-		//dLon = radians(lon2 - lon1)
-		//lat1 = radians(lat1)
-		//lat2 = radians(lat2)		
+		var dlon = lon2 - lon1
+		var dlat = lat2 - lat1
 		
+		//Workaround, since some problems with type appeared
+		//a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+		var summand1 : real = (Math.Sin(dlat/2))**2
+		var factor1 : real = Math.Cos(lat1)
+		var factor2 : real = Math.Cos(lat2)
+		var factor3 : real = (Math.Sin(dlon/2))**2
+		var a = summand1 + (factor1 * factor2 * factor3)	
+		
+		//c = 2 * asin(sqrt(a)) 
+		var c : real = 2 * Math.Asin(a**0.5)
+		
+		var r = 6371000 //Radius of earth in meters
+		
+	    return c*r
+		                                                                 
 	}
 }
 
