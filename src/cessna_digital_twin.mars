@@ -104,7 +104,7 @@ agent Aircraft on AgentLayer{
 	observe var Latitude : real
 	observe var Longitude : real
 	observe var Callsign : string // IDENTIFIER!
-	// TODO: Think about this
+	// TODO: Think about this for documentation
 	//observe var passive_activity: string // activity by pilot is more precise
 	//observe var malfunction_notification // maybe add something like this or think about it
 	
@@ -156,7 +156,9 @@ agent Aircraft on AgentLayer{
 	var Engine__RPM_max : integer = 2500  // when running during ground
 	
 	//TODO, dependent on throttle settings!
-	//observe var Engine__fuel_consumption : real 
+	//observe var Engine__fuel_consumption : real
+	
+	//TODO
 	//observe var Engine__oil_pump_condition : bool
 	//observe var Engine__oil_pressure_gauge_condition : bool
 	//observe var Engine__oil_leakage : real
@@ -198,11 +200,11 @@ agent Aircraft on AgentLayer{
 		
 		if (Engine__running === true)
 		{
-			//Engine RPM TODO: Add speed dependency, since RPM changes with aircraft speed with paper
+			//Engine RPM TODO: Add speed dependency (and more..?), since RPM changes with aircraft speed see paper
 			Engine__RPM = Engine__RPM_min + (Engine__RPM_max - Engine__RPM_min) * Engine__throttle
 			Engine__RPM = Engine__RPM + random(21) - 10 // for random deviations
 			
-			//Engine Oil TODO: Make dependent on and engine__oil_pump
+			//Engine Oil TODO: Make dependent on engine__oil_pump and possible leakage
 			var temp_Engine__oil_pressure_normal_half = (Engine__oil_pressure_normal_max + Engine__oil_pressure_normal_min) / 2
 			var temp_Engine__oil_temperature_normal_half = (Engine__oil_temperature_normal_max + Engine__oil_temperature_normal_min) / 2
 			Engine__oil_pressure = temp_Engine__oil_pressure_normal_half // Normal Operations
@@ -460,6 +462,7 @@ agent Pilot on AgentLayer{
 	
 	
 	//-----State Preflight Inspection-----
+	// ---TODO: Add variable outcomes!---
 	def PreflightInspection_action()
 	{
 		// Flag for first action and architecture like this avoids loose of one tick
@@ -475,7 +478,7 @@ agent Pilot on AgentLayer{
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				var check_value = Check_Visual_TireRightMainWheel__inflation()
-				if (check_value >= 0) //TODO
+				if (check_value >= 0)
 				{
 					next_action = "Check_RWT__water_sediments"
 				}
@@ -489,7 +492,7 @@ agent Pilot on AgentLayer{
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				var check_value = Check_Visual_RWT__water_sediments()
-				if (check_value === true or check_value === false) //TODO
+				if (check_value === true or check_value === false) 
 				{
 					next_action = "Check_RWT__fuel_quantity"
 				}
@@ -503,7 +506,7 @@ agent Pilot on AgentLayer{
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				var check_value = Check_Visual_RWT__fuel_quantity()
-				if (check_value >= 0) //TODO
+				if (check_value >= 0) 
 				{
 					next_action = "Check_Engine__oil"
 				}
@@ -516,7 +519,7 @@ agent Pilot on AgentLayer{
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				var check_value = Check_Visual_Engine__oil()
-				if (check_value >= 0) //TODO
+				if (check_value >= 0) 
 				{
 					next_action = "Check_TireNoseWheel__inflation"
 				}
@@ -529,7 +532,7 @@ agent Pilot on AgentLayer{
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				var check_value = Check_Visual_TireNoseWheel__inflation()
-				if (check_value >= 0) //TODO
+				if (check_value >= 0) 
 				{
 					next_action = "Check_TireLeftMainWheel__inflation"
 				}
@@ -542,7 +545,7 @@ agent Pilot on AgentLayer{
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				var check_value = Check_Visual_TireLeftMainWheel__inflation()
-				if (check_value >= 0) //TODO
+				if (check_value >= 0) 
 				{
 					next_action = "Check_LWT__water_sediments"
 				}
@@ -555,7 +558,7 @@ agent Pilot on AgentLayer{
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				var check_value = Check_Visual_LWT__water_sediments()
-				if (check_value === true or check_value === false) //TODO
+				if (check_value === true or check_value === false)
 				{
 					next_action = "Check_LWT__fuel_quantity"
 				}
@@ -568,7 +571,7 @@ agent Pilot on AgentLayer{
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				var check_value = Check_Visual_LWT__fuel_quantity()
-				if (check_value >= 0) //TODO
+				if (check_value >= 0) 
 				{
 					next_action = "End_of_Actions"
 				}
@@ -653,7 +656,7 @@ agent Pilot on AgentLayer{
 				var check_value = Check_Visual_Engine__running()
 				if (check_value === true)
 				{
-					next_action = "Set_Engine__ignition_switch_BOTH" //TODO
+					next_action = "Set_Engine__ignition_switch_BOTH"
 				}
 				else if (check_value === false)
 				{
@@ -766,7 +769,7 @@ agent Pilot on AgentLayer{
 	//-----State Taxiing in general-----
 	// TODO: Important Note: Before entering Taxi State, define the "normal" State after Taxiing
 	//help variable:
-	var active_taxi_point_number = 0
+	var active_taxi_point_number : integer
 	def Taxiing_action()
 	{
 		var taxi_path_points = taxi_path.Size()
@@ -975,11 +978,13 @@ agent AirTrafficController on AgentLayer
 				timehandler.create_action_duration(2, 2, "None")
 				if (timehandler.hold_action_time(timehandler.action_duration))
 				{
-					agentlayer.Clear_frequency() // Tower always able to answer or Clear Frequency, when request insufficient
+					agentlayer.Clear_frequency() // Tower always able to answer or Clear Frequency, when request insufficient	
+					runway_heading_calculated = 107 // TODO: Add information retrieval for heading
+					
 					if (message_type_received === "RequestTakeOffPreparationPoint")
 					{
-						//TODO: Add a information retrieval for ATC
-						agentlayer.Communicate_taxipath_on_frequency(identifier, callsign_received, "AnswerTakeOffPreparationPoint", groundpath)
+						taxipath = airportstade.Get_taxipath_to_TakeOffPreparationPoint(runway_heading_calculated)
+						agentlayer.Communicate_taxipath_on_frequency(identifier, callsign_received, "AnswerTakeOffPreparationPoint", taxipath)
 						state = "Listen_on_frequency"
 					}
 				}
@@ -991,24 +996,71 @@ agent AirTrafficController on AgentLayer
 		observe var state : string
 		observe var message_type_received : string
 		observe var callsign_received : string
+		observe var runway_heading_calculated : integer
 		var timehandler = new TimeHandler()
-		
-		//TODO: Add a information retrieval for ATC
-		var groundpath : List<Tuple<real, real>>
+		var airportstade = new AirportStade() // for airport information retrieval
+		var taxipath : List<Tuple<real, real>>
 		
 		def initialize_general_values()
 		{
 			identifier = "Tower"
 			state = "Listen_on_frequency"
-			
-			//TODO: Add a information retrieval for ATC
-			groundpath = #[#(9.4994287, 53.5604441), #(9.4934248,53.5617509), #(9.4931937,53.5618008), #(9.4930632,53.5618664), #(9.4930261,53.5619488), #(9.4930324,53.562018),#(9.4930903,53.5620665),#(9.4931671,53.5621049),#(9.4932789,53.5621333),#(9.493448,53.5621513),#(9.4936651,53.5621639),#(9.4939417,53.562171)]
 		}
 		
 	}
 
 
-
+// TODO: Make a more convenient way for information retrieval of airport
+class AirportStade
+// ------------TODO: Enter the correct data!---------------
+{
+	var taxipath: List<Tuple<real, real>>
+	
+	def Get_taxipath_to_TakeOffPreparationPoint(heading : integer)
+	{
+		if (heading === 107)
+		{
+			taxipath = #[#(9.4994287, 53.5604441), #(9.4934248,53.5617509), #(9.4931937,53.5618008), #(9.4930632,53.5618664), #(9.4930261,53.5619488), #(9.4930324,53.562018),#(9.4930903,53.5620665),#(9.4931671,53.5621049),#(9.4932789,53.5621333),#(9.493448,53.5621513),#(9.4936651,53.5621639),#(9.4939417,53.562171)]
+			return taxipath
+		}
+		
+		else if (heading === 287)
+		{
+			taxipath = #[#(9.4994287, 53.5604441), #(9.4934248,53.5617509)]
+			return taxipath
+		}
+	}
+	
+	def Get_taxipath_to_RunwayHoldShortPoint(heading: integer)
+	{
+		if (heading === 107)
+		{
+			taxipath = #[#(9.4994287, 53.5604441), #(9.4934248,53.5617509), #(9.4931937,53.5618008), #(9.4930632,53.5618664), #(9.4930261,53.5619488), #(9.4930324,53.562018),#(9.4930903,53.5620665),#(9.4931671,53.5621049),#(9.4932789,53.5621333),#(9.493448,53.5621513),#(9.4936651,53.5621639),#(9.4939417,53.562171)]
+			return taxipath
+		}
+		
+		else if (heading === 287)
+		{
+			taxipath = #[#(9.4994287, 53.5604441), #(9.4934248,53.5617509)]
+			return taxipath
+		}
+	}
+	
+	def Get_taxipath_to_RunwayLineUpPoint(heading: integer)
+	{
+		if (heading === 107)
+		{
+			taxipath = #[#(9.4994287, 53.5604441), #(9.4934248,53.5617509), #(9.4931937,53.5618008), #(9.4930632,53.5618664), #(9.4930261,53.5619488), #(9.4930324,53.562018),#(9.4930903,53.5620665),#(9.4931671,53.5621049),#(9.4932789,53.5621333),#(9.493448,53.5621513),#(9.4936651,53.5621639),#(9.4939417,53.562171)]
+			return taxipath
+		}
+		
+		else if (heading === 287)
+		{
+			taxipath = #[#(9.4994287, 53.5604441), #(9.4934248,53.5617509)]
+			return taxipath
+		}
+	}
+}
 
 // -----Class with helper functions-----
 class Formula

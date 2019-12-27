@@ -50,6 +50,14 @@ namespace cessna_digital_twin {
 				if(__callsign_received != value) __callsign_received = value;
 			}
 		}
+		private int __runway_heading_calculated
+			 = default(int);
+		public int runway_heading_calculated { 
+			get { return __runway_heading_calculated; }
+			set{
+				if(__runway_heading_calculated != value) __runway_heading_calculated = value;
+			}
+		}
 		private cessna_digital_twin.TimeHandler __timehandler
 			 = new cessna_digital_twin.TimeHandler();
 		internal cessna_digital_twin.TimeHandler timehandler { 
@@ -58,12 +66,20 @@ namespace cessna_digital_twin {
 				if(__timehandler != value) __timehandler = value;
 			}
 		}
-		private Mars.Components.Common.MarsList<System.Tuple<double,double>> __groundpath
-			 = default(Mars.Components.Common.MarsList<System.Tuple<double,double>>);
-		internal Mars.Components.Common.MarsList<System.Tuple<double,double>> groundpath { 
-			get { return __groundpath; }
+		private cessna_digital_twin.AirportStade __airportstade
+			 = new cessna_digital_twin.AirportStade();
+		internal cessna_digital_twin.AirportStade airportstade { 
+			get { return __airportstade; }
 			set{
-				if(__groundpath != value) __groundpath = value;
+				if(__airportstade != value) __airportstade = value;
+			}
+		}
+		private Mars.Components.Common.MarsList<System.Tuple<double,double>> __taxipath
+			 = default(Mars.Components.Common.MarsList<System.Tuple<double,double>>);
+		internal Mars.Components.Common.MarsList<System.Tuple<double,double>> taxipath { 
+			get { return __taxipath; }
+			set{
+				if(__taxipath != value) __taxipath = value;
 			}
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
@@ -71,8 +87,7 @@ namespace cessna_digital_twin {
 		{
 			{
 			identifier = "Tower";
-			state = "Listen_on_frequency";
-			groundpath = (new Mars.Components.Common.MarsList<System.Tuple<double,double>>() { new System.Tuple<double,double>(9.4994287,53.5604441),new System.Tuple<double,double>(9.4934248,53.5617509),new System.Tuple<double,double>(9.4931937,53.5618008),new System.Tuple<double,double>(9.4930632,53.5618664),new System.Tuple<double,double>(9.4930261,53.5619488),new System.Tuple<double,double>(9.4930324,53.562018),new System.Tuple<double,double>(9.4930903,53.5620665),new System.Tuple<double,double>(9.4931671,53.5621049),new System.Tuple<double,double>(9.4932789,53.5621333),new System.Tuple<double,double>(9.493448,53.5621513),new System.Tuple<double,double>(9.4936651,53.5621639),new System.Tuple<double,double>(9.4939417,53.562171) })
+			state = "Listen_on_frequency"
 			;}
 			return;
 		}
@@ -110,12 +125,12 @@ namespace cessna_digital_twin {
 			double y_spawn = agentlayer.Get_spawn_y_coord();
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget953_26618 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget956_26666 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object953_26618 = this;
+				var _object956_26666 = this;
 				
-				_AgentLayer._AirTrafficControllerEnvironment.PosAt(_object953_26618, 
-					_taget953_26618.Item1, _taget953_26618.Item2
+				_AgentLayer._AirTrafficControllerEnvironment.PosAt(_object956_26666, 
+					_taget956_26666.Item1, _taget956_26666.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke()
@@ -151,9 +166,11 @@ namespace cessna_digital_twin {
 											) {
 															{
 															agentlayer.Clear_frequency();
+															runway_heading_calculated = 107;
 															if(Equals(message_type_received, "RequestTakeOffPreparationPoint")) {
 																			{
-																			agentlayer.Communicate_taxipath_on_frequency(identifier,callsign_received,"AnswerTakeOffPreparationPoint",groundpath);
+																			taxipath = airportstade.Get_taxipath_to_TakeOffPreparationPoint(runway_heading_calculated);
+																			agentlayer.Communicate_taxipath_on_frequency(identifier,callsign_received,"AnswerTakeOffPreparationPoint",taxipath);
 																			state = "Listen_on_frequency"
 																			;}
 																	;} 
