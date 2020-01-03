@@ -161,13 +161,13 @@ namespace cessna_digital_twin {
 			{
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget448_12371 = (myAircraft.Get_position()
+				var _taget493_14113 = (myAircraft.Get_position()
 				);
 				
-				var _object448_12371 = this;
+				var _object493_14113 = this;
 				
-				_AgentLayer._PilotEnvironment.PosAt(_object448_12371, 
-					_taget448_12371.Item1, _taget448_12371.Item2
+				_AgentLayer._PilotEnvironment.PosAt(_object493_14113, 
+					_taget493_14113.Item1, _taget493_14113.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
@@ -576,18 +576,18 @@ namespace cessna_digital_twin {
 											System.Tuple<double,double> active_taxi_point = taxi_path.Get(active_taxi_point_number);
 											new System.Func<Tuple<double,double>>(() => {
 												
-												var _speed797_22591 = 5
+												var _speed842_24333 = 5
 											;
 												
-												var _entity797_22591 = myAircraft;
+												var _entity842_24333 = myAircraft;
 												
-												Func<double[], bool> _predicate797_22591 = null;
+												Func<double[], bool> _predicate842_24333 = null;
 												
-												var _target797_22591 = active_taxi_point;
-												_AgentLayer._AircraftEnvironment.MoveTo(_entity797_22591,
-													 _target797_22591.Item1, _target797_22591.Item2, 
-													_speed797_22591, 
-													_predicate797_22591);
+												var _target842_24333 = active_taxi_point;
+												_AgentLayer._AircraftEnvironment.MoveTo(_entity842_24333,
+													 _target842_24333.Item1, _target842_24333.Item2, 
+													_speed842_24333, 
+													_predicate842_24333);
 												
 												return new Tuple<double, double>(Position.X, Position.Y);
 											}).Invoke();
@@ -807,32 +807,32 @@ namespace cessna_digital_twin {
 			double y_spawn = agentlayer.Get_spawn_y_coord();
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget386_10627 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget431_12369 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object386_10627 = this;
+				var _object431_12369 = this;
 				
-				_AgentLayer._PilotEnvironment.PosAt(_object386_10627, 
-					_taget386_10627.Item1, _taget386_10627.Item2
+				_AgentLayer._PilotEnvironment.PosAt(_object431_12369, 
+					_taget431_12369.Item1, _taget431_12369.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
 			myAircraft = new Func<cessna_digital_twin.Aircraft>(() => {
-				Func<cessna_digital_twin.Aircraft, bool> _predicate390_10783 = null;
-				Func<cessna_digital_twin.Aircraft, bool> _predicateMod390_10783 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
+				Func<cessna_digital_twin.Aircraft, bool> _predicate435_12525 = null;
+				Func<cessna_digital_twin.Aircraft, bool> _predicateMod435_12525 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
 				{
 					if (_it?.ID == this.ID)
 					{
 						return false;
-					} else if (_predicate390_10783 != null)
+					} else if (_predicate435_12525 != null)
 					{
-						return _predicate390_10783.Invoke(_it);
+						return _predicate435_12525.Invoke(_it);
 					} else return true;
 				});
 				
-				const int _range390_10783 = -1;
-				var _source390_10783 = this.Position;
+				const int _range435_12525 = -1;
+				var _source435_12525 = this.Position;
 				
-				return _AgentLayer._AircraftEnvironment.Explore(_source390_10783, _range390_10783, 1, _predicateMod390_10783)?.FirstOrDefault();
+				return _AgentLayer._AircraftEnvironment.Explore(_source435_12525, _range435_12525, 1, _predicateMod435_12525)?.FirstOrDefault();
 			}).Invoke();
 			myAircraft_callsign = myAircraft.Get_callsign();
 			update_general_values();
@@ -848,7 +848,6 @@ namespace cessna_digital_twin {
 		{
 			{ if (!_isAlive) return; }
 			{
-			update_general_values();
 			if(Equals(state, "PreflightInspection")) {
 							{
 							PreflightInspection_action()
@@ -871,7 +870,8 @@ namespace cessna_digital_twin {
 																	;} 
 														;}
 										;}
-						;}
+						;};
+			update_general_values()
 			;}
 		}
 		

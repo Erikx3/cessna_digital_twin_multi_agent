@@ -4,6 +4,15 @@ use Mars
 
 layer AgentLayer as agentlayer
 {
+	
+	//Weather Values TODO: Think about another solution for weather
+	var Weather__density : real = 1.225 //kg/m^3 TODO: Add height dependent density
+	def Get_Weather__density()
+	{
+		return Weather__density
+	}
+	
+	
 	//-----Spawn Handling-----
 	var spawn_xcor : real = 9.4987928
 	var spawn_ycor : real = 53.560392
@@ -84,6 +93,7 @@ agent Aircraft on AgentLayer{
 	initialize
 	{
 		initialize_general_values()
+		initialize_AircraftPhysics()
 		initialize_RightWingTank()
 		initialize_LeftWingTank()
 		initialize_Tire()
@@ -104,6 +114,7 @@ agent Aircraft on AgentLayer{
 	observe var Latitude : real
 	observe var Longitude : real
 	observe var Callsign : string // IDENTIFIER!
+	
 	// TODO: Think about this for documentation
 	//observe var passive_activity: string // activity by pilot is more precise
 	//observe var malfunction_notification // maybe add something like this or think about it
@@ -114,7 +125,7 @@ agent Aircraft on AgentLayer{
 		var y_spawn = agentlayer.Get_spawn_y_coord()
 		pos at #(x_spawn, y_spawn)
 		
-		Callsign = "Cessna" + random(10000)
+		Callsign = "Cessna" + random(10000) //TODO: Make sure, Callsign is Unique!
 		Longitude = xcor
 		Latitude = ycor
 	}
@@ -130,8 +141,15 @@ agent Aircraft on AgentLayer{
 	
 	
 	//-----Aircraft(Movement and Physics)-----
+	observe var Physics__speed : real //TODO: Think about cleaner naming scheme!!!!
 	
+	def initialize_AircraftPhysics()
+	{
+		Physics__speed = 0.0
+	}
 	
+	// -----Propeller-----
+	var Propeller__diameter : real = 1.75 // meters
 	
 	// -----Engine-----
 	observe var Engine__oil : real  // litre
@@ -139,9 +157,31 @@ agent Aircraft on AgentLayer{
 	observe var Engine__oil_temperature : real // normal between 38°C and 116°C
 	observe var Engine__mixture_control : real  // percentage RICH 0..1 LEAN
 	observe var Engine__throttle : real  // percentage NO THROTTLE 0..1 FULL THROTTLE
+	observe var Engine__power : real // between 0W and 75000W 
 	observe var Engine__ignition_switch : string  // "OFF", "L", "R", "BOTH" or "START"
-	observe var Engine__RPM : real  //range between 0, 1000..2500
+	observe var Engine__RPM : real  //calculated via formula with power coefficient
 	observe var Engine__running : bool
+	
+	//Power Efficient Variable
+	//Note: assumption cp = f(V/(n*d)) with n*d=1
+	observe var Engine__power_coefficient : real
+	var Engine__power_coefficient_slope : real // TODO: has to be initialized, since negative and Mars does not allow direct negative number assignment
+	var Engine__power_coefficient_constant : real = 0.05
+	var Engine__power_coefficient_speed_constant : real = 30.0 //Up to which speed coefficient is constant
+	
+	def Get_Engine__power_coefficient()
+	{
+		if (Physics__speed > Engine__power_coefficient_speed_constant)
+		{
+			Engine__power_coefficient = Engine__power_coefficient_slope * (Physics__speed - Engine__power_coefficient_speed_constant) + Engine__power_coefficient_constant
+		}
+		else
+		{
+			Engine__power_coefficient = Engine__power_coefficient_constant
+		}
+		return Engine__power_coefficient
+	}
+	
 	
 	//Settings
 	var Engine__oil_max : integer = 6
@@ -152,13 +192,13 @@ agent Aircraft on AgentLayer{
 	var Engine__oil_pressure_min = 70000
 	var Engine__oil_temperature_normal_min = 38
 	var Engine__oil_temperature_normal_max = 116
-	var Engine__RPM_min : integer = 1000  // when running during ground
-	var Engine__RPM_max : integer = 2500  // when running during ground
+	var Engine__RPM_max : integer = 2750
+	var Engine__power_max : integer = 75000 // W
 	
 	//TODO, dependent on throttle settings!
 	//observe var Engine__fuel_consumption : real
 	
-	//TODO
+	//TODO Think about implementation
 	//observe var Engine__oil_pump_condition : bool
 	//observe var Engine__oil_pressure_gauge_condition : bool
 	//observe var Engine__oil_leakage : real
@@ -170,15 +210,18 @@ agent Aircraft on AgentLayer{
 		Engine__mixture_control = random(101) / 100.0
 		Engine__throttle = random(10) / 10.0
 		Engine__ignition_switch = "OFF"
-		Engine__RPM = 0
+		Engine__RPM = 0.0
+		Engine__power = 0.0
 		Engine__running = false
 		Engine__oil_pressure = 101325
-		Engine__oil_temperature = 15 		
+		Engine__oil_temperature = 15
+		
+		Engine__power_coefficient_slope = -0.0009	
 	}
 	
 	def Set_Engine__not_running_values()
 	{
-		Engine__RPM = 0
+		Engine__RPM = 0.0
 		Engine__oil_pressure = 101325
 		Engine__oil_temperature = 15
 	}
@@ -188,7 +231,7 @@ agent Aircraft on AgentLayer{
 		if (Engine__running === false)
 		{
 			Set_Engine__not_running_values()
-			if (Engine__ignition_switch === "START")
+			if (Engine__ignition_switch === "START" and CIP__master_switch === "ON")
 			{
 				if (random(100) <= 40) // 40% chance for engine to start
 				{
@@ -200,9 +243,11 @@ agent Aircraft on AgentLayer{
 		
 		if (Engine__running === true)
 		{
-			//Engine RPM TODO: Add speed dependency (and more..?), since RPM changes with aircraft speed see paper
-			Engine__RPM = Engine__RPM_min + (Engine__RPM_max - Engine__RPM_min) * Engine__throttle
-			Engine__RPM = Engine__RPM + random(21) - 10 // for random deviations
+			//Engine RPM Calculation TODO: Add speed dependency (and more..?), since RPM changes with aircraft speed see paper
+			Engine__power = Engine__power_max * Engine__throttle
+			Engine__power_coefficient = Get_Engine__power_coefficient()
+			Engine__RPM = (Engine__power/(Engine__power_coefficient*agentlayer.Get_Weather__density()*Propeller__diameter**5))**0.3333 * 60 // FACTOR 60 TO CONVERT INTO PER MINUTE
+			//Engine__RPM = Engine__RPM + random(21) - 10 // for random deviations
 			
 			//Engine Oil TODO: Make dependent on engine__oil_pump and possible leakage
 			var temp_Engine__oil_pressure_normal_half = (Engine__oil_pressure_normal_max + Engine__oil_pressure_normal_min) / 2
@@ -400,8 +445,6 @@ agent Pilot on AgentLayer{
 		
 	tick
 	{	
-		update_general_values()
-		
 		if (state === "PreflightInspection"){
 			PreflightInspection_action()
 		}
@@ -417,6 +460,8 @@ agent Pilot on AgentLayer{
 		else if (state === "Taxiing"){
 			Taxiing_action()
 		}
+		
+		update_general_values()
 	}
 	
 	
@@ -1095,7 +1140,6 @@ class Formula
 		                                                                 
 	}
 }
-
 
 // -----Class for handling all time issues-----
 class TimeHandler

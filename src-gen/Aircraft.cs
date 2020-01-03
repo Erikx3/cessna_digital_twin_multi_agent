@@ -42,6 +42,22 @@ namespace cessna_digital_twin {
 				if(__Callsign != value) __Callsign = value;
 			}
 		}
+		private double __Physics__speed
+			 = default(double);
+		public double Physics__speed { 
+			get { return __Physics__speed; }
+			set{
+				if(System.Math.Abs(__Physics__speed - value) > 0.0000001) __Physics__speed = value;
+			}
+		}
+		private double __Propeller__diameter
+			 = 1.75;
+		internal double Propeller__diameter { 
+			get { return __Propeller__diameter; }
+			set{
+				if(System.Math.Abs(__Propeller__diameter - value) > 0.0000001) __Propeller__diameter = value;
+			}
+		}
 		private double __Engine__oil
 			 = default(double);
 		public double Engine__oil { 
@@ -82,6 +98,14 @@ namespace cessna_digital_twin {
 				if(System.Math.Abs(__Engine__throttle - value) > 0.0000001) __Engine__throttle = value;
 			}
 		}
+		private double __Engine__power
+			 = default(double);
+		public double Engine__power { 
+			get { return __Engine__power; }
+			set{
+				if(System.Math.Abs(__Engine__power - value) > 0.0000001) __Engine__power = value;
+			}
+		}
 		private string __Engine__ignition_switch
 			 = default(string);
 		public string Engine__ignition_switch { 
@@ -104,6 +128,38 @@ namespace cessna_digital_twin {
 			get { return __Engine__running; }
 			set{
 				if(__Engine__running != value) __Engine__running = value;
+			}
+		}
+		private double __Engine__power_coefficient
+			 = default(double);
+		public double Engine__power_coefficient { 
+			get { return __Engine__power_coefficient; }
+			set{
+				if(System.Math.Abs(__Engine__power_coefficient - value) > 0.0000001) __Engine__power_coefficient = value;
+			}
+		}
+		private double __Engine__power_coefficient_slope
+			 = default(double);
+		internal double Engine__power_coefficient_slope { 
+			get { return __Engine__power_coefficient_slope; }
+			set{
+				if(System.Math.Abs(__Engine__power_coefficient_slope - value) > 0.0000001) __Engine__power_coefficient_slope = value;
+			}
+		}
+		private double __Engine__power_coefficient_constant
+			 = 0.05;
+		internal double Engine__power_coefficient_constant { 
+			get { return __Engine__power_coefficient_constant; }
+			set{
+				if(System.Math.Abs(__Engine__power_coefficient_constant - value) > 0.0000001) __Engine__power_coefficient_constant = value;
+			}
+		}
+		private double __Engine__power_coefficient_speed_constant
+			 = 30.0;
+		internal double Engine__power_coefficient_speed_constant { 
+			get { return __Engine__power_coefficient_speed_constant; }
+			set{
+				if(System.Math.Abs(__Engine__power_coefficient_speed_constant - value) > 0.0000001) __Engine__power_coefficient_speed_constant = value;
 			}
 		}
 		private int __Engine__oil_max
@@ -170,20 +226,20 @@ namespace cessna_digital_twin {
 				if(__Engine__oil_temperature_normal_max != value) __Engine__oil_temperature_normal_max = value;
 			}
 		}
-		private int __Engine__RPM_min
-			 = 1000;
-		internal int Engine__RPM_min { 
-			get { return __Engine__RPM_min; }
-			set{
-				if(__Engine__RPM_min != value) __Engine__RPM_min = value;
-			}
-		}
 		private int __Engine__RPM_max
-			 = 2500;
+			 = 2750;
 		internal int Engine__RPM_max { 
 			get { return __Engine__RPM_max; }
 			set{
 				if(__Engine__RPM_max != value) __Engine__RPM_max = value;
+			}
+		}
+		private int __Engine__power_max
+			 = 75000;
+		internal int Engine__power_max { 
+			get { return __Engine__power_max; }
+			set{
+				if(__Engine__power_max != value) __Engine__power_max = value;
 			}
 		}
 		private double __RWT__fuel_quantity
@@ -306,12 +362,12 @@ namespace cessna_digital_twin {
 			double y_spawn = agentlayer.Get_spawn_y_coord();
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget115_2807 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget126_3063 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object115_2807 = this;
+				var _object126_3063 = this;
 				
-				_AgentLayer._AircraftEnvironment.PosAt(_object115_2807, 
-					_taget115_2807.Item1, _taget115_2807.Item2
+				_AgentLayer._AircraftEnvironment.PosAt(_object126_3063, 
+					_taget126_3063.Item1, _taget126_3063.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
@@ -331,6 +387,31 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void initialize_AircraftPhysics() 
+		{
+			{
+			Physics__speed = 0.0
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public double Get_Engine__power_coefficient() 
+		{
+			{
+			if(Physics__speed > Engine__power_coefficient_speed_constant) {
+							{
+							Engine__power_coefficient = Engine__power_coefficient_slope * (Physics__speed - Engine__power_coefficient_speed_constant) + Engine__power_coefficient_constant
+							;}
+					;} else {
+							{
+							Engine__power_coefficient = Engine__power_coefficient_constant
+							;}
+						;};
+			return Engine__power_coefficient
+			;}
+			return default(double);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public void initialize_Engine() 
 		{
 			{
@@ -342,10 +423,12 @@ namespace cessna_digital_twin {
 			Engine__throttle = _Random.Next(10)
 			 / 10.0;
 			Engine__ignition_switch = "OFF";
-			Engine__RPM = 0;
+			Engine__RPM = 0.0;
+			Engine__power = 0.0;
 			Engine__running = false;
 			Engine__oil_pressure = 101325;
-			Engine__oil_temperature = 15
+			Engine__oil_temperature = 15;
+			Engine__power_coefficient_slope = -0.0009
 			;}
 			return;
 		}
@@ -353,7 +436,7 @@ namespace cessna_digital_twin {
 		public void Set_Engine__not_running_values() 
 		{
 			{
-			Engine__RPM = 0;
+			Engine__RPM = 0.0;
 			Engine__oil_pressure = 101325;
 			Engine__oil_temperature = 15
 			;}
@@ -366,7 +449,7 @@ namespace cessna_digital_twin {
 			if(Equals(Engine__running, false)) {
 							{
 							Set_Engine__not_running_values();
-							if(Equals(Engine__ignition_switch, "START")) {
+							if(Equals(Engine__ignition_switch, "START") && Equals(CIP__master_switch, "ON")) {
 											{
 											if(_Random.Next(100)
 											 <= 40) {
@@ -381,9 +464,10 @@ namespace cessna_digital_twin {
 					;} ;
 			if(Equals(Engine__running, true)) {
 							{
-							Engine__RPM = Engine__RPM_min + (Engine__RPM_max - Engine__RPM_min) * Engine__throttle;
-							Engine__RPM = Engine__RPM + _Random.Next(21)
-							 - 10;
+							Engine__power = Engine__power_max * Engine__throttle;
+							Engine__power_coefficient = Get_Engine__power_coefficient();
+							Engine__RPM = Mars.Components.Common.Math.Pow((Engine__power / (Engine__power_coefficient * agentlayer.Get_Weather__density()
+							 * Mars.Components.Common.Math.Pow(Propeller__diameter, 5))), 0.3333) * 60;
 							int temp_Engine__oil_pressure_normal_half = (Engine__oil_pressure_normal_max + Engine__oil_pressure_normal_min) / 2;
 							int temp_Engine__oil_temperature_normal_half = (Engine__oil_temperature_normal_max + Engine__oil_temperature_normal_min) / 2;
 							Engine__oil_pressure = temp_Engine__oil_pressure_normal_half;
@@ -671,6 +755,7 @@ namespace cessna_digital_twin {
 			_executionFrequency = freq;
 			{
 			initialize_general_values();
+			initialize_AircraftPhysics();
 			initialize_RightWingTank();
 			initialize_LeftWingTank();
 			initialize_Tire();

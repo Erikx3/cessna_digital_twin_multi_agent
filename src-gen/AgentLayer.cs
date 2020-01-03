@@ -46,6 +46,14 @@ namespace cessna_digital_twin {
 		
 		public AgentLayer _AgentLayer => this;
 		public AgentLayer agentlayer => this;
+		private double __Weather__density
+			 = 1.225;
+		internal double Weather__density { 
+			get { return __Weather__density; }
+			set{
+				if(System.Math.Abs(__Weather__density - value) > 0.0000001) __Weather__density = value;
+			}
+		}
 		private double __spawn_xcor
 			 = 9.4987928;
 		internal double spawn_xcor { 
@@ -101,6 +109,14 @@ namespace cessna_digital_twin {
 			set{
 				if(__message_information_path != value) __message_information_path = value;
 			}
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public double Get_Weather__density() 
+		{
+			{
+			return Weather__density
+			;}
+			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public void Update_spawn_coord() 
