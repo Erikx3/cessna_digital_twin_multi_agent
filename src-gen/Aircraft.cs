@@ -34,6 +34,14 @@ namespace cessna_digital_twin {
 				if(System.Math.Abs(__Longitude - value) > 0.0000001) __Longitude = value;
 			}
 		}
+		private string __Aircraft__heading_mode
+			 = default(string);
+		internal string Aircraft__heading_mode { 
+			get { return __Aircraft__heading_mode; }
+			set{
+				if(__Aircraft__heading_mode != value) __Aircraft__heading_mode = value;
+			}
+		}
 		private string __Aircraft__callsign
 			 = default(string);
 		public string Aircraft__callsign { 
@@ -92,10 +100,26 @@ namespace cessna_digital_twin {
 		}
 		private double __Aircraft__movement_x
 			 = default(double);
-		public double Aircraft__movement_x { 
+		internal double Aircraft__movement_x { 
 			get { return __Aircraft__movement_x; }
 			set{
 				if(System.Math.Abs(__Aircraft__movement_x - value) > 0.0000001) __Aircraft__movement_x = value;
+			}
+		}
+		private int __Aircraft__heading_bearing
+			 = default(int);
+		internal int Aircraft__heading_bearing { 
+			get { return __Aircraft__heading_bearing; }
+			set{
+				if(__Aircraft__heading_bearing != value) __Aircraft__heading_bearing = value;
+			}
+		}
+		private System.Tuple<double,double> __Aircraft__heading_coordinates
+			 = default(System.Tuple<double,double>);
+		internal System.Tuple<double,double> Aircraft__heading_coordinates { 
+			get { return __Aircraft__heading_coordinates; }
+			set{
+				if(__Aircraft__heading_coordinates != value) __Aircraft__heading_coordinates = value;
 			}
 		}
 		private double __Aircraft__height
@@ -224,6 +248,30 @@ namespace cessna_digital_twin {
 			get { return __Brake__parking_brake; }
 			set{
 				if(__Brake__parking_brake != value) __Brake__parking_brake = value;
+			}
+		}
+		private double __Brake__application
+			 = default(double);
+		public double Brake__application { 
+			get { return __Brake__application; }
+			set{
+				if(System.Math.Abs(__Brake__application - value) > 0.0000001) __Brake__application = value;
+			}
+		}
+		private double __Brake__deceleration
+			 = default(double);
+		public double Brake__deceleration { 
+			get { return __Brake__deceleration; }
+			set{
+				if(System.Math.Abs(__Brake__deceleration - value) > 0.0000001) __Brake__deceleration = value;
+			}
+		}
+		private double __Brake__deceleration_max
+			 = 4;
+		internal double Brake__deceleration_max { 
+			get { return __Brake__deceleration_max; }
+			set{
+				if(System.Math.Abs(__Brake__deceleration_max - value) > 0.0000001) __Brake__deceleration_max = value;
 			}
 		}
 		private double __Propeller__diameter
@@ -579,7 +627,7 @@ namespace cessna_digital_twin {
 			}
 		}
 		private double __Tire__roll_coefficient
-			 = 0.0015;
+			 = 0.002;
 		internal double Tire__roll_coefficient { 
 			get { return __Tire__roll_coefficient; }
 			set{
@@ -602,17 +650,18 @@ namespace cessna_digital_twin {
 			double y_spawn = agentlayer.Get_spawn_y_coord();
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget133_3265 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget135_3420 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object133_3265 = this;
+				var _object135_3420 = this;
 				
-				_AgentLayer._AircraftEnvironment.PosAt(_object133_3265, 
-					_taget133_3265.Item1, _taget133_3265.Item2
+				_AgentLayer._AircraftEnvironment.PosAt(_object135_3420, 
+					_taget135_3420.Item1, _taget135_3420.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
 			Longitude = this.Position.X;
-			Latitude = this.Position.Y
+			Latitude = this.Position.Y;
+			Aircraft__heading_mode = "COORDINATES"
 			;}
 			return;
 		}
@@ -708,7 +757,58 @@ namespace cessna_digital_twin {
 			 * Mars.Components.Common.Math.Pow(Aircraft__speed, 2) * Aircraft__wing_area / 2;
 			Aircraft__drag_coefficient = Get_Aircraft__drag_coefficient();
 			Aircraft__drag = Aircraft__drag_coefficient * agentlayer.Get_Weather__density()
-			 * Mars.Components.Common.Math.Pow(Aircraft__speed, 2) * Aircraft__wing_area / 2
+			 * Mars.Components.Common.Math.Pow(Aircraft__speed, 2) * Aircraft__wing_area / 2;
+			Aircraft__acceleration_x = (Propeller__thrust - Tire__friction_force - Aircraft__drag) / Aircraft__weight - Brake__deceleration;
+			Aircraft__speed = Aircraft__speed + Aircraft__acceleration_x;
+			if(Aircraft__speed < 0 || Equals(Brake__parking_brake, "SET")) {
+							{
+							Aircraft__speed = 0
+							;}
+					;} ;
+			Aircraft__movement_x = Aircraft__speed;
+			if(Aircraft__movement_x > 0) {
+							{
+							if(Equals(Aircraft__heading_mode, "COORDINATES")) {
+											{
+											new System.Func<Tuple<double,double>>(() => {
+												
+												var _speed271_8207 = Aircraft__movement_x
+											;
+												
+												var _entity271_8207 = this;
+												
+												Func<double[], bool> _predicate271_8207 = null;
+												
+												var _target271_8207 = Aircraft__heading_coordinates;
+												_AgentLayer._AircraftEnvironment.MoveTo(_entity271_8207,
+													 _target271_8207.Item1, _target271_8207.Item2, 
+													_speed271_8207, 
+													_predicate271_8207);
+												
+												return new Tuple<double, double>(Position.X, Position.Y);
+											}).Invoke()
+											;}
+									;} else {
+											if(Equals(Aircraft__heading_mode, "BEARING")) {
+															{
+															new System.Func<Tuple<double,double>>(() => {
+																
+																var _speed275_8337 = Aircraft__movement_x
+															;
+																
+																var _entity275_8337 = this;
+																
+																Func<double[], bool> _predicate275_8337 = null;
+																
+																_AgentLayer._AircraftEnvironment.MoveTowards(_entity275_8337, Aircraft__heading_bearing, _speed275_8337);	
+																
+																return new Tuple<double, double>(Position.X, Position.Y);
+															}).Invoke()
+															;}
+													;} 
+										;}
+							;}
+					;} 
 			;}
 			return;
 		}
@@ -716,7 +816,17 @@ namespace cessna_digital_twin {
 		public void initialize_Brake() 
 		{
 			{
-			Brake__parking_brake = "SET"
+			Brake__parking_brake = "SET";
+			Brake__deceleration = 0.0;
+			Brake__application = 0.0
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void update_Brake() 
+		{
+			{
+			Brake__deceleration = Brake__application * Brake__deceleration_max
 			;}
 			return;
 		}
@@ -936,6 +1046,16 @@ namespace cessna_digital_twin {
 			return default(System.Tuple<double,double>);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void Set_Aircraft__heading_mode(
+		string input) {
+			{
+			Aircraft__heading_mode = input
+					;
+			}
+			
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public string Get_callsign() {
 			{
 			return Aircraft__callsign
@@ -1055,6 +1175,24 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void CIP_Set_Aircraft__heading_bearing(
+		int input) {
+			{
+			Aircraft__heading_bearing = input
+			;}
+			
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void CIP_Set_Aircraft__heading_coordinates(
+		System.Tuple<double,double> input) {
+			{
+			Aircraft__heading_coordinates = input
+			;}
+			
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public void CIP_Set__master_switch(
 		string input) {
 			{
@@ -1068,6 +1206,15 @@ namespace cessna_digital_twin {
 		string input) {
 			{
 			Brake__parking_brake = input
+			;}
+			
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void CIP_Apply_Brake__application(
+		double input) {
+			{
+			Brake__application = input
 			;}
 			
 			return;
@@ -1093,6 +1240,14 @@ namespace cessna_digital_twin {
 		public double IP_Get_Engine__oil_temperature() {
 			{
 			return Engine__oil_temperature
+			;}
+			
+			return default(double);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public double IP_Get_Aircraft__speed() {
+			{
+			return Aircraft__speed
 			;}
 			
 			return default(double);;
@@ -1147,6 +1302,7 @@ namespace cessna_digital_twin {
 			update_Engine();
 			update_Propeller();
 			update_Tire();
+			update_Brake();
 			update_AircraftPhysics()
 			;}
 		}
