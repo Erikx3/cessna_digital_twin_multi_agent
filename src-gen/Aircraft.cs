@@ -34,20 +34,44 @@ namespace cessna_digital_twin {
 				if(System.Math.Abs(__Longitude - value) > 0.0000001) __Longitude = value;
 			}
 		}
-		private string __Callsign
+		private string __Aircraft__callsign
 			 = default(string);
-		public string Callsign { 
-			get { return __Callsign; }
+		public string Aircraft__callsign { 
+			get { return __Aircraft__callsign; }
 			set{
-				if(__Callsign != value) __Callsign = value;
+				if(__Aircraft__callsign != value) __Aircraft__callsign = value;
 			}
 		}
-		private double __Physics__speed
-			 = default(double);
-		public double Physics__speed { 
-			get { return __Physics__speed; }
+		private double __Aircraft__weight
+			 = 725.0;
+		internal double Aircraft__weight { 
+			get { return __Aircraft__weight; }
 			set{
-				if(System.Math.Abs(__Physics__speed - value) > 0.0000001) __Physics__speed = value;
+				if(System.Math.Abs(__Aircraft__weight - value) > 0.0000001) __Aircraft__weight = value;
+			}
+		}
+		private double __Aircraft__speed
+			 = default(double);
+		public double Aircraft__speed { 
+			get { return __Aircraft__speed; }
+			set{
+				if(System.Math.Abs(__Aircraft__speed - value) > 0.0000001) __Aircraft__speed = value;
+			}
+		}
+		private string __Aircraft__flight_phase
+			 = default(string);
+		public string Aircraft__flight_phase { 
+			get { return __Aircraft__flight_phase; }
+			set{
+				if(__Aircraft__flight_phase != value) __Aircraft__flight_phase = value;
+			}
+		}
+		private string __Brake__parking_brake
+			 = default(string);
+		public string Brake__parking_brake { 
+			get { return __Brake__parking_brake; }
+			set{
+				if(__Brake__parking_brake != value) __Brake__parking_brake = value;
 			}
 		}
 		private double __Propeller__diameter
@@ -56,6 +80,46 @@ namespace cessna_digital_twin {
 			get { return __Propeller__diameter; }
 			set{
 				if(System.Math.Abs(__Propeller__diameter - value) > 0.0000001) __Propeller__diameter = value;
+			}
+		}
+		private double __Propeller__thrust
+			 = default(double);
+		public double Propeller__thrust { 
+			get { return __Propeller__thrust; }
+			set{
+				if(System.Math.Abs(__Propeller__thrust - value) > 0.0000001) __Propeller__thrust = value;
+			}
+		}
+		private double __Propeller__thrust_coefficient
+			 = default(double);
+		public double Propeller__thrust_coefficient { 
+			get { return __Propeller__thrust_coefficient; }
+			set{
+				if(System.Math.Abs(__Propeller__thrust_coefficient - value) > 0.0000001) __Propeller__thrust_coefficient = value;
+			}
+		}
+		private double __Propeller__thrust_coefficient_slope
+			 = default(double);
+		internal double Propeller__thrust_coefficient_slope { 
+			get { return __Propeller__thrust_coefficient_slope; }
+			set{
+				if(System.Math.Abs(__Propeller__thrust_coefficient_slope - value) > 0.0000001) __Propeller__thrust_coefficient_slope = value;
+			}
+		}
+		private double __Propeller__thrust_coefficient_constant
+			 = 0.1;
+		internal double Propeller__thrust_coefficient_constant { 
+			get { return __Propeller__thrust_coefficient_constant; }
+			set{
+				if(System.Math.Abs(__Propeller__thrust_coefficient_constant - value) > 0.0000001) __Propeller__thrust_coefficient_constant = value;
+			}
+		}
+		private double __Propeller__thrust_coefficient_speed_constant
+			 = 25.0;
+		internal double Propeller__thrust_coefficient_speed_constant { 
+			get { return __Propeller__thrust_coefficient_speed_constant; }
+			set{
+				if(System.Math.Abs(__Propeller__thrust_coefficient_speed_constant - value) > 0.0000001) __Propeller__thrust_coefficient_speed_constant = value;
 			}
 		}
 		private double __Engine__oil
@@ -132,7 +196,7 @@ namespace cessna_digital_twin {
 		}
 		private double __Engine__power_coefficient
 			 = default(double);
-		public double Engine__power_coefficient { 
+		internal double Engine__power_coefficient { 
 			get { return __Engine__power_coefficient; }
 			set{
 				if(System.Math.Abs(__Engine__power_coefficient - value) > 0.0000001) __Engine__power_coefficient = value;
@@ -338,12 +402,36 @@ namespace cessna_digital_twin {
 				if(__TireNoseWheel__inflation_max != value) __TireNoseWheel__inflation_max = value;
 			}
 		}
-		private string __Brake__parking_brake
-			 = default(string);
-		public string Brake__parking_brake { 
-			get { return __Brake__parking_brake; }
+		private int __Tire__number_of_wheels
+			 = 3;
+		internal int Tire__number_of_wheels { 
+			get { return __Tire__number_of_wheels; }
 			set{
-				if(__Brake__parking_brake != value) __Brake__parking_brake = value;
+				if(__Tire__number_of_wheels != value) __Tire__number_of_wheels = value;
+			}
+		}
+		private double __Tire__wheel_radius
+			 = 0.075;
+		internal double Tire__wheel_radius { 
+			get { return __Tire__wheel_radius; }
+			set{
+				if(System.Math.Abs(__Tire__wheel_radius - value) > 0.0000001) __Tire__wheel_radius = value;
+			}
+		}
+		private double __Tire__friction_force
+			 = default(double);
+		public double Tire__friction_force { 
+			get { return __Tire__friction_force; }
+			set{
+				if(System.Math.Abs(__Tire__friction_force - value) > 0.0000001) __Tire__friction_force = value;
+			}
+		}
+		private double __Tire__roll_coefficient
+			 = 0.0015;
+		internal double Tire__roll_coefficient { 
+			get { return __Tire__roll_coefficient; }
+			set{
+				if(System.Math.Abs(__Tire__roll_coefficient - value) > 0.0000001) __Tire__roll_coefficient = value;
 			}
 		}
 		private string __CIP__master_switch
@@ -362,16 +450,15 @@ namespace cessna_digital_twin {
 			double y_spawn = agentlayer.Get_spawn_y_coord();
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget126_3063 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget132_3237 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object126_3063 = this;
+				var _object132_3237 = this;
 				
-				_AgentLayer._AircraftEnvironment.PosAt(_object126_3063, 
-					_taget126_3063.Item1, _taget126_3063.Item2
+				_AgentLayer._AircraftEnvironment.PosAt(_object132_3237, 
+					_taget132_3237.Item1, _taget132_3237.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
-			Callsign = "Cessna" + _Random.Next(10000);
 			Longitude = this.Position.X;
 			Latitude = this.Position.Y
 			;}
@@ -387,10 +474,63 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void initialize_AircraftCharacteristics() 
+		{
+			{
+			Aircraft__callsign = "Cessna" + _Random.Next(10000)
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public void initialize_AircraftPhysics() 
 		{
 			{
-			Physics__speed = 0.0
+			Aircraft__speed = 0.0;
+			Aircraft__flight_phase = "on-ground"
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void initialize_Brake() 
+		{
+			{
+			Brake__parking_brake = "SET"
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public double Get_Propeller__thrust_coefficient() 
+		{
+			{
+			if(Aircraft__speed > Propeller__thrust_coefficient_speed_constant) {
+							{
+							Propeller__thrust_coefficient = Propeller__thrust_coefficient_slope * (Aircraft__speed - Propeller__thrust_coefficient_speed_constant) + Propeller__thrust_coefficient_constant
+							;}
+					;} else {
+							{
+							Propeller__thrust_coefficient = Propeller__thrust_coefficient_constant
+							;}
+						;};
+			return Propeller__thrust_coefficient
+			;}
+			return default(double);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void initialize_Propeller() 
+		{
+			{
+			Propeller__thrust = 0.0;
+			Propeller__thrust_coefficient_slope = -0.002
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void update_Propeller() 
+		{
+			{
+			Propeller__thrust_coefficient = Get_Propeller__thrust_coefficient();
+			Propeller__thrust = Propeller__thrust_coefficient * agentlayer.Get_Weather__density()
+			 * Mars.Components.Common.Math.Pow((Engine__RPM / 60), 2) * Mars.Components.Common.Math.Pow(Propeller__diameter, 4)
 			;}
 			return;
 		}
@@ -398,9 +538,9 @@ namespace cessna_digital_twin {
 		public double Get_Engine__power_coefficient() 
 		{
 			{
-			if(Physics__speed > Engine__power_coefficient_speed_constant) {
+			if(Aircraft__speed > Engine__power_coefficient_speed_constant) {
 							{
-							Engine__power_coefficient = Engine__power_coefficient_slope * (Physics__speed - Engine__power_coefficient_speed_constant) + Engine__power_coefficient_constant
+							Engine__power_coefficient = Engine__power_coefficient_slope * (Aircraft__speed - Engine__power_coefficient_speed_constant) + Engine__power_coefficient_constant
 							;}
 					;} else {
 							{
@@ -534,15 +674,25 @@ namespace cessna_digital_twin {
 							{
 							TireNoseWheel__inflation = _Random.Next(TireNoseWheel__inflation_max)
 							;}
-						;}
+						;};
+			Tire__friction_force = 0
 			;}
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void initialize_Brake() 
+		public void update_Tire() 
 		{
 			{
-			Brake__parking_brake = "SET"
+			if(Equals(Aircraft__flight_phase, "on-ground")) {
+							{
+							Tire__friction_force = Tire__number_of_wheels * Aircraft__weight * agentlayer.Get_gravity()
+							 * Tire__roll_coefficient / Tire__wheel_radius
+							;}
+					;} else {
+							{
+							Tire__friction_force = 0
+							;}
+						;}
 			;}
 			return;
 		}
@@ -566,7 +716,7 @@ namespace cessna_digital_twin {
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public string Get_callsign() {
 			{
-			return Callsign
+			return Aircraft__callsign
 					;
 			}
 			
@@ -755,12 +905,14 @@ namespace cessna_digital_twin {
 			_executionFrequency = freq;
 			{
 			initialize_general_values();
-			initialize_AircraftPhysics();
+			initialize_AircraftCharacteristics();
 			initialize_RightWingTank();
 			initialize_LeftWingTank();
 			initialize_Tire();
-			initialize_Engine();
 			initialize_Brake();
+			initialize_Engine();
+			initialize_Propeller();
+			initialize_AircraftPhysics();
 			initialize_CIP()
 			;}
 		}
@@ -770,7 +922,9 @@ namespace cessna_digital_twin {
 			{ if (!_isAlive) return; }
 			{
 			update_general_values();
-			update_Engine()
+			update_Engine();
+			update_Propeller();
+			update_Tire()
 			;}
 		}
 		

@@ -54,6 +54,14 @@ namespace cessna_digital_twin {
 				if(System.Math.Abs(__Weather__density - value) > 0.0000001) __Weather__density = value;
 			}
 		}
+		private double __gravity
+			 = 9.81;
+		internal double gravity { 
+			get { return __gravity; }
+			set{
+				if(System.Math.Abs(__gravity - value) > 0.0000001) __gravity = value;
+			}
+		}
 		private double __spawn_xcor
 			 = 9.4987928;
 		internal double spawn_xcor { 
@@ -115,7 +123,17 @@ namespace cessna_digital_twin {
 		{
 			{
 			return Weather__density
-			;}
+					;
+			}
+			return default(double);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public double Get_gravity() 
+		{
+			{
+			return gravity
+					;
+			}
 			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]

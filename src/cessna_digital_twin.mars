@@ -6,11 +6,13 @@ layer AgentLayer as agentlayer
 {
 	
 	//Weather Values TODO: Think about another solution for weather
-	var Weather__density : real = 1.225 //kg/m^3 TODO: Add height dependent density
-	def Get_Weather__density()
-	{
-		return Weather__density
-	}
+	var Weather__density : real = 1.225 // kg/m^3 TODO: Add height dependent density
+	def Get_Weather__density() => return Weather__density
+	
+	// Physics Values
+	var gravity : real = 9.81 // m/s^2
+	def Get_gravity() => return gravity
+	
 	
 	
 	//-----Spawn Handling-----
@@ -93,12 +95,14 @@ agent Aircraft on AgentLayer{
 	initialize
 	{
 		initialize_general_values()
-		initialize_AircraftPhysics()
+		initialize_AircraftCharacteristics()
 		initialize_RightWingTank()
 		initialize_LeftWingTank()
 		initialize_Tire()
-		initialize_Engine()
 		initialize_Brake()
+		initialize_Engine()
+		initialize_Propeller()
+		initialize_AircraftPhysics()
 		initialize_CIP()
 	}
 	
@@ -106,14 +110,16 @@ agent Aircraft on AgentLayer{
 	{
 		update_general_values()
 		update_Engine()
+		update_Propeller()
+		update_Tire()
 	}
 	
 	
 	
-	// -----General Values and Functions-----
+	// -----General Values and Functions (Settings and Doc)-----
 	observe var Latitude : real
 	observe var Longitude : real
-	observe var Callsign : string // IDENTIFIER!
+	
 	
 	// TODO: Think about this for documentation
 	//observe var passive_activity: string // activity by pilot is more precise
@@ -125,7 +131,6 @@ agent Aircraft on AgentLayer{
 		var y_spawn = agentlayer.Get_spawn_y_coord()
 		pos at #(x_spawn, y_spawn)
 		
-		Callsign = "Cessna" + random(10000) //TODO: Make sure, Callsign is Unique!
 		Longitude = xcor
 		Latitude = ycor
 	}
@@ -137,19 +142,77 @@ agent Aircraft on AgentLayer{
 	}
 	
 	passive Get_position() => return #(xcor, ycor) // for returning the position of the aircraft
-	passive Get_callsign() => return Callsign
+	
+	
+	//-----Aircraft Characteristics-----
+	observe var Aircraft__callsign : string // IDENTIFIER!
+	var Aircraft__weight : real = 725.0 // kg
+	
+	passive Get_callsign() => return Aircraft__callsign
+	
+	def initialize_AircraftCharacteristics()
+	{
+		Aircraft__callsign = "Cessna" + random(10000) //TODO: Make sure, Callsign is Unique!
+	}
 	
 	
 	//-----Aircraft(Movement and Physics)-----
-	observe var Physics__speed : real //TODO: Think about cleaner naming scheme!!!!
-	
+	observe var Aircraft__speed : real 
+	observe var Aircraft__flight_phase : string // values "in-air" or "on-ground"
 	def initialize_AircraftPhysics()
 	{
-		Physics__speed = 0.0
+		Aircraft__speed = 0.0
+		Aircraft__flight_phase = "on-ground"
 	}
+		
+		
+	//-----Brake System-----
+	observe var Brake__parking_brake : string // "SET" or "OFF"
+	
+	//TODO: Add brake_health dependency on Tire inflation
+	
+	def initialize_Brake()
+	{
+		Brake__parking_brake = "SET" 
+	}
+	
 	
 	// -----Propeller-----
 	var Propeller__diameter : real = 1.75 // meters
+	observe var Propeller__thrust : real // newton
+	
+	// Thrust Coefficient (See Excel "Calculation Table")
+	observe var Propeller__thrust_coefficient : real
+	var Propeller__thrust_coefficient_slope : real // TODO: has to be initialized, since negative and Mars does not allow direct negative number assignment
+	var Propeller__thrust_coefficient_constant : real = 0.1
+	var Propeller__thrust_coefficient_speed_constant : real = 25.0 //Up to which speed coefficient is constant
+	def Get_Propeller__thrust_coefficient()
+	{
+		if (Aircraft__speed > Propeller__thrust_coefficient_speed_constant)
+		{
+			Propeller__thrust_coefficient = Propeller__thrust_coefficient_slope * (Aircraft__speed - Propeller__thrust_coefficient_speed_constant) + Propeller__thrust_coefficient_constant
+		}
+		else
+		{
+			Propeller__thrust_coefficient = Propeller__thrust_coefficient_constant
+		}
+		return Propeller__thrust_coefficient
+	}
+	
+	
+	def initialize_Propeller()
+	{
+		Propeller__thrust = 0.0
+		
+		Propeller__thrust_coefficient_slope = -0.002
+	}
+	
+	def update_Propeller()
+	{
+		// Propeller thrust calculation
+		Propeller__thrust_coefficient = Get_Propeller__thrust_coefficient()
+		Propeller__thrust = Propeller__thrust_coefficient * agentlayer.Get_Weather__density() * (Engine__RPM/60)**2 * Propeller__diameter**4
+	}
 	
 	// -----Engine-----
 	observe var Engine__oil : real  // litre
@@ -162,18 +225,18 @@ agent Aircraft on AgentLayer{
 	observe var Engine__RPM : real  //calculated via formula with power coefficient
 	observe var Engine__running : bool
 	
-	//Power Efficient Variable
+	//Power Coefficient (See Excel "Calculation Table")
 	//Note: assumption cp = f(V/(n*d)) with n*d=1
-	observe var Engine__power_coefficient : real
+	var Engine__power_coefficient : real
 	var Engine__power_coefficient_slope : real // TODO: has to be initialized, since negative and Mars does not allow direct negative number assignment
 	var Engine__power_coefficient_constant : real = 0.05
 	var Engine__power_coefficient_speed_constant : real = 30.0 //Up to which speed coefficient is constant
 	
 	def Get_Engine__power_coefficient()
 	{
-		if (Physics__speed > Engine__power_coefficient_speed_constant)
+		if (Aircraft__speed > Engine__power_coefficient_speed_constant)
 		{
-			Engine__power_coefficient = Engine__power_coefficient_slope * (Physics__speed - Engine__power_coefficient_speed_constant) + Engine__power_coefficient_constant
+			Engine__power_coefficient = Engine__power_coefficient_slope * (Aircraft__speed - Engine__power_coefficient_speed_constant) + Engine__power_coefficient_constant
 		}
 		else
 		{
@@ -181,8 +244,7 @@ agent Aircraft on AgentLayer{
 		}
 		return Engine__power_coefficient
 	}
-	
-	
+
 	//Settings
 	var Engine__oil_max : integer = 6
 	var Engine__oil_normal : integer = 5
@@ -243,11 +305,10 @@ agent Aircraft on AgentLayer{
 		
 		if (Engine__running === true)
 		{
-			//Engine RPM Calculation TODO: Add speed dependency (and more..?), since RPM changes with aircraft speed see paper
+			//Engine RPM Calculation
 			Engine__power = Engine__power_max * Engine__throttle
 			Engine__power_coefficient = Get_Engine__power_coefficient()
 			Engine__RPM = (Engine__power/(Engine__power_coefficient*agentlayer.Get_Weather__density()*Propeller__diameter**5))**0.3333 * 60 // FACTOR 60 TO CONVERT INTO PER MINUTE
-			//Engine__RPM = Engine__RPM + random(21) - 10 // for random deviations
 			
 			//Engine Oil TODO: Make dependent on engine__oil_pump and possible leakage
 			var temp_Engine__oil_pressure_normal_half = (Engine__oil_pressure_normal_max + Engine__oil_pressure_normal_min) / 2
@@ -309,10 +370,16 @@ agent Aircraft on AgentLayer{
 	var TireRightMainWheel__inflation_max : integer = 145000
 	var TireLeftMainWheel__inflation_max : integer = 145000
 	var TireNoseWheel__inflation_max : integer = 207000
+	var Tire__number_of_wheels : integer = 3
+	var Tire__wheel_radius : real = 0.075 //meter; neglecting non equal size of nose and main wheels
 	
-	// 1% Chance that a Tire is not fully inflated
+	// Friction Calculation (See Excel "Calculation table")
+	observe var Tire__friction_force : real //newton
+	var Tire__roll_coefficient : real = 0.0015 //meters
+	
 	def initialize_Tire()
 	{
+		//Inflation with 1% Chance that a Tire is not fully inflated
 		if (random(100) <= 99)
 		{
 			TireRightMainWheel__inflation = TireRightMainWheel__inflation_max
@@ -339,20 +406,26 @@ agent Aircraft on AgentLayer{
 		{
 			TireNoseWheel__inflation = random(TireNoseWheel__inflation_max)
 		}
+		
+		Tire__friction_force = 0
+	}
+	
+	def update_Tire()
+	{
+		//TODO: Add friction dependency on Tire inflation
+		if (Aircraft__flight_phase === "on-ground")
+		{
+			Tire__friction_force = Tire__number_of_wheels * Aircraft__weight * agentlayer.Get_gravity() * Tire__roll_coefficient / Tire__wheel_radius
+		}
+		else
+		{
+			Tire__friction_force = 0
+		}		
 	}
 	
 	passive Get_TireRightMainWheel__inflation() => return TireRightMainWheel__inflation
 	passive Get_TireLeftMainWheel__inflation() => return TireLeftMainWheel__inflation
 	passive Get_TireNoseWheel__inflation() => return TireNoseWheel__inflation
-	
-	
-	//-----Brake System-----
-	observe var Brake__parking_brake : string // "SET" or "OFF"
-	
-	def initialize_Brake()
-	{
-		Brake__parking_brake = "SET" 
-	}
 	
 	
 	
@@ -435,7 +508,7 @@ agent Pilot on AgentLayer{
 		myAircraft = nearest Aircraft // assign aircraft only ones
 		myAircraft_callsign = myAircraft.Get_callsign() // save aircraft callsign --> IDENTIFIER!
 		update_general_values() // so first row of csv is not empty
-		state = "PreflightInspection" // first state so far
+		state = "PreflightInspection" // always first state so far
 		
 		// Pilot attributes and share them
 		age = age_min + random((age_max - age_min) + 1)
