@@ -50,6 +50,38 @@ namespace cessna_digital_twin {
 				if(System.Math.Abs(__Aircraft__weight - value) > 0.0000001) __Aircraft__weight = value;
 			}
 		}
+		private double __Aircraft__wing_area
+			 = 15.0;
+		internal double Aircraft__wing_area { 
+			get { return __Aircraft__wing_area; }
+			set{
+				if(System.Math.Abs(__Aircraft__wing_area - value) > 0.0000001) __Aircraft__wing_area = value;
+			}
+		}
+		private double __Aircraft__wing_span
+			 = 10.1;
+		internal double Aircraft__wing_span { 
+			get { return __Aircraft__wing_span; }
+			set{
+				if(System.Math.Abs(__Aircraft__wing_span - value) > 0.0000001) __Aircraft__wing_span = value;
+			}
+		}
+		private double __Aircraft__stall_angle
+			 = 14.0;
+		internal double Aircraft__stall_angle { 
+			get { return __Aircraft__stall_angle; }
+			set{
+				if(System.Math.Abs(__Aircraft__stall_angle - value) > 0.0000001) __Aircraft__stall_angle = value;
+			}
+		}
+		private double __Aircraft__acceleration_x
+			 = default(double);
+		public double Aircraft__acceleration_x { 
+			get { return __Aircraft__acceleration_x; }
+			set{
+				if(System.Math.Abs(__Aircraft__acceleration_x - value) > 0.0000001) __Aircraft__acceleration_x = value;
+			}
+		}
 		private double __Aircraft__speed
 			 = default(double);
 		public double Aircraft__speed { 
@@ -58,12 +90,132 @@ namespace cessna_digital_twin {
 				if(System.Math.Abs(__Aircraft__speed - value) > 0.0000001) __Aircraft__speed = value;
 			}
 		}
+		private double __Aircraft__movement_x
+			 = default(double);
+		public double Aircraft__movement_x { 
+			get { return __Aircraft__movement_x; }
+			set{
+				if(System.Math.Abs(__Aircraft__movement_x - value) > 0.0000001) __Aircraft__movement_x = value;
+			}
+		}
+		private double __Aircraft__height
+			 = default(double);
+		public double Aircraft__height { 
+			get { return __Aircraft__height; }
+			set{
+				if(System.Math.Abs(__Aircraft__height - value) > 0.0000001) __Aircraft__height = value;
+			}
+		}
 		private string __Aircraft__flight_phase
 			 = default(string);
 		public string Aircraft__flight_phase { 
 			get { return __Aircraft__flight_phase; }
 			set{
 				if(__Aircraft__flight_phase != value) __Aircraft__flight_phase = value;
+			}
+		}
+		private double __Aircraft__angle_of_attack
+			 = default(double);
+		public double Aircraft__angle_of_attack { 
+			get { return __Aircraft__angle_of_attack; }
+			set{
+				if(System.Math.Abs(__Aircraft__angle_of_attack - value) > 0.0000001) __Aircraft__angle_of_attack = value;
+			}
+		}
+		private double __Aircraft__lift
+			 = default(double);
+		public double Aircraft__lift { 
+			get { return __Aircraft__lift; }
+			set{
+				if(System.Math.Abs(__Aircraft__lift - value) > 0.0000001) __Aircraft__lift = value;
+			}
+		}
+		private double __Aircraft__acceleration_z
+			 = default(double);
+		public double Aircraft__acceleration_z { 
+			get { return __Aircraft__acceleration_z; }
+			set{
+				if(System.Math.Abs(__Aircraft__acceleration_z - value) > 0.0000001) __Aircraft__acceleration_z = value;
+			}
+		}
+		private double __Aircraft__climb_rate
+			 = default(double);
+		public double Aircraft__climb_rate { 
+			get { return __Aircraft__climb_rate; }
+			set{
+				if(System.Math.Abs(__Aircraft__climb_rate - value) > 0.0000001) __Aircraft__climb_rate = value;
+			}
+		}
+		private double __Aircraft__height_gain
+			 = default(double);
+		public double Aircraft__height_gain { 
+			get { return __Aircraft__height_gain; }
+			set{
+				if(System.Math.Abs(__Aircraft__height_gain - value) > 0.0000001) __Aircraft__height_gain = value;
+			}
+		}
+		private double __Aircraft__drag
+			 = default(double);
+		public double Aircraft__drag { 
+			get { return __Aircraft__drag; }
+			set{
+				if(System.Math.Abs(__Aircraft__drag - value) > 0.0000001) __Aircraft__drag = value;
+			}
+		}
+		private double __Aircraft__lift_coefficient
+			 = default(double);
+		internal double Aircraft__lift_coefficient { 
+			get { return __Aircraft__lift_coefficient; }
+			set{
+				if(System.Math.Abs(__Aircraft__lift_coefficient - value) > 0.0000001) __Aircraft__lift_coefficient = value;
+			}
+		}
+		private double __Aircraft__lift_coefficient_slope
+			 = 4.9;
+		internal double Aircraft__lift_coefficient_slope { 
+			get { return __Aircraft__lift_coefficient_slope; }
+			set{
+				if(System.Math.Abs(__Aircraft__lift_coefficient_slope - value) > 0.0000001) __Aircraft__lift_coefficient_slope = value;
+			}
+		}
+		private double __Aircraft__zero_lift_angle
+			 = default(double);
+		internal double Aircraft__zero_lift_angle { 
+			get { return __Aircraft__zero_lift_angle; }
+			set{
+				if(System.Math.Abs(__Aircraft__zero_lift_angle - value) > 0.0000001) __Aircraft__zero_lift_angle = value;
+			}
+		}
+		private double __Aircraft__total_stall_angle
+			 = 18.0;
+		internal double Aircraft__total_stall_angle { 
+			get { return __Aircraft__total_stall_angle; }
+			set{
+				if(System.Math.Abs(__Aircraft__total_stall_angle - value) > 0.0000001) __Aircraft__total_stall_angle = value;
+			}
+		}
+		private double __Aircraft__drag_coefficient
+			 = default(double);
+		public double Aircraft__drag_coefficient { 
+			get { return __Aircraft__drag_coefficient; }
+			set{
+				if(System.Math.Abs(__Aircraft__drag_coefficient - value) > 0.0000001) __Aircraft__drag_coefficient = value;
+			}
+		}
+		private double __Aircraft__zero_lift_drag_coefficient
+			 = 0.03;
+		internal double Aircraft__zero_lift_drag_coefficient { 
+			get { return __Aircraft__zero_lift_drag_coefficient; }
+			set{
+				if(System.Math.Abs(__Aircraft__zero_lift_drag_coefficient - value) > 0.0000001) __Aircraft__zero_lift_drag_coefficient = value;
+			}
+		}
+		private double __Aircraft__oswald_factor
+			 = 0.7;
+		internal double Aircraft__oswald_factor { 
+			get { return __Aircraft__oswald_factor; }
+			set{
+				if(System.Math.Abs(__Aircraft__oswald_factor - value) > 0.0000001) __Aircraft__oswald_factor = value;
 			}
 		}
 		private string __Brake__parking_brake
@@ -450,12 +602,12 @@ namespace cessna_digital_twin {
 			double y_spawn = agentlayer.Get_spawn_y_coord();
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget132_3237 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget133_3265 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object132_3237 = this;
+				var _object133_3265 = this;
 				
-				_AgentLayer._AircraftEnvironment.PosAt(_object132_3237, 
-					_taget132_3237.Item1, _taget132_3237.Item2
+				_AgentLayer._AircraftEnvironment.PosAt(_object133_3265, 
+					_taget133_3265.Item1, _taget133_3265.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
@@ -474,6 +626,14 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public double Get_Aircraft__aspect_ratio() 
+		{
+			{
+			return Mars.Components.Common.Math.Pow(Aircraft__wing_span, 2) / Aircraft__wing_area
+			;}
+			return default(double);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public void initialize_AircraftCharacteristics() 
 		{
 			{
@@ -482,11 +642,73 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public double Get_Aircraft__lift_coefficient() 
+		{
+			{
+			if(Aircraft__angle_of_attack <= Aircraft__stall_angle) {
+							{
+							Aircraft__lift_coefficient = (Aircraft__angle_of_attack - Aircraft__zero_lift_angle) * Mars.Components.Common.Constants.Pi / 180 * Aircraft__lift_coefficient_slope
+							;}
+					;} else {
+							if(Aircraft__angle_of_attack >= Aircraft__total_stall_angle) {
+											{
+											Aircraft__lift_coefficient = 0.0
+											;}
+									;} else {
+											{
+											Aircraft__lift_coefficient = (2 * Aircraft__zero_lift_angle - Aircraft__angle_of_attack) * Mars.Components.Common.Constants.Pi / 180 * Aircraft__lift_coefficient_slope
+											;}
+										;}
+						;};
+			return Aircraft__lift_coefficient
+			;}
+			return default(double);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public double Get_Aircraft__drag_coefficient() 
+		{
+			{
+			Aircraft__drag_coefficient = Aircraft__zero_lift_drag_coefficient + Mars.Components.Common.Math.Pow(Aircraft__lift_coefficient, 2) / (Aircraft__oswald_factor * Mars.Components.Common.Constants.Pi * Get_Aircraft__aspect_ratio());
+			return Aircraft__drag_coefficient
+			;}
+			return default(double);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public void initialize_AircraftPhysics() 
 		{
 			{
+			Aircraft__acceleration_x = 0.0;
 			Aircraft__speed = 0.0;
-			Aircraft__flight_phase = "on-ground"
+			Aircraft__height = 0.0;
+			Aircraft__flight_phase = "on-ground";
+			Aircraft__lift = 0.0;
+			Aircraft__acceleration_z = 0.0;
+			Aircraft__climb_rate = 0.0;
+			Aircraft__angle_of_attack = 0.0;
+			Aircraft__drag = 0.0;
+			Aircraft__zero_lift_angle = -4.0
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void update_AircraftPhysics() 
+		{
+			{
+			if(Aircraft__height > 0) {
+							{
+							Aircraft__flight_phase = "in-air"
+							;}
+					;} else {
+							{
+							Aircraft__flight_phase = "on-ground"
+							;}
+						;};
+			Aircraft__lift_coefficient = Get_Aircraft__lift_coefficient();
+			Aircraft__lift = Aircraft__lift_coefficient * agentlayer.Get_Weather__density()
+			 * Mars.Components.Common.Math.Pow(Aircraft__speed, 2) * Aircraft__wing_area / 2;
+			Aircraft__drag_coefficient = Get_Aircraft__drag_coefficient();
+			Aircraft__drag = Aircraft__drag_coefficient * agentlayer.Get_Weather__density()
+			 * Mars.Components.Common.Math.Pow(Aircraft__speed, 2) * Aircraft__wing_area / 2
 			;}
 			return;
 		}
@@ -924,7 +1146,8 @@ namespace cessna_digital_twin {
 			update_general_values();
 			update_Engine();
 			update_Propeller();
-			update_Tire()
+			update_Tire();
+			update_AircraftPhysics()
 			;}
 		}
 		

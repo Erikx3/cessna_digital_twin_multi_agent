@@ -112,6 +112,7 @@ agent Aircraft on AgentLayer{
 		update_Engine()
 		update_Propeller()
 		update_Tire()
+		update_AircraftPhysics()
 	}
 	
 	
@@ -147,27 +148,114 @@ agent Aircraft on AgentLayer{
 	//-----Aircraft Characteristics-----
 	observe var Aircraft__callsign : string // IDENTIFIER!
 	var Aircraft__weight : real = 725.0 // kg
+	var Aircraft__wing_area : real = 15.0 // m^2
+	var Aircraft__wing_span : real = 10.1 // m
+	var Aircraft__stall_angle : real = 14.0 // deg
 	
-	passive Get_callsign() => return Aircraft__callsign
+	def Get_Aircraft__aspect_ratio()
+	{
+		return Aircraft__wing_span**2 / Aircraft__wing_area
+	}	
 	
 	def initialize_AircraftCharacteristics()
 	{
 		Aircraft__callsign = "Cessna" + random(10000) //TODO: Make sure, Callsign is Unique!
 	}
 	
+	passive Get_callsign() => return Aircraft__callsign
 	
 	//-----Aircraft(Movement and Physics)-----
-	observe var Aircraft__speed : real 
+	observe var Aircraft__acceleration_x : real // m/s^2 with x in direction of plane heading
+	observe var Aircraft__speed : real // m/s
+	observe var Aircraft__movement_x : real // m
+	//observe var Aircraft__heading : real // TODO: Think about handling of aircraft heading
+	
+	observe var Aircraft__height : real // m
 	observe var Aircraft__flight_phase : string // values "in-air" or "on-ground"
-	def initialize_AircraftPhysics()
+	observe var Aircraft__angle_of_attack : real // degree
+	observe var Aircraft__lift : real //newton
+	observe var Aircraft__acceleration_z : real // m/s^2 with z pointing upwards
+	observe var Aircraft__climb_rate : real // m/s
+	observe var Aircraft__height_gain : real // m
+	
+	observe var Aircraft__drag : real // newton
+	
+	//lift coefficient calculation (See Excel "Calculation_Table")
+	var Aircraft__lift_coefficient : real
+	var Aircraft__lift_coefficient_slope : real = 4.9
+	var Aircraft__zero_lift_angle : real 
+	var Aircraft__total_stall_angle : real = 18.0 // deg, only for calculation purpose
+	def Get_Aircraft__lift_coefficient()
 	{
-		Aircraft__speed = 0.0
-		Aircraft__flight_phase = "on-ground"
+		if (Aircraft__angle_of_attack <= Aircraft__stall_angle)
+		{
+			Aircraft__lift_coefficient = (Aircraft__angle_of_attack - Aircraft__zero_lift_angle) * Constants.Pi / 180 * Aircraft__lift_coefficient_slope
+		}
+		else if (Aircraft__angle_of_attack >= Aircraft__total_stall_angle)
+		{
+			Aircraft__lift_coefficient = 0.0
+		}
+		else
+		{
+			Aircraft__lift_coefficient = (2 * Aircraft__zero_lift_angle - Aircraft__angle_of_attack) * Constants.Pi / 180 * Aircraft__lift_coefficient_slope
+		}
+		return Aircraft__lift_coefficient
+	}
+	
+	//drag coefficient calculation (See Excel "Calculation_Table")
+	observe var Aircraft__drag_coefficient : real
+	var Aircraft__zero_lift_drag_coefficient : real = 0.03
+	var Aircraft__oswald_factor : real = 0.7
+	def Get_Aircraft__drag_coefficient()
+	{
+		Aircraft__drag_coefficient = Aircraft__zero_lift_drag_coefficient + Aircraft__lift_coefficient**2 /(Aircraft__oswald_factor * Constants.Pi * Get_Aircraft__aspect_ratio())
+		return	Aircraft__drag_coefficient
 	}
 		
+	def initialize_AircraftPhysics()
+	{
+		Aircraft__acceleration_x = 0.0
+		Aircraft__speed = 0.0
+		Aircraft__height = 0.0
+		Aircraft__flight_phase = "on-ground"
+		Aircraft__lift = 0.0
+		Aircraft__acceleration_z = 0.0
+		Aircraft__climb_rate = 0.0
+		Aircraft__angle_of_attack = 0.0
+		Aircraft__drag = 0.0
+		
+		Aircraft__zero_lift_angle = -4.0
+	}
+		
+	def update_AircraftPhysics()
+	{
+		// flight state
+		if (Aircraft__height > 0)
+		{
+			Aircraft__flight_phase = "in-air"
+		}
+		else
+		{
+			Aircraft__flight_phase = "on-ground"
+		}
+		
+		// Lift calculation
+		Aircraft__lift_coefficient = Get_Aircraft__lift_coefficient()
+		Aircraft__lift = Aircraft__lift_coefficient * agentlayer.Get_Weather__density() * Aircraft__speed**2 * Aircraft__wing_area / 2
+		//TODO: Add climb_rate, acceleration, height_gain etc.
+		
+		// Drag calculation
+		Aircraft__drag_coefficient = Get_Aircraft__drag_coefficient()
+		Aircraft__drag = Aircraft__drag_coefficient * agentlayer.Get_Weather__density() * Aircraft__speed**2 * Aircraft__wing_area / 2
+	}
 		
 	//-----Brake System-----
 	observe var Brake__parking_brake : string // "SET" or "OFF"
+	
+	//TODO: Brake system
+	//observe var Brake__application : real // value No brakes applie 0...1 Full Brakes applied
+	//observe var Brake__deceleration : real // m/s^2
+	//var Brake__deceleration_max : real = 4 // m/s^2
 	
 	//TODO: Add brake_health dependency on Tire inflation
 	
