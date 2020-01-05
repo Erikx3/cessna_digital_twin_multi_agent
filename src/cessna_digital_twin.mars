@@ -44,17 +44,17 @@ layer AgentLayer as agentlayer
 	var message_type = ""
 	// either information is at first place "0" or contains multiple information as e.g. flight_path
 	var message_information_path : List<Tuple<real, real>>
-	var message_information_dict : Map<string, Object>
+	var message_information_heading : integer
 	
 	
 	def Listen_receiver_on_frequency() => return receiver
 	def Listen_sender_identifier_on_frequency() => return sender_identifier
 	def Listen_message_type_on_frequency() => return message_type
 	def Listen_message_information_path_on_frequency() => return message_information_path 
-	def Listen_message_information_dict() => return message_information_dict
+	def Listen_message_information_heading() => return message_information_heading
 	
 	
-	def Communicate_taxipath_on_frequency(_sender_identifier : string, _receiver : string, _message_type : string, _message_information_path : List<Tuple<real, real>>)
+	def Communicate_answer_on_frequency(_sender_identifier : string, _receiver : string, _message_type : string, _message_information_path : List<Tuple<real, real>>, _message_information_heading : integer)
 	{
 		if (message_on_frequency === false)
 		{
@@ -62,6 +62,7 @@ layer AgentLayer as agentlayer
 			receiver = _receiver
 			message_type = _message_type
 			message_information_path  = _message_information_path 
+			message_information_heading = _message_information_heading
 			
 			message_on_frequency = true
 		}		
@@ -155,7 +156,7 @@ agent Aircraft on AgentLayer{
 	
 	//-----Aircraft Characteristics-----
 	observe var Aircraft__callsign : string // IDENTIFIER!
-	var Aircraft__weight : real = 725.0 // kg
+	var Aircraft__mass : real = 725.0 // kg
 	var Aircraft__wing_area : real = 15.0 // m^2
 	var Aircraft__wing_span : real = 10.1 // m
 	var Aircraft__stall_angle : real = 14.0 // deg
@@ -174,7 +175,7 @@ agent Aircraft on AgentLayer{
 	
 	//-----Aircraft(Movement and Physics)-----
 	observe var Aircraft__acceleration_x : real // m/s^2 with x in direction of plane heading
-	observe var Aircraft__speed : real // m/s
+	observe var Aircraft__speed_x : real // m/s
 	var Aircraft__movement_x : real // m
 	var Aircraft__heading_bearing : integer //heading integer, usage depends on Aircraft_heading_mode
 	var Aircraft__heading_coordinates : Tuple<real, real> //heading tuple coordinate
@@ -185,7 +186,6 @@ agent Aircraft on AgentLayer{
 	observe var Aircraft__lift : real //newton
 	observe var Aircraft__acceleration_z : real // m/s^2 with z pointing upwards
 	observe var Aircraft__climb_rate : real // m/s
-	observe var Aircraft__height_gain : real // m
 	
 	observe var Aircraft__drag : real // newton
 	
@@ -213,7 +213,7 @@ agent Aircraft on AgentLayer{
 	
 	//drag coefficient calculation (See Excel "Calculation_Table")
 	observe var Aircraft__drag_coefficient : real
-	var Aircraft__zero_lift_drag_coefficient : real = 0.03
+	var Aircraft__zero_lift_drag_coefficient : real = 0.04
 	var Aircraft__oswald_factor : real = 0.7
 	def Get_Aircraft__drag_coefficient()
 	{
@@ -225,7 +225,7 @@ agent Aircraft on AgentLayer{
 	def initialize_AircraftPhysics()
 	{
 		Aircraft__acceleration_x = 0.0
-		Aircraft__speed = 0.0
+		Aircraft__speed_x = 0.0
 		Aircraft__height = 0.0
 		Aircraft__flight_phase = "on-ground"
 		Aircraft__lift = 0.0
@@ -240,6 +240,8 @@ agent Aircraft on AgentLayer{
 	def update_AircraftPhysics()
 	{
 		//Note: remember, Tick size is ONE second!
+		//help variable
+		var Aircraft__AoA_rad = Aircraft__angle_of_attack * Constants.Pi / 180
 		// flight state
 		if (Aircraft__height > 0)
 		{
@@ -252,22 +254,31 @@ agent Aircraft on AgentLayer{
 		
 		// Lift calculation
 		Aircraft__lift_coefficient = Get_Aircraft__lift_coefficient()
-		Aircraft__lift = Aircraft__lift_coefficient * agentlayer.Get_Weather__density() * Aircraft__speed**2 * Aircraft__wing_area / 2
-		//TODO: Add climb_rate, acceleration, height_gain etc.
+		Aircraft__lift = Aircraft__lift_coefficient * agentlayer.Get_Weather__density() * Aircraft__speed_x**2 * Aircraft__wing_area / 2
+		
+		//Z Movement calculation
+		Aircraft__acceleration_z = ((Propeller__thrust - Tire__friction_force - Aircraft__drag) * Math.Sin(Aircraft__AoA_rad) + Aircraft__lift * Math.Cos(Aircraft__AoA_rad) - Aircraft__mass * agentlayer.Get_gravity()) / Aircraft__mass 
+		Aircraft__climb_rate = Aircraft__climb_rate + Aircraft__acceleration_z
+		Aircraft__height = Aircraft__height + Aircraft__climb_rate
+		
+		if (Aircraft__height <= 0) //redundancy and deny negative values
+		{
+			Aircraft__climb_rate = 0
+			Aircraft__height = 0
+		}
 		
 		// Drag calculation
 		Aircraft__drag_coefficient = Get_Aircraft__drag_coefficient()
-		Aircraft__drag = Aircraft__drag_coefficient * agentlayer.Get_Weather__density() * Aircraft__speed**2 * Aircraft__wing_area / 2
+		Aircraft__drag = Aircraft__drag_coefficient * agentlayer.Get_Weather__density() * Aircraft__speed_x**2 * Aircraft__wing_area / 2
 	
 		//X Movement calculation
-		//TODO: Add AoA Dependency to calculation!!!!!
-		Aircraft__acceleration_x = (Propeller__thrust - Tire__friction_force - Aircraft__drag) / Aircraft__weight - Brake__deceleration
-		Aircraft__speed = Aircraft__speed + Aircraft__acceleration_x
-		if (Aircraft__speed < 0 or Brake__parking_brake === "SET")
+		Aircraft__acceleration_x = ((Propeller__thrust - Tire__friction_force - Aircraft__drag) * Math.Cos(Aircraft__AoA_rad) - Aircraft__lift * Math.Sin(Aircraft__AoA_rad)) / Aircraft__mass - Brake__deceleration
+		Aircraft__speed_x = Aircraft__speed_x + Aircraft__acceleration_x
+		if (Aircraft__speed_x < 0 or Brake__parking_brake === "SET")
 		{
-			Aircraft__speed = 0
+			Aircraft__speed_x = 0
 		}
-		Aircraft__movement_x = Aircraft__speed
+		Aircraft__movement_x = Aircraft__speed_x
 		if (Aircraft__movement_x > 0)
 		{
 			if (Aircraft__heading_mode === "COORDINATES")
@@ -287,7 +298,6 @@ agent Aircraft on AgentLayer{
 	//-----Brake System-----
 	observe var Brake__parking_brake : string // "SET" or "OFF"
 	
-	//TODO: Brake system
 	observe var Brake__application : real // value No brakes applied 0...1 Full Brakes applied
 	observe var Brake__deceleration : real // m/s^2
 	var Brake__deceleration_max : real = 4 // m/s^2
@@ -318,9 +328,9 @@ agent Aircraft on AgentLayer{
 	var Propeller__thrust_coefficient_speed_constant : real = 25.0 //Up to which speed coefficient is constant
 	def Get_Propeller__thrust_coefficient()
 	{
-		if (Aircraft__speed > Propeller__thrust_coefficient_speed_constant)
+		if (Aircraft__speed_x > Propeller__thrust_coefficient_speed_constant)
 		{
-			Propeller__thrust_coefficient = Propeller__thrust_coefficient_slope * (Aircraft__speed - Propeller__thrust_coefficient_speed_constant) + Propeller__thrust_coefficient_constant
+			Propeller__thrust_coefficient = Propeller__thrust_coefficient_slope * (Aircraft__speed_x - Propeller__thrust_coefficient_speed_constant) + Propeller__thrust_coefficient_constant
 		}
 		else
 		{
@@ -364,9 +374,9 @@ agent Aircraft on AgentLayer{
 	
 	def Get_Engine__power_coefficient()
 	{
-		if (Aircraft__speed > Engine__power_coefficient_speed_constant)
+		if (Aircraft__speed_x > Engine__power_coefficient_speed_constant)
 		{
-			Engine__power_coefficient = Engine__power_coefficient_slope * (Aircraft__speed - Engine__power_coefficient_speed_constant) + Engine__power_coefficient_constant
+			Engine__power_coefficient = Engine__power_coefficient_slope * (Aircraft__speed_x - Engine__power_coefficient_speed_constant) + Engine__power_coefficient_constant
 		}
 		else
 		{
@@ -439,6 +449,10 @@ agent Aircraft on AgentLayer{
 			Engine__power = Engine__power_max * Engine__throttle
 			Engine__power_coefficient = Get_Engine__power_coefficient()
 			Engine__RPM = (Engine__power/(Engine__power_coefficient*agentlayer.Get_Weather__density()*Propeller__diameter**5))**0.3333 * 60 // FACTOR 60 TO CONVERT INTO PER MINUTE
+			if (Engine__RPM > Engine__RPM_max)
+			{
+				Engine__RPM = Engine__RPM_max
+			}
 			
 			//Engine Oil TODO: Make dependent on engine__oil_pump and possible leakage
 			var temp_Engine__oil_pressure_normal_half = (Engine__oil_pressure_normal_max + Engine__oil_pressure_normal_min) / 2
@@ -545,7 +559,7 @@ agent Aircraft on AgentLayer{
 		//TODO: Add friction dependency on Tire inflation
 		if (Aircraft__flight_phase === "on-ground")
 		{
-			Tire__friction_force = Tire__number_of_wheels * Aircraft__weight * agentlayer.Get_gravity() * Tire__roll_coefficient / Tire__wheel_radius
+			Tire__friction_force = Tire__number_of_wheels * Aircraft__mass * agentlayer.Get_gravity() * Tire__roll_coefficient / Tire__wheel_radius
 		}
 		else
 		{
@@ -600,6 +614,11 @@ agent Aircraft on AgentLayer{
 		Aircraft__heading_coordinates = input
 	}
 	
+	passive CIP_Apply_Aircraft__pitch(input : real)
+	{
+		Aircraft__angle_of_attack = input
+	}
+	
 	passive CIP_Set__master_switch(input: string)
 	{
 		CIP__master_switch = input
@@ -636,10 +655,10 @@ agent Aircraft on AgentLayer{
 	}
 	
 	//airspeed_indicator
-	passive IP_Get_Aircraft__speed()
+	passive IP_Get_Aircraft__speed_x()
 	{
 		//TODO: Right Aircraft Speed indication calculation
-		return Aircraft__speed
+		return Aircraft__speed_x
 	}
 	
 	//artificial_horizon
@@ -732,6 +751,10 @@ agent Pilot on AgentLayer{
 			TakeOffRequest_action()
 		}
 		
+		else if (state === "TakeOff"){
+			TakeOff_action()
+		}
+		
 		
 		update_general_values()
 	}
@@ -752,10 +775,12 @@ agent Pilot on AgentLayer{
 	
 	//help variables
 	var temp_throttle_value : real // for throttle management between 0...1
+	var temp_pitch_value : real // for pitch management
 	var next_action : string
 	var first_action_set : bool = false // temporary auxiliary variable
 	var taxi_path : List<Tuple<real, real>> // for saving taxi instructions
-	var active_taxi_point_number : integer // for indicating actual taxi point
+	var active_taxi_point_number : integer = 0 // for indicating actual taxi point
+	var heading_information : integer // for saving heading value
 	
 	//Settings
 	var age_max : integer = 75
@@ -1119,7 +1144,7 @@ agent Pilot on AgentLayer{
 				Check_Instrument_Aircraft__height()
 				Check_Instrument_Aircraft__climb_rate()
 				Check_Instrument_Aircraft__angle_of_attack()
-				Check_Instrument_Aircraft__speed()
+				Check_Instrument_Aircraft__speed_x()
 				Check_Instrument_Engine__oil_temperature()
 				Check_Instrument_Engine__oil_pressure()
 				next_action = "Set_Engine__mixture_control"
@@ -1277,8 +1302,8 @@ agent Pilot on AgentLayer{
 			var temp_receiver = agentlayer.Listen_receiver_on_frequency()
 			if (temp_receiver === myAircraft_callsign)
 			{
-				//TODO: ADD HEADING RETRIEVAL
 				taxi_path = agentlayer.Listen_message_information_path_on_frequency()
+				heading_information = agentlayer.Listen_message_information_heading()
 				next_action = "Clear_frequency"
 				println "Listen on frequency successful"
 			}
@@ -1306,9 +1331,66 @@ agent Pilot on AgentLayer{
 		if (next_action === "End_of_Actions")
 		{
 			println "Finished State -->" + state + " with next action flag -->" + next_action
-			go_to_next_state("TakeOff")
+			go_to_next_state("Taxiing")
+			state_after_taxiing = "TakeOff"
 			println "Next state -->" + state
 		}
+	}
+	
+	//-----State TakeOff-----
+	//TODO: Add Instrument Screening and better mechanism for take off
+	def TakeOff_action()
+	{
+		if (first_action_set === false)
+		{
+			next_action = "Set_Throttle_and_Heading"
+			first_action_set = true
+		}
+		
+		if (next_action === "Set_Throttle_and_Heading")
+		{
+			timehandler.create_action_duration(4, 2, "pilot_age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				// Set Aircraft Heading
+				myAircraft.Set_Aircraft__heading_mode("BEARING")
+				Set_Aircraft__heading_bearing(heading_information)
+				Apply_Engine__throttle(1.0)
+				Apply_Brake__application(0.0)
+				next_action = "ReadyForRotate"
+			}
+		}
+		
+		else if (next_action === "ReadyForRotate")
+		{
+			if (Check_Instrument_Aircraft__speed_x() > 30)
+			{
+				temp_pitch_value = 8
+				Apply_Aircraft__pitch(temp_pitch_value)
+				next_action = "ControlAircraft"
+			}
+		}
+		
+		else if (next_action === "ControlAircraft")
+		{
+			if (Check_Instrument_Aircraft__climb_rate() > 3)
+			{
+				temp_pitch_value = temp_pitch_value - 1
+				Apply_Aircraft__pitch(temp_pitch_value)
+			}
+			else if (Check_Instrument_Aircraft__climb_rate() < 1)
+			{
+				temp_pitch_value = temp_pitch_value + 1
+				Apply_Aircraft__pitch(temp_pitch_value)
+			}
+			
+			println "Aircraft Speed:"
+			println Check_Instrument_Aircraft__speed_x()
+			println "Aircraft Height:"
+			println Check_Instrument_Aircraft__height()
+		}
+		
+		
 	}
 	
 	
@@ -1342,26 +1424,57 @@ agent Pilot on AgentLayer{
 			myAircraft.Set_Aircraft__heading_mode("COORDINATES")
 			Set_Aircraft__heading_coordinates(active_taxi_point)
 			
-			// Throttle handling
-			Apply_Engine__throttle(0.20)
-			if (Check_Instrument_Aircraft__speed() > 8)
+			//Distance and throtte handling
+			var distance_to_next_point = formula.haversine(myAircraft.Get_position(), active_taxi_point)			
+			if (distance_to_next_point < 20)
 			{
-				Apply_Engine__throttle(0.10)
-			}
-			
-			var distance_to_next_point = formula.haversine(myAircraft.Get_position(), active_taxi_point)
-						
-			if (distance_to_next_point < 15)
-			{
+				//When reaching end point
 				if (taxi_path_points === (active_taxi_point_number + 1))
 				{
-					Apply_Brake__application(0.5)
-					Apply_Engine__throttle(0.08)
-					next_action = "End_of_Actions"				
+					// rolling to the end
+					if (distance_to_next_point < 5)
+					{
+						Apply_Brake__application(0.5)
+						Apply_Engine__throttle(0.10)
+						next_action = "End_of_Actions"
+					}
+					else
+					{
+						if (Check_Instrument_Aircraft__speed_x() > 5)
+						{
+							Apply_Engine__throttle(0.10)
+							Apply_Brake__application(0.2)
+						}
+						else
+						{
+							Apply_Engine__throttle(0.15)
+						}
+					}
+					
+
+									
 				}
 				else
 				{
 					active_taxi_point_number = active_taxi_point_number + 1
+					// Transition Throttle
+					Apply_Engine__throttle(0.16)
+				}
+			}
+			else
+			{
+				// Throttle handling in normal case				
+				if (Check_Instrument_Aircraft__speed_x() > 8)
+				{
+					Apply_Engine__throttle(0.10)
+				}
+				else if (Check_Instrument_Aircraft__speed_x() < 5)
+				{
+					Apply_Engine__throttle(0.40)
+				}
+				else
+				{
+					Apply_Engine__throttle(0.20)
 				}
 			}
 			
@@ -1375,7 +1488,7 @@ agent Pilot on AgentLayer{
 			println "active_taxi_point : "
 			println active_taxi_point
 			println "Current speed : "
-			println Check_Instrument_Aircraft__speed()
+			println Check_Instrument_Aircraft__speed_x()
 			println "distance: " + distance_to_next_point
 			
 		}
@@ -1410,10 +1523,10 @@ agent Pilot on AgentLayer{
 		return myAircraft.IP_Get_Engine__oil_temperature()
 	}
 	
-	def Check_Instrument_Aircraft__speed()
+	def Check_Instrument_Aircraft__speed_x()
 	{
 		println "Checking Aircraft Speed Instrument"
-		return myAircraft.IP_Get_Aircraft__speed()
+		return myAircraft.IP_Get_Aircraft__speed_x()
 	}
 	
 	def Check_Instrument_Aircraft__angle_of_attack()
@@ -1463,8 +1576,14 @@ agent Pilot on AgentLayer{
 	
 	def Apply_Engine__throttle(input : real)
 	{
-		println "Apply throttle"
+		println "Apply throttle " + input
 		myAircraft.CIP_Apply_Engine__throttle(input)
+	}
+	
+	def Apply_Aircraft__pitch(input : real)
+	{
+		println "Apply pitch (angle of attack):  " + input
+		myAircraft.CIP_Apply_Aircraft__pitch(input)
 	}
 	
 	def Set_Engine__ignition_switch(input : string)
@@ -1496,6 +1615,8 @@ agent Pilot on AgentLayer{
 		println "Set Master Switch to " + input
 		myAircraft.CIP_Set__master_switch(input)
 	}
+	
+	
 	
 	//-----Visual Tire Functions------
 	def Check_Visual_TireRightMainWheel__inflation()
@@ -1601,19 +1722,19 @@ agent AirTrafficController on AgentLayer
 					if (message_type_received === "RequestTakeOffPreparationPoint")
 					{
 						taxipath = airportstade.Get_taxipath_to_TakeOffPreparationPoint(runway_heading_calculated)
-						agentlayer.Communicate_taxipath_on_frequency(identifier, callsign_received, "AnswerTakeOffPreparationPoint", taxipath)
+						agentlayer.Communicate_answer_on_frequency(identifier, callsign_received, "AnswerTakeOffPreparationPoint", taxipath, runway_heading_calculated)
 						state = "Listen_on_frequency"
 					}
 					else if(message_type_received === "RequestTakeOffHoldShortPoint")
 					{
 						taxipath = airportstade.Get_taxipath_to_RunwayHoldShortPoint(runway_heading_calculated)
-						agentlayer.Communicate_taxipath_on_frequency(identifier, callsign_received, "AnswerTakeOffHoldShortPoint", taxipath)
+						agentlayer.Communicate_answer_on_frequency(identifier, callsign_received, "AnswerTakeOffHoldShortPoint", taxipath, runway_heading_calculated)
 						state = "Listen_on_frequency"
 					}
 					else if(message_type_received === "RequestTakeOff")
 					{
 						taxipath = airportstade.Get_taxipath_to_RunwayLineUpPoint(runway_heading_calculated)
-						agentlayer.Communicate_taxipath_on_frequency(identifier, callsign_received, "AnswerTakeOff", taxipath)
+						agentlayer.Communicate_answer_on_frequency(identifier, callsign_received, "AnswerTakeOff", taxipath, runway_heading_calculated)
 						state = "Listen_on_frequency"
 					}
 				}
