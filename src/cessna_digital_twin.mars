@@ -44,13 +44,17 @@ layer AgentLayer as agentlayer
 	var message_type = ""
 	// either information is at first place "0" or contains multiple information as e.g. flight_path
 	var message_information_path : List<Tuple<real, real>>
+	var message_information_dict : Map<string, Object>
+	
 	
 	def Listen_receiver_on_frequency() => return receiver
 	def Listen_sender_identifier_on_frequency() => return sender_identifier
 	def Listen_message_type_on_frequency() => return message_type
 	def Listen_message_information_path_on_frequency() => return message_information_path 
+	def Listen_message_information_dict() => return message_information_dict
 	
-	def Communicate_taxipath_on_frequency(_sender_identifier : string, _receiver : string, _message_type : string, _message_information_path  : List<Tuple<real, real>>)
+	
+	def Communicate_taxipath_on_frequency(_sender_identifier : string, _receiver : string, _message_type : string, _message_information_path : List<Tuple<real, real>>)
 	{
 		if (message_on_frequency === false)
 		{
@@ -631,9 +635,45 @@ agent Aircraft on AgentLayer{
 		return Engine__oil_temperature()
 	}
 	
+	//airspeed_indicator
 	passive IP_Get_Aircraft__speed()
 	{
+		//TODO: Right Aircraft Speed indication calculation
 		return Aircraft__speed
+	}
+	
+	//artificial_horizon
+	passive IP_Get_Aircraft__angle_of_attack()
+	{
+		return Aircraft__angle_of_attack
+	}
+	
+	//vertival speed indicator
+	passive IP_Get_Aircraft__climb_rate()
+	{
+		return Aircraft__climb_rate
+	}
+	
+	//altimeter
+	passive IP_Get_Aircraft__height()
+	{
+		return Aircraft__height
+	}
+	
+	//fuel indicator
+	passive IP_Get_RWT__fuel_quantity()
+	{
+		return RWT__fuel_quantity
+	}
+	passive IP_Get_LWT__fuel_quantity()
+	{
+		return LWT__fuel_quantity
+	}
+	
+	//tachometer
+	passive IP_Get_Engine__RPM()
+	{
+		return Engine__RPM
 	}
 }
 
@@ -656,7 +696,7 @@ agent Pilot on AgentLayer{
 		update_general_values() // so first row of csv is not empty
 		state = "PreflightInspection" // always first state so far
 		
-		// Pilot attributes and share them
+		// Pilot attributes and share them with classes
 		age = age_min + random((age_max - age_min) + 1)
 		flight_experience = random(age - age_min) +1
 		timehandler.initialize_variables(age, flight_experience, age_max, age_min)
@@ -680,6 +720,19 @@ agent Pilot on AgentLayer{
 			Taxiing_action()
 		}
 		
+		else if (state === "TakeOffPreparation"){
+			TakeOffPreparation_action()
+		}
+		
+		else if (state === "TakeOffHoldShortRequest"){
+			TakeOffHoldShortRequest_action()
+		}
+		
+		else if (state === "TakeOffRequest"){
+			TakeOffRequest_action()
+		}
+		
+		
 		update_general_values()
 	}
 	
@@ -689,15 +742,22 @@ agent Pilot on AgentLayer{
 	observe var Longitude : real
 	observe var myAircraft_callsign : string
 	observe var state : string
+	observe var state_after_taxiing : string
 	observe var current_activity : string
 	
+	//Classes
 	var myAircraft : Aircraft // for accessing the real aircraft
 	var timehandler = new TimeHandler()
 	var formula = new Formula()
+	
+	//help variables
+	var temp_throttle_value : real // for throttle management between 0...1
+	var next_action : string
 	var first_action_set : bool = false // temporary auxiliary variable
 	var taxi_path : List<Tuple<real, real>> // for saving taxi instructions
+	var active_taxi_point_number : integer // for indicating actual taxi point
 	
-	var next_action : string
+	//Settings
 	var age_max : integer = 75
 	var age_min : integer = 18
 	
@@ -705,6 +765,11 @@ agent Pilot on AgentLayer{
 	{
 		state = _state
 		first_action_set = false
+		if (state === "Taxiing")
+		{
+			//reset placed here
+			active_taxi_point_number = 0
+		}
 	}
 	
 	def update_general_values()
@@ -719,9 +784,6 @@ agent Pilot on AgentLayer{
 	//-----General Pilot Values and functions-----
 	observe var age: integer // years
 	observe var flight_experience : integer // years
-		
-	
-
 		
 	
 	
@@ -895,8 +957,8 @@ agent Pilot on AgentLayer{
 			timehandler.create_action_duration(4, 2, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
-				var throttle_value = 0.05 + (random(11) / 100.0) // random idle value
-				Apply_Engine__throttle(throttle_value)
+				temp_throttle_value = 0.10 // idle throttle
+				Apply_Engine__throttle(temp_throttle_value)
 				next_action = "Set_Engine__ignition_switch_START"
 			}
 		}
@@ -968,18 +1030,16 @@ agent Pilot on AgentLayer{
 	}
 	
 	
-	
-	
 	//-----State TakeOffPreparationRequest-----
 	def TakeOffPreparationRequest_action()
 	{
 		if (first_action_set === false)
 		{
-			next_action = "Set_Brake__parking_brake"
+			next_action = "Communicate_on_frequency"
 			first_action_set = true
 		}
 		
-		if (next_action === "Set_Brake__parking_brake")
+		if (next_action === "Communicate_on_frequency")
 		{
 			timehandler.create_action_duration(2, 2, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
@@ -1024,15 +1084,235 @@ agent Pilot on AgentLayer{
 		{
 			println "Finished State -->" + state + " with next action flag -->" + next_action
 			go_to_next_state("Taxiing")
+			state_after_taxiing = "TakeOffPreparation"
+			println "Next state -->" + state
+		}
+	}
+	
+	
+	//-----State TakeOff Preparation
+	def TakeOffPreparation_action()
+	{
+		if (first_action_set === false)
+		{
+			next_action = "Set_Brake__parking_brake"
+			first_action_set = true
+		}
+		
+		if (next_action === "Set_Brake__parking_brake")
+		{
+			timehandler.create_action_duration(2, 2, "pilot_age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				Set_Brake__parking_brake("SET")
+				next_action = "Check_all_Flight_Instruments"
+			}
+		}
+		
+		else if (next_action === "Check_all_Flight_Instruments")
+		{
+			timehandler.create_action_duration(20, 10, "pilot_age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				Check_Instrument_LWT__fuel_quantitity()
+				Check_Instrument_RWT__fuel_quantitity()
+				Check_Instrument_Aircraft__height()
+				Check_Instrument_Aircraft__climb_rate()
+				Check_Instrument_Aircraft__angle_of_attack()
+				Check_Instrument_Aircraft__speed()
+				Check_Instrument_Engine__oil_temperature()
+				Check_Instrument_Engine__oil_pressure()
+				next_action = "Set_Engine__mixture_control"
+			}
+		}
+		
+		else if(next_action === "Set_Engine__mixture_control")
+		{
+			timehandler.create_action_duration(4, 2, "pilot_age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				Set_Engine__mixture_control(0.0) //set to RICH
+				next_action = "Apply_Engine__throttle_to_1700RPM"
+				temp_throttle_value = 0.20 //starting point for throttle
+			}
+		}
+		
+		else if (next_action === "Apply_Engine__throttle_to_1700RPM")
+		{
+			//Instructions are to apply throttle, so that rpm equal 1700
+			timehandler.create_action_duration(1, 1, "pilot_age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				Apply_Engine__throttle(temp_throttle_value)
+				if (Check_Instrument_Engine__RPM < 1700)
+				{
+					temp_throttle_value = temp_throttle_value + 0.02
+					next_action = "Apply_Engine__throttle_to_1700RPM"
+				}
+				else
+				{
+					next_action = "Check_Engine_Instruments"
+				}
+			}
+		}
+		
+		else if(next_action === "Check_Engine_Instruments")
+		{
+			timehandler.create_action_duration(10, 5, "pilot_age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				//usually here should be a magneto check
+				Check_Instrument_Engine__oil_temperature()
+				Check_Instrument_Engine__oil_pressure()
+				Check_Instrument_Engine__RPM
+				next_action = "Apply_Engine__throttle_idle"
+				temp_throttle_value = 0.10 //idle throttle
+			}
+		}
+		
+		else if(next_action === "Apply_Engine__throttle_idle")
+		{
+			timehandler.create_action_duration(3, 2, "pilot_age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				Apply_Engine__throttle(temp_throttle_value)
+				next_action = "End_of_Actions"
+			}
+		}
+		
+		
+		if (next_action === "End_of_Actions")
+			{
+				println "Finished State -->" + state + " with next action flag -->" + next_action
+				go_to_next_state("TakeOffHoldShortRequest")
+				println "Next state -->" + state
+			}
+	}
+	
+	
+	
+	//-----State TakeOffHoldShortRequest-----
+	def TakeOffHoldShortRequest_action()
+	{
+		if (first_action_set === false)
+		{
+			next_action = "Communicate_on_frequency"
+			first_action_set = true
+		}
+		
+		if (next_action === "Communicate_on_frequency")
+		{
+			timehandler.create_action_duration(2, 2, "pilot_age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				agentlayer.Communicate_request_on_frequency(myAircraft_callsign, "Tower", "RequestTakeOffHoldShortPoint")
+				println "Communicating on frequency"
+				next_action = "Listen_receiver_on_frequency"
+			}
+		}
+		
+		else if (next_action === "Listen_receiver_on_frequency")
+		{
+			var temp_receiver = agentlayer.Listen_receiver_on_frequency()
+			if (temp_receiver === myAircraft_callsign)
+			{
+				taxi_path = agentlayer.Listen_message_information_path_on_frequency()
+				next_action = "Clear_frequency"
+				println "Listen on frequency successful"
+			}
+			
+			//retry contacting tower after a specific period of time
+			timehandler.create_action_duration(10, 5, "pilot_age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				next_action = "Communicate_on_frequency"
+			}
+		}
+		
+		// to make sure that message is not instantly deleted and simulate processing time of incoming message and blockage
+		else if (next_action === "Clear_frequency")
+		{
+			timehandler.create_action_duration(2, 2, "pilot_age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				agentlayer.Clear_frequency()
+				println "Clear on frequency successful"
+				next_action = "End_of_Actions"
+			}
+		}
+		
+		if (next_action === "End_of_Actions")
+		{
+			println "Finished State -->" + state + " with next action flag -->" + next_action
+			go_to_next_state("Taxiing")
+			state_after_taxiing = "TakeOffRequest"
+			println "Next state -->" + state
+		}
+	}
+	
+	
+	
+	//-----State TakeOffHoldShortRequest-----
+	def TakeOffRequest_action()
+	{
+		if (first_action_set === false)
+		{
+			next_action = "Communicate_on_frequency"
+			first_action_set = true
+		}
+		
+		if (next_action === "Communicate_on_frequency")
+		{
+			timehandler.create_action_duration(2, 2, "pilot_age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				agentlayer.Communicate_request_on_frequency(myAircraft_callsign, "Tower", "RequestTakeOff")
+				println "Communicating on frequency"
+				next_action = "Listen_receiver_on_frequency"
+			}
+		}
+		
+		else if (next_action === "Listen_receiver_on_frequency")
+		{
+			var temp_receiver = agentlayer.Listen_receiver_on_frequency()
+			if (temp_receiver === myAircraft_callsign)
+			{
+				//TODO: ADD HEADING RETRIEVAL
+				taxi_path = agentlayer.Listen_message_information_path_on_frequency()
+				next_action = "Clear_frequency"
+				println "Listen on frequency successful"
+			}
+			
+			//retry contacting tower after a specific period of time
+			timehandler.create_action_duration(10, 5, "pilot_age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				next_action = "Communicate_on_frequency"
+			}
+		}
+		
+		// to make sure that message is not instantly deleted and simulate processing time of incoming message and blockage
+		else if (next_action === "Clear_frequency")
+		{
+			timehandler.create_action_duration(2, 2, "pilot_age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				agentlayer.Clear_frequency()
+				println "Clear on frequency successful"
+				next_action = "End_of_Actions"
+			}
+		}
+		
+		if (next_action === "End_of_Actions")
+		{
+			println "Finished State -->" + state + " with next action flag -->" + next_action
+			go_to_next_state("TakeOff")
 			println "Next state -->" + state
 		}
 	}
 	
 	
 	//-----State Taxiing in general-----
-	// TODO: Important Note: Before entering Taxi State, define the "normal" State after Taxiing
-	//help variable:
-	var active_taxi_point_number : integer
 	def Taxiing_action()
 	{
 		var taxi_path_points = taxi_path.Size()
@@ -1048,22 +1328,44 @@ agent Pilot on AgentLayer{
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				Set_Brake__parking_brake("OFF")
-				println "Set braking park"
+				Apply_Brake__application(0.0)
+				println "Set braking park OFF and release brake application"
 				next_action = "Taxiing"
 			}
 		}
 		
 		else if (next_action === "Taxiing")
 		{
+			// Get active Taxi point
 			var active_taxi_point = taxi_path.Get(active_taxi_point_number)
+			// Set Aircraft Heading
 			myAircraft.Set_Aircraft__heading_mode("COORDINATES")
 			Set_Aircraft__heading_coordinates(active_taxi_point)
+			
+			// Throttle handling
 			Apply_Engine__throttle(0.20)
-			if (Check_Instrument_Aircraft__speed() > 10)
+			if (Check_Instrument_Aircraft__speed() > 8)
 			{
 				Apply_Engine__throttle(0.10)
 			}
 			
+			var distance_to_next_point = formula.haversine(myAircraft.Get_position(), active_taxi_point)
+						
+			if (distance_to_next_point < 15)
+			{
+				if (taxi_path_points === (active_taxi_point_number + 1))
+				{
+					Apply_Brake__application(0.5)
+					Apply_Engine__throttle(0.08)
+					next_action = "End_of_Actions"				
+				}
+				else
+				{
+					active_taxi_point_number = active_taxi_point_number + 1
+				}
+			}
+			
+			//TODO: Delete this print section
 			
 			println "-----Taxiing-----"
 			println "taxi_path_points : " + taxi_path_points
@@ -1074,29 +1376,14 @@ agent Pilot on AgentLayer{
 			println active_taxi_point
 			println "Current speed : "
 			println Check_Instrument_Aircraft__speed()
-			
-			var distance_to_next_point = formula.haversine(myAircraft.Get_position(), active_taxi_point)
 			println "distance: " + distance_to_next_point
-			
-			if (distance_to_next_point < 15)
-			{
-				if (taxi_path_points === (active_taxi_point_number + 1))
-				{
-					Set_Brake__parking_brake("SET")
-					next_action = "End_of_Actions"				
-				}
-				else
-				{
-					active_taxi_point_number = active_taxi_point_number + 1
-				}
-			}
 			
 		}
 		
 		if (next_action === "End_of_Actions")
 		{
 			println "Finished State -->" + state + " with next action flag -->" + next_action
-			state = "NextStateTaxiingIGuess"
+			go_to_next_state(state_after_taxiing)
 			println "Next state -->" + state
 			first_action_set = false
 		}	
@@ -1106,6 +1393,11 @@ agent Pilot on AgentLayer{
 	
 	
 	//-----Instrument Panel(IP) Functions-----
+	def Check_Instrument_Engine__RPM()
+	{
+		println "Checking Engine RPM via instrument"
+		return myAircraft.IP_Get_Engine__RPM()
+	}
 	def Check_Instrument_Engine__oil_pressure()
 	{
 		println "Checking Engine oil pressure instrument"
@@ -1122,6 +1414,36 @@ agent Pilot on AgentLayer{
 	{
 		println "Checking Aircraft Speed Instrument"
 		return myAircraft.IP_Get_Aircraft__speed()
+	}
+	
+	def Check_Instrument_Aircraft__angle_of_attack()
+	{
+		println "Checking Aircraft angle of attack via instrument"
+		return myAircraft.IP_Get_Aircraft__angle_of_attack()
+	}
+	
+	def Check_Instrument_Aircraft__climb_rate()
+	{
+		println "Checking Aircraft climb of rate via instrument"
+		return myAircraft.IP_Get_Aircraft__climb_rate()
+	}
+	
+	def Check_Instrument_Aircraft__height()
+	{
+		println "Checking Aircraft height via instrument"
+		return myAircraft.IP_Get_Aircraft__height()
+	}
+	
+	def Check_Instrument_RWT__fuel_quantitity()
+	{
+		println "Checking RWT fuel quantity via instrument"
+		return myAircraft.IP_Get_RWT__fuel_quantity()
+	}
+	
+	def Check_Instrument_LWT__fuel_quantitity()
+	{
+		println "Checking LWT fuel quantity via instrument"
+		return myAircraft.IP_Get_LWT__fuel_quantity()
 	}
 	
 	
@@ -1280,6 +1602,18 @@ agent AirTrafficController on AgentLayer
 					{
 						taxipath = airportstade.Get_taxipath_to_TakeOffPreparationPoint(runway_heading_calculated)
 						agentlayer.Communicate_taxipath_on_frequency(identifier, callsign_received, "AnswerTakeOffPreparationPoint", taxipath)
+						state = "Listen_on_frequency"
+					}
+					else if(message_type_received === "RequestTakeOffHoldShortPoint")
+					{
+						taxipath = airportstade.Get_taxipath_to_RunwayHoldShortPoint(runway_heading_calculated)
+						agentlayer.Communicate_taxipath_on_frequency(identifier, callsign_received, "AnswerTakeOffHoldShortPoint", taxipath)
+						state = "Listen_on_frequency"
+					}
+					else if(message_type_received === "RequestTakeOff")
+					{
+						taxipath = airportstade.Get_taxipath_to_RunwayLineUpPoint(runway_heading_calculated)
+						agentlayer.Communicate_taxipath_on_frequency(identifier, callsign_received, "AnswerTakeOff", taxipath)
 						state = "Listen_on_frequency"
 					}
 				}

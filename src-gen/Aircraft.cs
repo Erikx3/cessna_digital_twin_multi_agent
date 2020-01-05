@@ -650,12 +650,12 @@ namespace cessna_digital_twin {
 			double y_spawn = agentlayer.Get_spawn_y_coord();
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget135_3420 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget139_3553 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object135_3420 = this;
+				var _object139_3553 = this;
 				
-				_AgentLayer._AircraftEnvironment.PosAt(_object135_3420, 
-					_taget135_3420.Item1, _taget135_3420.Item2
+				_AgentLayer._AircraftEnvironment.PosAt(_object139_3553, 
+					_taget139_3553.Item1, _taget139_3553.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
@@ -772,18 +772,18 @@ namespace cessna_digital_twin {
 											{
 											new System.Func<Tuple<double,double>>(() => {
 												
-												var _speed271_8207 = Aircraft__movement_x
+												var _speed275_8340 = Aircraft__movement_x
 											;
 												
-												var _entity271_8207 = this;
+												var _entity275_8340 = this;
 												
-												Func<double[], bool> _predicate271_8207 = null;
+												Func<double[], bool> _predicate275_8340 = null;
 												
-												var _target271_8207 = Aircraft__heading_coordinates;
-												_AgentLayer._AircraftEnvironment.MoveTo(_entity271_8207,
-													 _target271_8207.Item1, _target271_8207.Item2, 
-													_speed271_8207, 
-													_predicate271_8207);
+												var _target275_8340 = Aircraft__heading_coordinates;
+												_AgentLayer._AircraftEnvironment.MoveTo(_entity275_8340,
+													 _target275_8340.Item1, _target275_8340.Item2, 
+													_speed275_8340, 
+													_predicate275_8340);
 												
 												return new Tuple<double, double>(Position.X, Position.Y);
 											}).Invoke()
@@ -793,14 +793,14 @@ namespace cessna_digital_twin {
 															{
 															new System.Func<Tuple<double,double>>(() => {
 																
-																var _speed275_8337 = Aircraft__movement_x
+																var _speed279_8470 = Aircraft__movement_x
 															;
 																
-																var _entity275_8337 = this;
+																var _entity279_8470 = this;
 																
-																Func<double[], bool> _predicate275_8337 = null;
+																Func<double[], bool> _predicate279_8470 = null;
 																
-																_AgentLayer._AircraftEnvironment.MoveTowards(_entity275_8337, Aircraft__heading_bearing, _speed275_8337);	
+																_AgentLayer._AircraftEnvironment.MoveTowards(_entity279_8470, Aircraft__heading_bearing, _speed279_8470);	
 																
 																return new Tuple<double, double>(Position.X, Position.Y);
 															}).Invoke()
@@ -1248,6 +1248,54 @@ namespace cessna_digital_twin {
 		public double IP_Get_Aircraft__speed() {
 			{
 			return Aircraft__speed
+			;}
+			
+			return default(double);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public double IP_Get_Aircraft__angle_of_attack() {
+			{
+			return Aircraft__angle_of_attack
+			;}
+			
+			return default(double);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public double IP_Get_Aircraft__climb_rate() {
+			{
+			return Aircraft__climb_rate
+			;}
+			
+			return default(double);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public double IP_Get_Aircraft__height() {
+			{
+			return Aircraft__height
+			;}
+			
+			return default(double);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public double IP_Get_RWT__fuel_quantity() {
+			{
+			return RWT__fuel_quantity
+			;}
+			
+			return default(double);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public double IP_Get_LWT__fuel_quantity() {
+			{
+			return LWT__fuel_quantity
+			;}
+			
+			return default(double);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public double IP_Get_Engine__RPM() {
+			{
+			return Engine__RPM
 			;}
 			
 			return default(double);;

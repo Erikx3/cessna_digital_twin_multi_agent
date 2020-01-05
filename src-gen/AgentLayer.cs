@@ -118,6 +118,14 @@ namespace cessna_digital_twin {
 				if(__message_information_path != value) __message_information_path = value;
 			}
 		}
+		private Mars.Components.Common.MarsMap<string,System.Object> __message_information_dict
+			 = default(Mars.Components.Common.MarsMap<string,System.Object>);
+		internal Mars.Components.Common.MarsMap<string,System.Object> message_information_dict { 
+			get { return __message_information_dict; }
+			set{
+				if(__message_information_dict != value) __message_information_dict = value;
+			}
+		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public double Get_Weather__density() 
 		{
@@ -198,6 +206,15 @@ namespace cessna_digital_twin {
 					;
 			}
 			return default(Mars.Components.Common.MarsList<System.Tuple<double,double>>);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public Mars.Components.Common.MarsMap<string,System.Object> Listen_message_information_dict() 
+		{
+			{
+			return message_information_dict
+					;
+			}
+			return default(Mars.Components.Common.MarsMap<string,System.Object>);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public void Communicate_taxipath_on_frequency(string _sender_identifier, string _receiver, string _message_type, Mars.Components.Common.MarsList<System.Tuple<double,double>> _message_information_path) 

@@ -125,12 +125,12 @@ namespace cessna_digital_twin {
 			double y_spawn = agentlayer.Get_spawn_y_coord();
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget1251_36893 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget1573_46376 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object1251_36893 = this;
+				var _object1573_46376 = this;
 				
-				_AgentLayer._AirTrafficControllerEnvironment.PosAt(_object1251_36893, 
-					_taget1251_36893.Item1, _taget1251_36893.Item2
+				_AgentLayer._AirTrafficControllerEnvironment.PosAt(_object1573_46376, 
+					_taget1573_46376.Item1, _taget1573_46376.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke()
@@ -173,7 +173,23 @@ namespace cessna_digital_twin {
 																			agentlayer.Communicate_taxipath_on_frequency(identifier,callsign_received,"AnswerTakeOffPreparationPoint",taxipath);
 																			state = "Listen_on_frequency"
 																			;}
-																	;} 
+																	;} else {
+																			if(Equals(message_type_received, "RequestTakeOffHoldShortPoint")) {
+																							{
+																							taxipath = airportstade.Get_taxipath_to_RunwayHoldShortPoint(runway_heading_calculated);
+																							agentlayer.Communicate_taxipath_on_frequency(identifier,callsign_received,"AnswerTakeOffHoldShortPoint",taxipath);
+																							state = "Listen_on_frequency"
+																							;}
+																					;} else {
+																							if(Equals(message_type_received, "RequestTakeOff")) {
+																											{
+																											taxipath = airportstade.Get_taxipath_to_RunwayLineUpPoint(runway_heading_calculated);
+																											agentlayer.Communicate_taxipath_on_frequency(identifier,callsign_received,"AnswerTakeOff",taxipath);
+																											state = "Listen_on_frequency"
+																											;}
+																									;} 
+																						;}
+																		;}
 															;}
 													;} 
 											;}
