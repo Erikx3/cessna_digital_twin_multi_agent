@@ -50,14 +50,6 @@ namespace cessna_digital_twin {
 				if(__state != value) __state = value;
 			}
 		}
-		private string __state_after_taxiing
-			 = default(string);
-		public string state_after_taxiing { 
-			get { return __state_after_taxiing; }
-			set{
-				if(__state_after_taxiing != value) __state_after_taxiing = value;
-			}
-		}
 		private string __current_activity
 			 = default(string);
 		public string current_activity { 
@@ -146,6 +138,14 @@ namespace cessna_digital_twin {
 				if(__heading_information != value) __heading_information = value;
 			}
 		}
+		private string __state_after_taxiing
+			 = default(string);
+		internal string state_after_taxiing { 
+			get { return __state_after_taxiing; }
+			set{
+				if(__state_after_taxiing != value) __state_after_taxiing = value;
+			}
+		}
 		private int __age_max
 			 = 75;
 		internal int age_max { 
@@ -198,13 +198,13 @@ namespace cessna_digital_twin {
 			{
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget802_24112 = (myAircraft.Get_position()
+				var _taget802_24176 = (myAircraft.Get_position()
 				);
 				
-				var _object802_24112 = this;
+				var _object802_24176 = this;
 				
-				_AgentLayer._PilotEnvironment.PosAt(_object802_24112, 
-					_taget802_24112.Item1, _taget802_24112.Item2
+				_AgentLayer._PilotEnvironment.PosAt(_object802_24176, 
+					_taget802_24176.Item1, _taget802_24176.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
@@ -857,7 +857,7 @@ namespace cessna_digital_twin {
 											myAircraft.Set_Aircraft__heading_mode("BEARING");
 											Set_Aircraft__heading_bearing(heading_information);
 											Apply_Engine__throttle(1.0);
-											Apply_Brake__application(0.0);
+											Apply_Brake__deceleration(0.0);
 											next_action = "ReadyForRotate"
 											;}
 									;} 
@@ -918,7 +918,7 @@ namespace cessna_digital_twin {
 							) {
 											{
 											Set_Brake__parking_brake("OFF");
-											Apply_Brake__application(0.0);
+											Apply_Brake__deceleration(0.0);
 											System.Console.WriteLine("Set braking park OFF and release brake application");;
 											next_action = "Taxiing"
 											;}
@@ -938,7 +938,7 @@ namespace cessna_digital_twin {
 																			{
 																			if(distance_to_next_point < 5) {
 																							{
-																							Apply_Brake__application(0.5);
+																							Apply_Brake__deceleration(0.5);
 																							Apply_Engine__throttle(0.10);
 																							next_action = "End_of_Actions"
 																							;}
@@ -947,7 +947,7 @@ namespace cessna_digital_twin {
 																							if(Check_Instrument_Aircraft__speed_x() > 5) {
 																											{
 																											Apply_Engine__throttle(0.10);
-																											Apply_Brake__application(0.2)
+																											Apply_Brake__deceleration(0.2)
 																											;}
 																									;} else {
 																											{
@@ -1135,11 +1135,11 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Apply_Brake__application(double input) 
+		public void Apply_Brake__deceleration(double input) 
 		{
 			{
 			System.Console.WriteLine("Apply Brake " + input);;
-			myAircraft.CIP_Apply_Brake__application(input)
+			myAircraft.CIP_Apply_Brake__deceleration(input)
 			;}
 			return;
 		}
@@ -1285,36 +1285,37 @@ namespace cessna_digital_twin {
 			double y_spawn = agentlayer.Get_spawn_y_coord();
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget709_21562 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget707_21558 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object709_21562 = this;
+				var _object707_21558 = this;
 				
-				_AgentLayer._PilotEnvironment.PosAt(_object709_21562, 
-					_taget709_21562.Item1, _taget709_21562.Item2
+				_AgentLayer._PilotEnvironment.PosAt(_object707_21558, 
+					_taget707_21558.Item1, _taget707_21558.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
 			myAircraft = new Func<cessna_digital_twin.Aircraft>(() => {
-				Func<cessna_digital_twin.Aircraft, bool> _predicate713_21718 = null;
-				Func<cessna_digital_twin.Aircraft, bool> _predicateMod713_21718 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
+				Func<cessna_digital_twin.Aircraft, bool> _predicate711_21714 = null;
+				Func<cessna_digital_twin.Aircraft, bool> _predicateMod711_21714 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
 				{
 					if (_it?.ID == this.ID)
 					{
 						return false;
-					} else if (_predicate713_21718 != null)
+					} else if (_predicate711_21714 != null)
 					{
-						return _predicate713_21718.Invoke(_it);
+						return _predicate711_21714.Invoke(_it);
 					} else return true;
 				});
 				
-				const int _range713_21718 = -1;
-				var _source713_21718 = this.Position;
+				const int _range711_21714 = -1;
+				var _source711_21714 = this.Position;
 				
-				return _AgentLayer._AircraftEnvironment.Explore(_source713_21718, _range713_21718, 1, _predicateMod713_21718)?.FirstOrDefault();
+				return _AgentLayer._AircraftEnvironment.Explore(_source711_21714, _range711_21714, 1, _predicateMod711_21714)?.FirstOrDefault();
 			}).Invoke();
 			myAircraft_callsign = myAircraft.Get_callsign();
 			update_general_values();
 			state = "PreflightInspection";
+			current_activity = "Initialization:)";
 			age = age_min + _Random.Next((age_max - age_min) + 1);
 			flight_experience = _Random.Next(age - age_min)
 			 + 1;

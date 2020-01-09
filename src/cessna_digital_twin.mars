@@ -161,10 +161,7 @@ agent Aircraft on AgentLayer{
 	var Aircraft__wing_span : real = 10.1 // m
 	var Aircraft__stall_angle : real = 14.0 // deg
 	
-	def Get_Aircraft__aspect_ratio()
-	{
-		return Aircraft__wing_span**2 / Aircraft__wing_area
-	}	
+	def Get_Aircraft__aspect_ratio() => return Aircraft__wing_span**2 / Aircraft__wing_area
 	
 	def initialize_AircraftCharacteristics()
 	{
@@ -279,6 +276,7 @@ agent Aircraft on AgentLayer{
 			Aircraft__speed_x = 0
 		}
 		Aircraft__movement_x = Aircraft__speed_x
+		
 		if (Aircraft__movement_x > 0)
 		{
 			if (Aircraft__heading_mode === "COORDINATES")
@@ -629,7 +627,7 @@ agent Aircraft on AgentLayer{
 		Brake__parking_brake = input
 	}
 	
-	passive CIP_Apply_Brake__application(input : real)
+	passive CIP_Apply_Brake__deceleration(input : real)
 	{
 		Brake__application = input
 	}
@@ -714,6 +712,8 @@ agent Pilot on AgentLayer{
 		myAircraft_callsign = myAircraft.Get_callsign() // save aircraft callsign --> IDENTIFIER!
 		update_general_values() // so first row of csv is not empty
 		state = "PreflightInspection" // always first state so far
+		current_activity = "Initialization:)"
+		
 		
 		// Pilot attributes and share them with classes
 		age = age_min + random((age_max - age_min) + 1)
@@ -765,7 +765,6 @@ agent Pilot on AgentLayer{
 	observe var Longitude : real
 	observe var myAircraft_callsign : string
 	observe var state : string
-	observe var state_after_taxiing : string
 	observe var current_activity : string
 	
 	//Classes
@@ -777,10 +776,11 @@ agent Pilot on AgentLayer{
 	var temp_throttle_value : real // for throttle management between 0...1
 	var temp_pitch_value : real // for pitch management
 	var next_action : string
-	var first_action_set : bool = false // temporary auxiliary variable
+	var first_action_set : bool = false // temporary auxiliary variable for first action in each state
 	var taxi_path : List<Tuple<real, real>> // for saving taxi instructions
 	var active_taxi_point_number : integer = 0 // for indicating actual taxi point
 	var heading_information : integer // for saving heading value
+	var state_after_taxiing : string
 	
 	//Settings
 	var age_max : integer = 75
@@ -1356,7 +1356,7 @@ agent Pilot on AgentLayer{
 				myAircraft.Set_Aircraft__heading_mode("BEARING")
 				Set_Aircraft__heading_bearing(heading_information)
 				Apply_Engine__throttle(1.0)
-				Apply_Brake__application(0.0)
+				Apply_Brake__deceleration(0.0)
 				next_action = "ReadyForRotate"
 			}
 		}
@@ -1410,7 +1410,7 @@ agent Pilot on AgentLayer{
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				Set_Brake__parking_brake("OFF")
-				Apply_Brake__application(0.0)
+				Apply_Brake__deceleration(0.0)
 				println "Set braking park OFF and release brake application"
 				next_action = "Taxiing"
 			}
@@ -1434,7 +1434,7 @@ agent Pilot on AgentLayer{
 					// rolling to the end
 					if (distance_to_next_point < 5)
 					{
-						Apply_Brake__application(0.5)
+						Apply_Brake__deceleration(0.5)
 						Apply_Engine__throttle(0.10)
 						next_action = "End_of_Actions"
 					}
@@ -1443,7 +1443,7 @@ agent Pilot on AgentLayer{
 						if (Check_Instrument_Aircraft__speed_x() > 5)
 						{
 							Apply_Engine__throttle(0.10)
-							Apply_Brake__application(0.2)
+							Apply_Brake__deceleration(0.2)
 						}
 						else
 						{
@@ -1592,10 +1592,10 @@ agent Pilot on AgentLayer{
 		myAircraft.CIP_Set_Engine__ignition_switch(input)
 	}
 	
-	def Apply_Brake__application(input : real)
+	def Apply_Brake__deceleration(input : real)
 	{
 		println "Apply Brake " + input
-		myAircraft.CIP_Apply_Brake__application(input)
+		myAircraft.CIP_Apply_Brake__deceleration(input)
 	}
 	
 	def Set_Brake__parking_brake(input : string)

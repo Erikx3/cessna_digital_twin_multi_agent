@@ -671,7 +671,8 @@ namespace cessna_digital_twin {
 		{
 			{
 			return Mars.Components.Common.Math.Pow(Aircraft__wing_span, 2) / Aircraft__wing_area
-			;}
+					;
+			}
 			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
@@ -779,18 +780,18 @@ namespace cessna_digital_twin {
 											{
 											new System.Func<Tuple<double,double>>(() => {
 												
-												var _speed286_9003 = Aircraft__movement_x
+												var _speed284_8998 = Aircraft__movement_x
 											;
 												
-												var _entity286_9003 = this;
+												var _entity284_8998 = this;
 												
-												Func<double[], bool> _predicate286_9003 = null;
+												Func<double[], bool> _predicate284_8998 = null;
 												
-												var _target286_9003 = Aircraft__heading_coordinates;
-												_AgentLayer._AircraftEnvironment.MoveTo(_entity286_9003,
-													 _target286_9003.Item1, _target286_9003.Item2, 
-													_speed286_9003, 
-													_predicate286_9003);
+												var _target284_8998 = Aircraft__heading_coordinates;
+												_AgentLayer._AircraftEnvironment.MoveTo(_entity284_8998,
+													 _target284_8998.Item1, _target284_8998.Item2, 
+													_speed284_8998, 
+													_predicate284_8998);
 												
 												return new Tuple<double, double>(Position.X, Position.Y);
 											}).Invoke()
@@ -800,14 +801,14 @@ namespace cessna_digital_twin {
 															{
 															new System.Func<Tuple<double,double>>(() => {
 																
-																var _speed290_9133 = Aircraft__movement_x
+																var _speed288_9128 = Aircraft__movement_x
 															;
 																
-																var _entity290_9133 = this;
+																var _entity288_9128 = this;
 																
-																Func<double[], bool> _predicate290_9133 = null;
+																Func<double[], bool> _predicate288_9128 = null;
 																
-																_AgentLayer._AircraftEnvironment.MoveTowards(_entity290_9133, Aircraft__heading_bearing, _speed290_9133);	
+																_AgentLayer._AircraftEnvironment.MoveTowards(_entity288_9128, Aircraft__heading_bearing, _speed288_9128);	
 																
 																return new Tuple<double, double>(Position.X, Position.Y);
 															}).Invoke()
@@ -1232,7 +1233,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void CIP_Apply_Brake__application(
+		public void CIP_Apply_Brake__deceleration(
 		double input) {
 			{
 			Brake__application = input
