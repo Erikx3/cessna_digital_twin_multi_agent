@@ -87,7 +87,19 @@ namespace cessna_digital_twin {
 		{
 			{
 			identifier = "Tower";
-			state = "Listen_on_frequency"
+			state = "Listen_on_frequency";
+			callsign_received = "None";
+			message_type_received = "None"
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void reset_general_values() 
+		{
+			{
+			state = "Listen_on_frequency";
+			callsign_received = "None";
+			message_type_received = "None"
 			;}
 			return;
 		}
@@ -125,12 +137,12 @@ namespace cessna_digital_twin {
 			double y_spawn = agentlayer.Get_spawn_y_coord();
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget1694_49879 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget1694_49861 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object1694_49879 = this;
+				var _object1694_49861 = this;
 				
-				_AgentLayer._AirTrafficControllerEnvironment.PosAt(_object1694_49879, 
-					_taget1694_49879.Item1, _taget1694_49879.Item2
+				_AgentLayer._AirTrafficControllerEnvironment.PosAt(_object1694_49861, 
+					_taget1694_49861.Item1, _taget1694_49861.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke()
@@ -169,22 +181,19 @@ namespace cessna_digital_twin {
 															if(Equals(message_type_received, "RequestTakeOffPreparationPoint")) {
 																			{
 																			taxipath = airportstade.Get_taxipath_to_TakeOffPreparationPoint(runway_heading_calculated);
-																			agentlayer.Communicate_answer_on_frequency(identifier,callsign_received,"AnswerTakeOffPreparationPoint",taxipath,runway_heading_calculated);
-																			state = "Listen_on_frequency"
+																			agentlayer.Communicate_answer_on_frequency(identifier,callsign_received,"AnswerTakeOffPreparationPoint",taxipath,runway_heading_calculated)
 																			;}
 																	;} else {
 																			if(Equals(message_type_received, "RequestTakeOffHoldShortPoint")) {
 																							{
 																							taxipath = airportstade.Get_taxipath_to_RunwayHoldShortPoint(runway_heading_calculated);
-																							agentlayer.Communicate_answer_on_frequency(identifier,callsign_received,"AnswerTakeOffHoldShortPoint",taxipath,runway_heading_calculated);
-																							state = "Listen_on_frequency"
+																							agentlayer.Communicate_answer_on_frequency(identifier,callsign_received,"AnswerTakeOffHoldShortPoint",taxipath,runway_heading_calculated)
 																							;}
 																					;} else {
 																							if(Equals(message_type_received, "RequestTakeOff")) {
 																											{
 																											taxipath = airportstade.Get_taxipath_to_RunwayLineUpPoint(runway_heading_calculated);
-																											agentlayer.Communicate_answer_on_frequency(identifier,callsign_received,"AnswerTakeOff",taxipath,runway_heading_calculated);
-																											state = "Listen_on_frequency"
+																											agentlayer.Communicate_answer_on_frequency(identifier,callsign_received,"AnswerTakeOff",taxipath,runway_heading_calculated)
 																											;}
 																									;} else {
 																											{
@@ -192,7 +201,8 @@ namespace cessna_digital_twin {
 																											;}
 																										;}
 																						;}
-																		;}
+																		;};
+															reset_general_values()
 															;}
 													;} 
 											;}

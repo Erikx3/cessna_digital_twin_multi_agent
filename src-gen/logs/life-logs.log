@@ -63,3 +63,23 @@
 [ERROR] 2020-01-04 20:58:02,939 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
 [ERROR] 2020-01-04 20:58:02,939 | Mars.Core.SimulationStarter.SimulationStarter - One or more errors occurred. (Object reference not set to an instance of an object.) 
 [ERROR] 2020-01-04 20:58:02,939 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2020-01-09 15:00:36,949 | Mars.Core.SimulationStarter.SimulationStarter - MARS simulation execution crashed by IOException 
+[ERROR] 2020-01-09 15:00:36,971 | Mars.Core.SimulationStarter.SimulationStarter - Exception message: 
+[ERROR] 2020-01-09 15:00:36,971 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2020-01-09 15:00:36,971 | Mars.Core.SimulationStarter.SimulationStarter - The process cannot access the file 'C:\Users\eriks\Google Drive\Bachelorarbeit\02_Eclipse_Workspace\cessna_digital_twin\src-gen\Pilot.csv' because it is being used by another process. 
+[ERROR] 2020-01-09 15:00:36,971 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2020-01-09 15:01:23,559 | Mars.Core.SimulationStarter.SimulationStarter - MARS simulation execution crashed by IOException 
+[ERROR] 2020-01-09 15:01:23,591 | Mars.Core.SimulationStarter.SimulationStarter - Exception message: 
+[ERROR] 2020-01-09 15:01:23,591 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2020-01-09 15:01:23,591 | Mars.Core.SimulationStarter.SimulationStarter - The process cannot access the file 'C:\Users\eriks\Google Drive\Bachelorarbeit\02_Eclipse_Workspace\cessna_digital_twin\src-gen\Pilot.csv' because it is being used by another process. 
+[ERROR] 2020-01-09 15:01:23,591 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2020-01-09 15:04:22,823 | Mars.Core.SimulationStarter.SimulationStarter - MARS simulation execution crashed by IOException 
+[ERROR] 2020-01-09 15:04:22,839 | Mars.Core.SimulationStarter.SimulationStarter - Exception message: 
+[ERROR] 2020-01-09 15:04:22,840 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2020-01-09 15:04:22,840 | Mars.Core.SimulationStarter.SimulationStarter - The process cannot access the file 'C:\Users\eriks\Google Drive\Bachelorarbeit\02_Eclipse_Workspace\cessna_digital_twin\src-gen\Aircraft.csv' because it is being used by another process. 
+[ERROR] 2020-01-09 15:04:22,840 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2020-01-09 15:05:32,500 | Mars.Core.SimulationStarter.SimulationStarter - MARS simulation execution crashed by IOException 
+[ERROR] 2020-01-09 15:05:32,519 | Mars.Core.SimulationStarter.SimulationStarter - Exception message: 
+[ERROR] 2020-01-09 15:05:32,519 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2020-01-09 15:05:32,519 | Mars.Core.SimulationStarter.SimulationStarter - The process cannot access the file 'C:\Users\eriks\Google Drive\Bachelorarbeit\02_Eclipse_Workspace\cessna_digital_twin\src-gen\Aircraft.csv' because it is being used by another process. 
+[ERROR] 2020-01-09 15:05:32,519 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 

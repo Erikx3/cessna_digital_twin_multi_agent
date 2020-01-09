@@ -78,12 +78,12 @@ namespace cessna_digital_twin {
 				if(System.Math.Abs(__spawn_ycor - value) > 0.0000001) __spawn_ycor = value;
 			}
 		}
-		private bool __message_on_frequency
+		private bool __frequency_blocked
 			 = false;
-		internal bool message_on_frequency { 
-			get { return __message_on_frequency; }
+		internal bool frequency_blocked { 
+			get { return __frequency_blocked; }
 			set{
-				if(__message_on_frequency != value) __message_on_frequency = value;
+				if(__frequency_blocked != value) __frequency_blocked = value;
 			}
 		}
 		private string __sender_identifier
@@ -220,14 +220,14 @@ namespace cessna_digital_twin {
 		public void Communicate_answer_on_frequency(string _sender_identifier, string _receiver, string _message_type, Mars.Components.Common.MarsList<System.Tuple<double,double>> _message_information_path, int _message_information_heading) 
 		{
 			{
-			if(Equals(message_on_frequency, false) || Equals(_sender_identifier, "Tower")) {
+			if(Equals(frequency_blocked, false) || Equals(_sender_identifier, "Tower")) {
 							{
 							sender_identifier = _sender_identifier;
 							receiver = _receiver;
 							message_type = _message_type;
 							message_information_path = _message_information_path;
 							message_information_heading = _message_information_heading;
-							message_on_frequency = true
+							frequency_blocked = true
 							;}
 					;} 
 			;}
@@ -237,12 +237,12 @@ namespace cessna_digital_twin {
 		public void Communicate_request_on_frequency(string _sender_identifier, string _receiver, string _message_type) 
 		{
 			{
-			if(Equals(message_on_frequency, false)) {
+			if(Equals(frequency_blocked, false)) {
 							{
 							sender_identifier = _sender_identifier;
 							receiver = _receiver;
 							message_type = _message_type;
-							message_on_frequency = true
+							frequency_blocked = true
 							;}
 					;} 
 			;}
@@ -252,7 +252,7 @@ namespace cessna_digital_twin {
 		public void Clear_frequency() 
 		{
 			{
-			message_on_frequency = false;
+			frequency_blocked = false;
 			sender_identifier = "";
 			receiver = "";
 			message_type = "";

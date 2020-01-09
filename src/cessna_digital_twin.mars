@@ -38,7 +38,7 @@ layer AgentLayer as agentlayer
 	
 	
 	//-----Communication Handling-----
-	var message_on_frequency = false
+	var frequency_blocked = false
 	var sender_identifier = ""
 	var receiver = ""
 	var message_type = ""
@@ -56,7 +56,7 @@ layer AgentLayer as agentlayer
 	
 	def Communicate_answer_on_frequency(_sender_identifier : string, _receiver : string, _message_type : string, _message_information_path : List<Tuple<real, real>>, _message_information_heading : integer)
 	{
-		if (message_on_frequency === false or _sender_identifier ==="Tower")
+		if (frequency_blocked === false or _sender_identifier ==="Tower")
 		{
 			sender_identifier = _sender_identifier
 			receiver = _receiver
@@ -64,25 +64,25 @@ layer AgentLayer as agentlayer
 			message_information_path  = _message_information_path 
 			message_information_heading = _message_information_heading
 			
-			message_on_frequency = true
+			frequency_blocked = true
 		}		
 	}
 	
 	def Communicate_request_on_frequency(_sender_identifier : string, _receiver : string, _message_type : string)
 	{
-		if (message_on_frequency === false)
+		if (frequency_blocked === false)
 		{
 			sender_identifier = _sender_identifier
 			receiver = _receiver
 			message_type = _message_type
 			
-			message_on_frequency = true
+			frequency_blocked = true
 		}		
 	}
 	
 	def Clear_frequency()
 	{
-		message_on_frequency = false
+		frequency_blocked = false
 		sender_identifier = ""
 		receiver = ""
 		message_type = ""
@@ -1721,24 +1721,22 @@ agent AirTrafficController on AgentLayer
 					{
 						taxipath = airportstade.Get_taxipath_to_TakeOffPreparationPoint(runway_heading_calculated)
 						agentlayer.Communicate_answer_on_frequency(identifier, callsign_received, "AnswerTakeOffPreparationPoint", taxipath, runway_heading_calculated)
-						state = "Listen_on_frequency"
 					}
 					else if(message_type_received === "RequestTakeOffHoldShortPoint")
 					{
 						taxipath = airportstade.Get_taxipath_to_RunwayHoldShortPoint(runway_heading_calculated)
 						agentlayer.Communicate_answer_on_frequency(identifier, callsign_received, "AnswerTakeOffHoldShortPoint", taxipath, runway_heading_calculated)
-						state = "Listen_on_frequency"
 					}
 					else if(message_type_received === "RequestTakeOff")
 					{
 						taxipath = airportstade.Get_taxipath_to_RunwayLineUpPoint(runway_heading_calculated)
 						agentlayer.Communicate_answer_on_frequency(identifier, callsign_received, "AnswerTakeOff", taxipath, runway_heading_calculated)
-						state = "Listen_on_frequency"
 					}
 					else
 					{
 						agentlayer.Clear_frequency() // Tower always able to answer or Clear Frequency, when request insufficient		
 					}
+					reset_general_values()
 				}
 			}
 		}
@@ -1757,6 +1755,16 @@ agent AirTrafficController on AgentLayer
 		{
 			identifier = "Tower"
 			state = "Listen_on_frequency"
+			callsign_received = "None"
+			message_type_received = "None"
+			
+		}
+		
+		def reset_general_values()
+		{
+			state = "Listen_on_frequency"
+			callsign_received = "None"
+			message_type_received = "None"
 		}
 		
 	}

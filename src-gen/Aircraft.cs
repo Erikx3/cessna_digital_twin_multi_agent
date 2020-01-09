@@ -642,12 +642,12 @@ namespace cessna_digital_twin {
 			double y_spawn = agentlayer.Get_spawn_y_coord();
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget140_3684 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget140_3666 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object140_3684 = this;
+				var _object140_3666 = this;
 				
-				_AgentLayer._AircraftEnvironment.PosAt(_object140_3684, 
-					_taget140_3684.Item1, _taget140_3684.Item2
+				_AgentLayer._AircraftEnvironment.PosAt(_object140_3666, 
+					_taget140_3666.Item1, _taget140_3666.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
@@ -780,18 +780,18 @@ namespace cessna_digital_twin {
 											{
 											new System.Func<Tuple<double,double>>(() => {
 												
-												var _speed284_9031 = Aircraft__movement_x
+												var _speed284_9013 = Aircraft__movement_x
 											;
 												
-												var _entity284_9031 = this;
+												var _entity284_9013 = this;
 												
-												Func<double[], bool> _predicate284_9031 = null;
+												Func<double[], bool> _predicate284_9013 = null;
 												
-												var _target284_9031 = Aircraft__heading_coordinates;
-												_AgentLayer._AircraftEnvironment.MoveTo(_entity284_9031,
-													 _target284_9031.Item1, _target284_9031.Item2, 
-													_speed284_9031, 
-													_predicate284_9031);
+												var _target284_9013 = Aircraft__heading_coordinates;
+												_AgentLayer._AircraftEnvironment.MoveTo(_entity284_9013,
+													 _target284_9013.Item1, _target284_9013.Item2, 
+													_speed284_9013, 
+													_predicate284_9013);
 												
 												return new Tuple<double, double>(Position.X, Position.Y);
 											}).Invoke()
@@ -801,14 +801,14 @@ namespace cessna_digital_twin {
 															{
 															new System.Func<Tuple<double,double>>(() => {
 																
-																var _speed288_9161 = Aircraft__movement_x
+																var _speed288_9143 = Aircraft__movement_x
 															;
 																
-																var _entity288_9161 = this;
+																var _entity288_9143 = this;
 																
-																Func<double[], bool> _predicate288_9161 = null;
+																Func<double[], bool> _predicate288_9143 = null;
 																
-																_AgentLayer._AircraftEnvironment.MoveTowards(_entity288_9161, Aircraft__heading_bearing, _speed288_9161);	
+																_AgentLayer._AircraftEnvironment.MoveTowards(_entity288_9143, Aircraft__heading_bearing, _speed288_9143);	
 																
 																return new Tuple<double, double>(Position.X, Position.Y);
 															}).Invoke()
