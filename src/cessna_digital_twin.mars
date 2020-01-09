@@ -56,7 +56,7 @@ layer AgentLayer as agentlayer
 	
 	def Communicate_answer_on_frequency(_sender_identifier : string, _receiver : string, _message_type : string, _message_information_path : List<Tuple<real, real>>, _message_information_heading : integer)
 	{
-		if (message_on_frequency === false)
+		if (message_on_frequency === false or _sender_identifier ==="Tower")
 		{
 			sender_identifier = _sender_identifier
 			receiver = _receiver
@@ -1716,9 +1716,7 @@ agent AirTrafficController on AgentLayer
 				timehandler.create_action_duration(2, 2, "None")
 				if (timehandler.hold_action_time(timehandler.action_duration))
 				{
-					agentlayer.Clear_frequency() // Tower always able to answer or Clear Frequency, when request insufficient	
-					runway_heading_calculated = 107 // TODO: Add information retrieval for heading
-					
+					runway_heading_calculated = 107 // TODO: Add information retrieval/calculation for heading
 					if (message_type_received === "RequestTakeOffPreparationPoint")
 					{
 						taxipath = airportstade.Get_taxipath_to_TakeOffPreparationPoint(runway_heading_calculated)
@@ -1736,6 +1734,10 @@ agent AirTrafficController on AgentLayer
 						taxipath = airportstade.Get_taxipath_to_RunwayLineUpPoint(runway_heading_calculated)
 						agentlayer.Communicate_answer_on_frequency(identifier, callsign_received, "AnswerTakeOff", taxipath, runway_heading_calculated)
 						state = "Listen_on_frequency"
+					}
+					else
+					{
+						agentlayer.Clear_frequency() // Tower always able to answer or Clear Frequency, when request insufficient		
 					}
 				}
 			}

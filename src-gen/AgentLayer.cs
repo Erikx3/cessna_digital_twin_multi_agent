@@ -220,7 +220,7 @@ namespace cessna_digital_twin {
 		public void Communicate_answer_on_frequency(string _sender_identifier, string _receiver, string _message_type, Mars.Components.Common.MarsList<System.Tuple<double,double>> _message_information_path, int _message_information_heading) 
 		{
 			{
-			if(Equals(message_on_frequency, false)) {
+			if(Equals(message_on_frequency, false) || Equals(_sender_identifier, "Tower")) {
 							{
 							sender_identifier = _sender_identifier;
 							receiver = _receiver;

@@ -125,12 +125,12 @@ namespace cessna_digital_twin {
 			double y_spawn = agentlayer.Get_spawn_y_coord();
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget1694_49846 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget1694_49879 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object1694_49846 = this;
+				var _object1694_49879 = this;
 				
-				_AgentLayer._AirTrafficControllerEnvironment.PosAt(_object1694_49846, 
-					_taget1694_49846.Item1, _taget1694_49846.Item2
+				_AgentLayer._AirTrafficControllerEnvironment.PosAt(_object1694_49879, 
+					_taget1694_49879.Item1, _taget1694_49879.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke()
@@ -165,7 +165,6 @@ namespace cessna_digital_twin {
 											if(timehandler.hold_action_time(timehandler.action_duration)
 											) {
 															{
-															agentlayer.Clear_frequency();
 															runway_heading_calculated = 107;
 															if(Equals(message_type_received, "RequestTakeOffPreparationPoint")) {
 																			{
@@ -187,7 +186,11 @@ namespace cessna_digital_twin {
 																											agentlayer.Communicate_answer_on_frequency(identifier,callsign_received,"AnswerTakeOff",taxipath,runway_heading_calculated);
 																											state = "Listen_on_frequency"
 																											;}
-																									;} 
+																									;} else {
+																											{
+																											agentlayer.Clear_frequency()
+																											;}
+																										;}
 																						;}
 																		;}
 															;}
