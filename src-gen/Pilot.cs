@@ -146,6 +146,14 @@ namespace cessna_digital_twin {
 				if(__state_after_taxiing != value) __state_after_taxiing = value;
 			}
 		}
+		private double __distance_to_next_point
+			 = default(double);
+		internal double distance_to_next_point { 
+			get { return __distance_to_next_point; }
+			set{
+				if(System.Math.Abs(__distance_to_next_point - value) > 0.0000001) __distance_to_next_point = value;
+			}
+		}
 		private int __age_max
 			 = 75;
 		internal int age_max { 
@@ -198,13 +206,13 @@ namespace cessna_digital_twin {
 			{
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget198_5373 = (myAircraft.Get_position()
+				var _taget199_5409 = (myAircraft.Get_position()
 				);
 				
-				var _object198_5373 = this;
+				var _object199_5409 = this;
 				
-				_AgentLayer._PilotEnvironment.PosAt(_object198_5373, 
-					_taget198_5373.Item1, _taget198_5373.Item2
+				_AgentLayer._PilotEnvironment.PosAt(_object199_5409, 
+					_taget199_5409.Item1, _taget199_5409.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
@@ -865,36 +873,97 @@ namespace cessna_digital_twin {
 					;} else {
 							if(Equals(next_action, "ReadyForRotate")) {
 											{
-											if(Check_Instrument_Aircraft__speed_x() > 30) {
+											timehandler.create_action_duration(2,1,"pilot_age_and_experience");
+											if(timehandler.hold_action_time(timehandler.action_duration)
+											) {
 															{
-															temp_pitch_value = 8;
-															Apply_Aircraft__pitch(temp_pitch_value);
-															next_action = "ControlAircraft"
+															if(Check_Instrument_Aircraft__speed_x() > 30) {
+																			{
+																			temp_pitch_value = 8;
+																			Apply_Aircraft__pitch(temp_pitch_value);
+																			next_action = "ControlAircraft"
+																			;}
+																	;} 
 															;}
 													;} 
 											;}
 									;} else {
 											if(Equals(next_action, "ControlAircraft")) {
 															{
-															if(Check_Instrument_Aircraft__climb_rate() > 3) {
+															timehandler.create_action_duration(2,1,"pilot_age_and_experience");
+															if(timehandler.hold_action_time(timehandler.action_duration)
+															) {
 																			{
-																			temp_pitch_value = temp_pitch_value - 1;
-																			Apply_Aircraft__pitch(temp_pitch_value)
-																			;}
-																	;} else {
-																			if(Check_Instrument_Aircraft__climb_rate() < 1) {
+																			if(Check_Instrument_Aircraft__climb_rate() > 3) {
 																							{
-																							temp_pitch_value = temp_pitch_value + 1;
+																							temp_pitch_value = temp_pitch_value - 0.5;
 																							Apply_Aircraft__pitch(temp_pitch_value)
 																							;}
-																					;} 
-																		;};
+																					;} else {
+																							if(Check_Instrument_Aircraft__climb_rate() < 1) {
+																											{
+																											temp_pitch_value = temp_pitch_value + 0.5;
+																											Apply_Aircraft__pitch(temp_pitch_value)
+																											;}
+																									;} 
+																						;}
+																			;}
+																	;} ;
 															System.Console.WriteLine("Aircraft Speed:");;
 															System.Console.WriteLine(Check_Instrument_Aircraft__speed_x());;
 															System.Console.WriteLine("Aircraft Height:");;
 															System.Console.WriteLine(Check_Instrument_Aircraft__height());
 															;}
 													;} 
+										;}
+						;}
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void Taxiing_to_final_point() 
+		{
+			{
+			if(distance_to_next_point < 5) {
+							{
+							Apply_Brake__deceleration(0.5);
+							Apply_Engine__throttle(0.10);
+							next_action = "End_of_Actions"
+							;}
+					;} else {
+							{
+							if(Check_Instrument_Aircraft__speed_x() > 5) {
+											{
+											Apply_Engine__throttle(0.10);
+											Apply_Brake__deceleration(0.2)
+											;}
+									;} else {
+											{
+											Apply_Engine__throttle(0.15)
+											;}
+										;}
+							;}
+						;}
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void Taxiing_normal() 
+		{
+			{
+			if(Check_Instrument_Aircraft__speed_x() > 8) {
+							{
+							Apply_Engine__throttle(0.10)
+							;}
+					;} else {
+							if(Check_Instrument_Aircraft__speed_x() < 5) {
+											{
+											Apply_Engine__throttle(0.40)
+											;}
+									;} else {
+											{
+											Apply_Engine__throttle(0.20)
+											;}
 										;}
 						;}
 			;}
@@ -930,57 +999,24 @@ namespace cessna_digital_twin {
 											System.Tuple<double,double> active_taxi_point = taxi_path.Get(active_taxi_point_number);
 											myAircraft.Set_Aircraft__heading_mode("COORDINATES");
 											Set_Aircraft__heading_coordinates(active_taxi_point);
-											double distance_to_next_point = formula.haversine(myAircraft.Get_position(),
+											distance_to_next_point = formula.haversine(myAircraft.Get_position(),
 											active_taxi_point);
 											if(distance_to_next_point < 20) {
 															{
 															if(Equals(taxi_path_points, (active_taxi_point_number + 1))) {
 																			{
-																			if(distance_to_next_point < 5) {
-																							{
-																							Apply_Brake__deceleration(0.5);
-																							Apply_Engine__throttle(0.10);
-																							next_action = "End_of_Actions"
-																							;}
-																					;} else {
-																							{
-																							if(Check_Instrument_Aircraft__speed_x() > 5) {
-																											{
-																											Apply_Engine__throttle(0.10);
-																											Apply_Brake__deceleration(0.2)
-																											;}
-																									;} else {
-																											{
-																											Apply_Engine__throttle(0.15)
-																											;}
-																										;}
-																							;}
-																						;}
+																			Taxiing_to_final_point()
 																			;}
 																	;} else {
 																			{
 																			active_taxi_point_number = active_taxi_point_number + 1;
-																			Apply_Engine__throttle(0.16)
+																			Taxiing_normal()
 																			;}
 																		;}
 															;}
 													;} else {
 															{
-															if(Check_Instrument_Aircraft__speed_x() > 8) {
-																			{
-																			Apply_Engine__throttle(0.10)
-																			;}
-																	;} else {
-																			if(Check_Instrument_Aircraft__speed_x() < 5) {
-																							{
-																							Apply_Engine__throttle(0.40)
-																							;}
-																					;} else {
-																							{
-																							Apply_Engine__throttle(0.20)
-																							;}
-																						;}
-																		;}
+															Taxiing_normal()
 															;}
 														;};
 											System.Console.WriteLine("-----Taxiing-----");;

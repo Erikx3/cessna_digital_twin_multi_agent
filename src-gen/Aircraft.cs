@@ -728,7 +728,7 @@ namespace cessna_digital_twin {
 			Aircraft__climb_rate = 0.0;
 			Aircraft__angle_of_attack = 0.0;
 			Aircraft__drag = 0.0;
-			Aircraft__zero_lift_angle = -4.0
+			Aircraft__zero_lift_angle = -3.0
 			;}
 			return;
 		}

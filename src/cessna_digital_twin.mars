@@ -177,6 +177,7 @@ agent Pilot on AgentLayer{
 	var active_taxi_point_number : integer = 0 // for indicating actual taxi point
 	var heading_information : integer // for saving heading value
 	var state_after_taxiing : string
+	var distance_to_next_point : real
 	
 	//Settings
 	var age_max : integer = 75
@@ -759,26 +760,36 @@ agent Pilot on AgentLayer{
 		
 		else if (next_action === "ReadyForRotate")
 		{
-			if (Check_Instrument_Aircraft__speed_x() > 30)
+			timehandler.create_action_duration(2, 1, "pilot_age_and_experience")  // simulating check of instrument every 2 sec
+			if (timehandler.hold_action_time(timehandler.action_duration))  
 			{
-				temp_pitch_value = 8
-				Apply_Aircraft__pitch(temp_pitch_value)
-				next_action = "ControlAircraft"
+				if (Check_Instrument_Aircraft__speed_x() > 30)
+				{
+					temp_pitch_value = 8
+					Apply_Aircraft__pitch(temp_pitch_value)
+					next_action = "ControlAircraft"
+				}
 			}
+			
 		}
 		
 		else if (next_action === "ControlAircraft")
 		{
-			if (Check_Instrument_Aircraft__climb_rate() > 3)
+			timehandler.create_action_duration(2, 1, "pilot_age_and_experience")  // simulating check of instrument every 2 sec
+			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
-				temp_pitch_value = temp_pitch_value - 1
-				Apply_Aircraft__pitch(temp_pitch_value)
+				if (Check_Instrument_Aircraft__climb_rate() > 3)
+				{
+					temp_pitch_value = temp_pitch_value - 0.5
+					Apply_Aircraft__pitch(temp_pitch_value)
+				}
+				else if (Check_Instrument_Aircraft__climb_rate() < 1)
+				{
+					temp_pitch_value = temp_pitch_value + 0.5
+					Apply_Aircraft__pitch(temp_pitch_value)
+				}
 			}
-			else if (Check_Instrument_Aircraft__climb_rate() < 1)
-			{
-				temp_pitch_value = temp_pitch_value + 1
-				Apply_Aircraft__pitch(temp_pitch_value)
-			}
+
 			
 			println "Aircraft Speed:"
 			println Check_Instrument_Aircraft__speed_x()
@@ -791,6 +802,46 @@ agent Pilot on AgentLayer{
 	
 	
 	//-----State Taxiing in general-----
+	
+	// defining help functions
+	def Taxiing_to_final_point()  // rolling to the end	
+	{
+		if (distance_to_next_point < 5)
+		{
+			Apply_Brake__deceleration(0.5)
+			Apply_Engine__throttle(0.10)
+			next_action = "End_of_Actions"
+		}
+		else
+		{
+			if (Check_Instrument_Aircraft__speed_x() > 5)
+			{
+				Apply_Engine__throttle(0.10)
+				Apply_Brake__deceleration(0.2)
+			}
+			else
+			{
+				Apply_Engine__throttle(0.15)
+			}
+		}
+	}
+	
+	def Taxiing_normal()  // Throttle handling in normal case	
+	{
+		if (Check_Instrument_Aircraft__speed_x() > 8)
+		{
+			Apply_Engine__throttle(0.10)
+		}
+		else if (Check_Instrument_Aircraft__speed_x() < 5)
+		{
+			Apply_Engine__throttle(0.40)
+		}
+		else
+		{
+			Apply_Engine__throttle(0.20)
+		}
+	}
+	
 	def Taxiing_action()
 	{
 		var taxi_path_points = taxi_path.Size()
@@ -820,58 +871,25 @@ agent Pilot on AgentLayer{
 			myAircraft.Set_Aircraft__heading_mode("COORDINATES")
 			Set_Aircraft__heading_coordinates(active_taxi_point)
 			
-			//Distance and throtte handling
-			var distance_to_next_point = formula.haversine(myAircraft.Get_position(), active_taxi_point)			
+			//Distance and throttle handling
+			distance_to_next_point = formula.haversine(myAircraft.Get_position(), active_taxi_point)			
 			if (distance_to_next_point < 20)
 			{
 				//When reaching end point
 				if (taxi_path_points === (active_taxi_point_number + 1))
 				{
-					// rolling to the end
-					if (distance_to_next_point < 5)
-					{
-						Apply_Brake__deceleration(0.5)
-						Apply_Engine__throttle(0.10)
-						next_action = "End_of_Actions"
-					}
-					else
-					{
-						if (Check_Instrument_Aircraft__speed_x() > 5)
-						{
-							Apply_Engine__throttle(0.10)
-							Apply_Brake__deceleration(0.2)
-						}
-						else
-						{
-							Apply_Engine__throttle(0.15)
-						}
-					}
-					
-
-									
+					Taxiing_to_final_point()							
 				}
 				else
 				{
 					active_taxi_point_number = active_taxi_point_number + 1
-					// Transition Throttle
-					Apply_Engine__throttle(0.16)
+					Taxiing_normal()
 				}
 			}
 			else
 			{
-				// Throttle handling in normal case				
-				if (Check_Instrument_Aircraft__speed_x() > 8)
-				{
-					Apply_Engine__throttle(0.10)
-				}
-				else if (Check_Instrument_Aircraft__speed_x() < 5)
-				{
-					Apply_Engine__throttle(0.40)
-				}
-				else
-				{
-					Apply_Engine__throttle(0.20)
-				}
+				Taxiing_normal()			
+				
 			}
 			
 			//TODO: Delete this print section
@@ -1165,7 +1183,9 @@ agent AirTrafficController on AgentLayer
 	}
 
 
+
 // TODO: Make a more convenient way for information retrieval of airport
+// TODO: Adapt heading, so aircraft wont fall off the runway :D
 class AirportStade
 {
 	var taxipath: List<Tuple<real, real>>
