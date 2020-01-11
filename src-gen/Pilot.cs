@@ -198,13 +198,13 @@ namespace cessna_digital_twin {
 			{
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget802_24191 = (myAircraft.Get_position()
+				var _taget198_5373 = (myAircraft.Get_position()
 				);
 				
-				var _object802_24191 = this;
+				var _object198_5373 = this;
 				
-				_AgentLayer._PilotEnvironment.PosAt(_object802_24191, 
-					_taget802_24191.Item1, _taget802_24191.Item2
+				_AgentLayer._PilotEnvironment.PosAt(_object198_5373, 
+					_taget198_5373.Item1, _taget198_5373.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
@@ -1285,32 +1285,32 @@ namespace cessna_digital_twin {
 			double y_spawn = agentlayer.Get_spawn_y_coord();
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget707_21573 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget103_2755 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object707_21573 = this;
+				var _object103_2755 = this;
 				
-				_AgentLayer._PilotEnvironment.PosAt(_object707_21573, 
-					_taget707_21573.Item1, _taget707_21573.Item2
+				_AgentLayer._PilotEnvironment.PosAt(_object103_2755, 
+					_taget103_2755.Item1, _taget103_2755.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
 			myAircraft = new Func<cessna_digital_twin.Aircraft>(() => {
-				Func<cessna_digital_twin.Aircraft, bool> _predicate711_21729 = null;
-				Func<cessna_digital_twin.Aircraft, bool> _predicateMod711_21729 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
+				Func<cessna_digital_twin.Aircraft, bool> _predicate107_2911 = null;
+				Func<cessna_digital_twin.Aircraft, bool> _predicateMod107_2911 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
 				{
 					if (_it?.ID == this.ID)
 					{
 						return false;
-					} else if (_predicate711_21729 != null)
+					} else if (_predicate107_2911 != null)
 					{
-						return _predicate711_21729.Invoke(_it);
+						return _predicate107_2911.Invoke(_it);
 					} else return true;
 				});
 				
-				const int _range711_21729 = -1;
-				var _source711_21729 = this.Position;
+				const int _range107_2911 = -1;
+				var _source107_2911 = this.Position;
 				
-				return _AgentLayer._AircraftEnvironment.Explore(_source711_21729, _range711_21729, 1, _predicateMod711_21729)?.FirstOrDefault();
+				return _AgentLayer._AircraftEnvironment.Explore(_source107_2911, _range107_2911, 1, _predicateMod107_2911)?.FirstOrDefault();
 			}).Invoke();
 			myAircraft_callsign = myAircraft.Get_callsign();
 			update_general_values();

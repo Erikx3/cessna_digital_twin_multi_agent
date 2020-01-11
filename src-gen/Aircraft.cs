@@ -242,12 +242,12 @@ namespace cessna_digital_twin {
 				if(__Brake__parking_brake != value) __Brake__parking_brake = value;
 			}
 		}
-		private double __Brake__application
+		private double __Brake__deceleration_application
 			 = default(double);
-		public double Brake__application { 
-			get { return __Brake__application; }
+		public double Brake__deceleration_application { 
+			get { return __Brake__deceleration_application; }
 			set{
-				if(System.Math.Abs(__Brake__application - value) > 0.0000001) __Brake__application = value;
+				if(System.Math.Abs(__Brake__deceleration_application - value) > 0.0000001) __Brake__deceleration_application = value;
 			}
 		}
 		private double __Brake__deceleration
@@ -642,12 +642,12 @@ namespace cessna_digital_twin {
 			double y_spawn = agentlayer.Get_spawn_y_coord();
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget140_3666 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget47_1150 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object140_3666 = this;
+				var _object47_1150 = this;
 				
-				_AgentLayer._AircraftEnvironment.PosAt(_object140_3666, 
-					_taget140_3666.Item1, _taget140_3666.Item2
+				_AgentLayer._AircraftEnvironment.PosAt(_object47_1150, 
+					_taget47_1150.Item1, _taget47_1150.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
@@ -780,18 +780,18 @@ namespace cessna_digital_twin {
 											{
 											new System.Func<Tuple<double,double>>(() => {
 												
-												var _speed284_9013 = Aircraft__movement_x
+												var _speed191_6497 = Aircraft__movement_x
 											;
 												
-												var _entity284_9013 = this;
+												var _entity191_6497 = this;
 												
-												Func<double[], bool> _predicate284_9013 = null;
+												Func<double[], bool> _predicate191_6497 = null;
 												
-												var _target284_9013 = Aircraft__heading_coordinates;
-												_AgentLayer._AircraftEnvironment.MoveTo(_entity284_9013,
-													 _target284_9013.Item1, _target284_9013.Item2, 
-													_speed284_9013, 
-													_predicate284_9013);
+												var _target191_6497 = Aircraft__heading_coordinates;
+												_AgentLayer._AircraftEnvironment.MoveTo(_entity191_6497,
+													 _target191_6497.Item1, _target191_6497.Item2, 
+													_speed191_6497, 
+													_predicate191_6497);
 												
 												return new Tuple<double, double>(Position.X, Position.Y);
 											}).Invoke()
@@ -801,14 +801,14 @@ namespace cessna_digital_twin {
 															{
 															new System.Func<Tuple<double,double>>(() => {
 																
-																var _speed288_9143 = Aircraft__movement_x
+																var _speed195_6627 = Aircraft__movement_x
 															;
 																
-																var _entity288_9143 = this;
+																var _entity195_6627 = this;
 																
-																Func<double[], bool> _predicate288_9143 = null;
+																Func<double[], bool> _predicate195_6627 = null;
 																
-																_AgentLayer._AircraftEnvironment.MoveTowards(_entity288_9143, Aircraft__heading_bearing, _speed288_9143);	
+																_AgentLayer._AircraftEnvironment.MoveTowards(_entity195_6627, Aircraft__heading_bearing, _speed195_6627);	
 																
 																return new Tuple<double, double>(Position.X, Position.Y);
 															}).Invoke()
@@ -826,7 +826,7 @@ namespace cessna_digital_twin {
 			{
 			Brake__parking_brake = "SET";
 			Brake__deceleration = 0.0;
-			Brake__application = 0.0
+			Brake__deceleration_application = 0.0
 			;}
 			return;
 		}
@@ -834,7 +834,7 @@ namespace cessna_digital_twin {
 		public void update_Brake() 
 		{
 			{
-			Brake__deceleration = Brake__application * Brake__deceleration_max
+			Brake__deceleration = Brake__deceleration_application * Brake__deceleration_max
 			;}
 			return;
 		}
@@ -1236,7 +1236,7 @@ namespace cessna_digital_twin {
 		public void CIP_Apply_Brake__deceleration(
 		double input) {
 			{
-			Brake__application = input
+			Brake__deceleration_application = input
 			;}
 			
 			return;
