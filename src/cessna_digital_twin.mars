@@ -7,7 +7,11 @@ layer AgentLayer as agentlayer
 	
 	//Weather Values TODO: Think about another solution for weather
 	var Weather__density : real = 1.225 // kg/m^3 TODO: Add height dependent density
+	// TODO: Use wind values
+	var Weather__wind_bearing : real  // °
+	var Weather__wind_speed : real  // m/s
 	def Get_Weather__density() => return Weather__density
+	
 	
 	// Physics Values
 	var gravity : real = 9.81 // m/s^2
@@ -17,6 +21,13 @@ layer AgentLayer as agentlayer
 	//-----Spawn Handling-----
 	var spawn_xcor : real = 9.4987928
 	var spawn_ycor : real = 53.560392
+	var callsign_number : integer = 0
+	
+	def Get_callsign_number()
+	{
+		callsign_number = callsign_number + 1
+		return callsign_number
+	}
 	
 	def Update_spawn_coord()
 	{
@@ -97,14 +108,14 @@ agent Pilot on AgentLayer{
 		
 	initialize
 	{
-		// Spawn
+		// Spawn TODO: Add spawning management (observer agent?)
 		var x_spawn = agentlayer.Get_spawn_x_coord()
 		var y_spawn = agentlayer.Get_spawn_y_coord()
 		pos at #(x_spawn, y_spawn)
 		
 		//General Initialization
-		//TODO: Add redundancy for making sure, not two pilots controlling 1 Aircraft
-		myAircraft = nearest Aircraft // assign aircraft only ones
+		myAircraft = nearest Aircraft where [it => return it.Get_occupy_bool() === false]
+		myAircraft.Set_occupied()		
 		myAircraft_callsign = myAircraft.Get_callsign() // save aircraft callsign --> IDENTIFIER!
 		update_general_values() // so first row of csv is not empty
 		state = "PreflightInspection" // always first state so far
@@ -1100,10 +1111,9 @@ agent AirTrafficController on AgentLayer
 	{	
 		initialize
 		{
-			initialize_general_values()
-			// Spawn TODO: Tower Coordinaten und ihn im Kreis laufen lassen ;D
-			var x_spawn = agentlayer.Get_spawn_x_coord()
-			var y_spawn = agentlayer.Get_spawn_y_coord()
+			initialize_general_values()	
+			var x_spawn = 9.501334
+			var y_spawn = 53.559712
 			pos at #(x_spawn, y_spawn)
 		}
 		

@@ -54,6 +54,22 @@ namespace cessna_digital_twin {
 				if(System.Math.Abs(__Weather__density - value) > 0.0000001) __Weather__density = value;
 			}
 		}
+		private double __Weather__wind_bearing
+			 = default(double);
+		internal double Weather__wind_bearing { 
+			get { return __Weather__wind_bearing; }
+			set{
+				if(System.Math.Abs(__Weather__wind_bearing - value) > 0.0000001) __Weather__wind_bearing = value;
+			}
+		}
+		private double __Weather__wind_speed
+			 = default(double);
+		internal double Weather__wind_speed { 
+			get { return __Weather__wind_speed; }
+			set{
+				if(System.Math.Abs(__Weather__wind_speed - value) > 0.0000001) __Weather__wind_speed = value;
+			}
+		}
 		private double __gravity
 			 = 9.81;
 		internal double gravity { 
@@ -76,6 +92,14 @@ namespace cessna_digital_twin {
 			get { return __spawn_ycor; }
 			set{
 				if(System.Math.Abs(__spawn_ycor - value) > 0.0000001) __spawn_ycor = value;
+			}
+		}
+		private int __callsign_number
+			 = 0;
+		internal int callsign_number { 
+			get { return __callsign_number; }
+			set{
+				if(__callsign_number != value) __callsign_number = value;
 			}
 		}
 		private bool __frequency_blocked
@@ -143,6 +167,15 @@ namespace cessna_digital_twin {
 					;
 			}
 			return default(double);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public int Get_callsign_number() 
+		{
+			{
+			callsign_number = callsign_number + 1;
+			return callsign_number
+			;}
+			return default(int);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public void Update_spawn_coord() 

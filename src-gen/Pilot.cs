@@ -206,13 +206,13 @@ namespace cessna_digital_twin {
 			{
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget199_5409 = (myAircraft.Get_position()
+				var _taget210_5684 = (myAircraft.Get_position()
 				);
 				
-				var _object199_5409 = this;
+				var _object210_5684 = this;
 				
-				_AgentLayer._PilotEnvironment.PosAt(_object199_5409, 
-					_taget199_5409.Item1, _taget199_5409.Item2
+				_AgentLayer._PilotEnvironment.PosAt(_object210_5684, 
+					_taget210_5684.Item1, _taget210_5684.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
@@ -1321,33 +1321,42 @@ namespace cessna_digital_twin {
 			double y_spawn = agentlayer.Get_spawn_y_coord();
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget103_2755 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget114_3057 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object103_2755 = this;
+				var _object114_3057 = this;
 				
-				_AgentLayer._PilotEnvironment.PosAt(_object103_2755, 
-					_taget103_2755.Item1, _taget103_2755.Item2
+				_AgentLayer._PilotEnvironment.PosAt(_object114_3057, 
+					_taget114_3057.Item1, _taget114_3057.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
 			myAircraft = new Func<cessna_digital_twin.Aircraft>(() => {
-				Func<cessna_digital_twin.Aircraft, bool> _predicate107_2911 = null;
-				Func<cessna_digital_twin.Aircraft, bool> _predicateMod107_2911 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
+				Func<cessna_digital_twin.Aircraft, bool> _predicate117_3132 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft it) => 
+				 {
+						{
+						return Equals(it.Get_occupy_bool()
+						, false)
+						;}
+						;
+						return default(bool);;
+				});
+				Func<cessna_digital_twin.Aircraft, bool> _predicateMod117_3132 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
 				{
 					if (_it?.ID == this.ID)
 					{
 						return false;
-					} else if (_predicate107_2911 != null)
+					} else if (_predicate117_3132 != null)
 					{
-						return _predicate107_2911.Invoke(_it);
+						return _predicate117_3132.Invoke(_it);
 					} else return true;
 				});
 				
-				const int _range107_2911 = -1;
-				var _source107_2911 = this.Position;
+				const int _range117_3132 = -1;
+				var _source117_3132 = this.Position;
 				
-				return _AgentLayer._AircraftEnvironment.Explore(_source107_2911, _range107_2911, 1, _predicateMod107_2911)?.FirstOrDefault();
+				return _AgentLayer._AircraftEnvironment.Explore(_source117_3132, _range117_3132, 1, _predicateMod117_3132)?.FirstOrDefault();
 			}).Invoke();
+			myAircraft.Set_occupied();
 			myAircraft_callsign = myAircraft.Get_callsign();
 			update_general_values();
 			state = "PreflightInspection";

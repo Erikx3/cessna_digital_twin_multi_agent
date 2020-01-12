@@ -133,16 +133,16 @@ namespace cessna_digital_twin {
 			_executionFrequency = freq;
 			{
 			initialize_general_values();
-			double x_spawn = agentlayer.Get_spawn_x_coord();
-			double y_spawn = agentlayer.Get_spawn_y_coord();
+			double x_spawn = 9.501334;
+			double y_spawn = 53.559712;
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget1107_31528 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget1117_31690 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object1107_31528 = this;
+				var _object1117_31690 = this;
 				
-				_AgentLayer._AirTrafficControllerEnvironment.PosAt(_object1107_31528, 
-					_taget1107_31528.Item1, _taget1107_31528.Item2
+				_AgentLayer._AirTrafficControllerEnvironment.PosAt(_object1117_31690, 
+					_taget1117_31690.Item1, _taget1117_31690.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke()

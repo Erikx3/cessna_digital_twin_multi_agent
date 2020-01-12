@@ -42,6 +42,14 @@ namespace cessna_digital_twin {
 				if(__Aircraft__heading_mode != value) __Aircraft__heading_mode = value;
 			}
 		}
+		private bool __occupied
+			 = false;
+		internal bool occupied { 
+			get { return __occupied; }
+			set{
+				if(__occupied != value) __occupied = value;
+			}
+		}
 		private string __Aircraft__callsign
 			 = default(string);
 		public string Aircraft__callsign { 
@@ -642,12 +650,12 @@ namespace cessna_digital_twin {
 			double y_spawn = agentlayer.Get_spawn_y_coord();
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget47_1150 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget51_1289 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object47_1150 = this;
+				var _object51_1289 = this;
 				
-				_AgentLayer._AircraftEnvironment.PosAt(_object47_1150, 
-					_taget47_1150.Item1, _taget47_1150.Item2
+				_AgentLayer._AircraftEnvironment.PosAt(_object51_1289, 
+					_taget51_1289.Item1, _taget51_1289.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
@@ -679,7 +687,7 @@ namespace cessna_digital_twin {
 		public void initialize_AircraftCharacteristics() 
 		{
 			{
-			Aircraft__callsign = "Cessna" + _Random.Next(10000)
+			Aircraft__callsign = "Cessna" + agentlayer.Get_callsign_number()
 			;}
 			return;
 		}
@@ -780,18 +788,18 @@ namespace cessna_digital_twin {
 											{
 											new System.Func<Tuple<double,double>>(() => {
 												
-												var _speed191_6497 = Aircraft__movement_x
+												var _speed195_6616 = Aircraft__movement_x
 											;
 												
-												var _entity191_6497 = this;
+												var _entity195_6616 = this;
 												
-												Func<double[], bool> _predicate191_6497 = null;
+												Func<double[], bool> _predicate195_6616 = null;
 												
-												var _target191_6497 = Aircraft__heading_coordinates;
-												_AgentLayer._AircraftEnvironment.MoveTo(_entity191_6497,
-													 _target191_6497.Item1, _target191_6497.Item2, 
-													_speed191_6497, 
-													_predicate191_6497);
+												var _target195_6616 = Aircraft__heading_coordinates;
+												_AgentLayer._AircraftEnvironment.MoveTo(_entity195_6616,
+													 _target195_6616.Item1, _target195_6616.Item2, 
+													_speed195_6616, 
+													_predicate195_6616);
 												
 												return new Tuple<double, double>(Position.X, Position.Y);
 											}).Invoke()
@@ -801,14 +809,14 @@ namespace cessna_digital_twin {
 															{
 															new System.Func<Tuple<double,double>>(() => {
 																
-																var _speed195_6627 = Aircraft__movement_x
+																var _speed199_6746 = Aircraft__movement_x
 															;
 																
-																var _entity195_6627 = this;
+																var _entity199_6746 = this;
 																
-																Func<double[], bool> _predicate195_6627 = null;
+																Func<double[], bool> _predicate199_6746 = null;
 																
-																_AgentLayer._AircraftEnvironment.MoveTowards(_entity195_6627, Aircraft__heading_bearing, _speed195_6627);	
+																_AgentLayer._AircraftEnvironment.MoveTowards(_entity199_6746, Aircraft__heading_bearing, _speed199_6746);	
 																
 																return new Tuple<double, double>(Position.X, Position.Y);
 															}).Invoke()
@@ -1047,6 +1055,24 @@ namespace cessna_digital_twin {
 			{
 			CIP__master_switch = "OFF"
 			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public bool Get_occupy_bool() {
+			{
+			return occupied
+					;
+			}
+			
+			return default(bool);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void Set_occupied() {
+			{
+			occupied = true
+					;
+			}
+			
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]

@@ -33,8 +33,12 @@ agent Aircraft on AgentLayer{
 	// -----General Values and Functions (Settings and Doc)-----
 	observe var Latitude : real
 	observe var Longitude : real
-	//TODO: Add calculation of heading between two point to pilot
-	var Aircraft__heading_mode : string // either "BEARING" or "COORDINATES"	
+	//TODO: Add calculation of heading between two points to pilot to remove this
+	var Aircraft__heading_mode : string // either "BEARING" or "COORDINATES"
+	
+	var occupied : bool = false
+	passive Get_occupy_bool() => return occupied
+	passive Set_occupied() => occupied = true
 	
 	// TODO: Think about this for documentation
 	//observe var passive_activity: string // activity by pilot is more precise
@@ -72,7 +76,7 @@ agent Aircraft on AgentLayer{
 	
 	def initialize_AircraftCharacteristics()
 	{
-		Aircraft__callsign = "Cessna" + random(10000) //TODO: Make sure, Callsign is Unique!
+		Aircraft__callsign = "Cessna" + agentlayer.Get_callsign_number()
 	}
 	
 	passive Get_callsign() => return Aircraft__callsign
@@ -228,7 +232,7 @@ agent Aircraft on AgentLayer{
 	
 	// Thrust Coefficient (See Excel "Calculation Table")
 	observe var Propeller__thrust_coefficient : real
-	var Propeller__thrust_coefficient_slope : real // TODO: has to be initialized, since negative and Mars does not allow direct negative number assignment
+	var Propeller__thrust_coefficient_slope : real // has to be initialized, since negative and Mars does not allow direct negative number assignment
 	var Propeller__thrust_coefficient_constant : real = 0.1
 	var Propeller__thrust_coefficient_speed_constant : real = 25.0 //Up to which speed coefficient is constant
 	def Get_Propeller__thrust_coefficient()
@@ -273,7 +277,7 @@ agent Aircraft on AgentLayer{
 	//Power Coefficient (See Excel "Calculation Table")
 	//Note: assumption cp = f(V/(n*d)) with n*d=1
 	var Engine__power_coefficient : real
-	var Engine__power_coefficient_slope : real // TODO: has to be initialized, since negative and Mars does not allow direct negative number assignment
+	var Engine__power_coefficient_slope : real // has to be initialized, since negative and Mars does not allow direct negative number assignment
 	var Engine__power_coefficient_constant : real = 0.05
 	var Engine__power_coefficient_speed_constant : real = 30.0 //Up to which speed coefficient is constant
 	
@@ -562,7 +566,7 @@ agent Aircraft on AgentLayer{
 	//airspeed_indicator
 	passive IP_Get_Aircraft__speed_x()
 	{
-		//TODO: Right Aircraft Speed indication calculation
+		//TODO: Right Aircraft Speed indication calculation after wind implementation
 		return Aircraft__speed_x
 	}
 	

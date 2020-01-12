@@ -29,11 +29,11 @@
     "agents": [
         {
             "name":"Pilot",
-            "count":1,
+            "count":2,
         },
         {
             "name":"Aircraft",
-            "count":1,
+            "count":2,
             // Deactivate the output for the Observer agent
             //"outputFrequency": -1
         },
