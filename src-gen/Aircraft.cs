@@ -42,6 +42,14 @@ namespace cessna_digital_twin {
 				if(__Aircraft__heading_mode != value) __Aircraft__heading_mode = value;
 			}
 		}
+		private cessna_digital_twin.Util __Utility
+			 = new cessna_digital_twin.Util();
+		internal cessna_digital_twin.Util Utility { 
+			get { return __Utility; }
+			set{
+				if(__Utility != value) __Utility = value;
+			}
+		}
 		private bool __occupied
 			 = false;
 		internal bool occupied { 
@@ -394,6 +402,30 @@ namespace cessna_digital_twin {
 				if(__Engine__running != value) __Engine__running = value;
 			}
 		}
+		private double __Engine__failure_probability
+			 = default(double);
+		public double Engine__failure_probability { 
+			get { return __Engine__failure_probability; }
+			set{
+				if(System.Math.Abs(__Engine__failure_probability - value) > 0.0000001) __Engine__failure_probability = value;
+			}
+		}
+		private bool __Engine__failure
+			 = default(bool);
+		public bool Engine__failure { 
+			get { return __Engine__failure; }
+			set{
+				if(__Engine__failure != value) __Engine__failure = value;
+			}
+		}
+		private double __Engine__fuel_consumption
+			 = default(double);
+		public double Engine__fuel_consumption { 
+			get { return __Engine__fuel_consumption; }
+			set{
+				if(System.Math.Abs(__Engine__fuel_consumption - value) > 0.0000001) __Engine__fuel_consumption = value;
+			}
+		}
 		private double __Engine__power_coefficient
 			 = default(double);
 		internal double Engine__power_coefficient { 
@@ -504,6 +536,14 @@ namespace cessna_digital_twin {
 			get { return __Engine__power_max; }
 			set{
 				if(__Engine__power_max != value) __Engine__power_max = value;
+			}
+		}
+		private double __Engine__fuel_consumption_max
+			 = 0.0079;
+		internal double Engine__fuel_consumption_max { 
+			get { return __Engine__fuel_consumption_max; }
+			set{
+				if(System.Math.Abs(__Engine__fuel_consumption_max - value) > 0.0000001) __Engine__fuel_consumption_max = value;
 			}
 		}
 		private double __RWT__fuel_quantity
@@ -650,12 +690,12 @@ namespace cessna_digital_twin {
 			double y_spawn = agentlayer.Get_spawn_y_coord();
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget51_1289 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget57_1435 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object51_1289 = this;
+				var _object57_1435 = this;
 				
-				_AgentLayer._AircraftEnvironment.PosAt(_object51_1289, 
-					_taget51_1289.Item1, _taget51_1289.Item2
+				_AgentLayer._AircraftEnvironment.PosAt(_object57_1435, 
+					_taget57_1435.Item1, _taget57_1435.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
@@ -788,18 +828,18 @@ namespace cessna_digital_twin {
 											{
 											new System.Func<Tuple<double,double>>(() => {
 												
-												var _speed195_6616 = Aircraft__movement_x
+												var _speed201_6762 = Aircraft__movement_x
 											;
 												
-												var _entity195_6616 = this;
+												var _entity201_6762 = this;
 												
-												Func<double[], bool> _predicate195_6616 = null;
+												Func<double[], bool> _predicate201_6762 = null;
 												
-												var _target195_6616 = Aircraft__heading_coordinates;
-												_AgentLayer._AircraftEnvironment.MoveTo(_entity195_6616,
-													 _target195_6616.Item1, _target195_6616.Item2, 
-													_speed195_6616, 
-													_predicate195_6616);
+												var _target201_6762 = Aircraft__heading_coordinates;
+												_AgentLayer._AircraftEnvironment.MoveTo(_entity201_6762,
+													 _target201_6762.Item1, _target201_6762.Item2, 
+													_speed201_6762, 
+													_predicate201_6762);
 												
 												return new Tuple<double, double>(Position.X, Position.Y);
 											}).Invoke()
@@ -809,14 +849,14 @@ namespace cessna_digital_twin {
 															{
 															new System.Func<Tuple<double,double>>(() => {
 																
-																var _speed199_6746 = Aircraft__movement_x
+																var _speed205_6892 = Aircraft__movement_x
 															;
 																
-																var _entity199_6746 = this;
+																var _entity205_6892 = this;
 																
-																Func<double[], bool> _predicate199_6746 = null;
+																Func<double[], bool> _predicate205_6892 = null;
 																
-																_AgentLayer._AircraftEnvironment.MoveTowards(_entity199_6746, Aircraft__heading_bearing, _speed199_6746);	
+																_AgentLayer._AircraftEnvironment.MoveTowards(_entity205_6892, Aircraft__heading_bearing, _speed205_6892);	
 																
 																return new Tuple<double, double>(Position.X, Position.Y);
 															}).Invoke()
@@ -916,6 +956,9 @@ namespace cessna_digital_twin {
 			Engine__running = false;
 			Engine__oil_pressure = 101325;
 			Engine__oil_temperature = 15;
+			Engine__failure_probability = Mars.Components.Common.Math.Pow(10, (-6));
+			Engine__failure = false;
+			Engine__fuel_consumption = 0.0;
 			Engine__power_coefficient_slope = -0.0009
 			;}
 			return;
@@ -934,10 +977,10 @@ namespace cessna_digital_twin {
 		public void update_Engine() 
 		{
 			{
-			if(Equals(Engine__running, false)) {
+			if(Equals(Engine__running, false) || Equals(Engine__failure, true)) {
 							{
 							Set_Engine__not_running_values();
-							if(Equals(Engine__ignition_switch, "START") && Equals(CIP__master_switch, "ON")) {
+							if(Equals(Engine__ignition_switch, "START") && Equals(CIP__master_switch, "ON") && Equals(Engine__failure, false)) {
 											{
 											if(_Random.Next(100)
 											 <= 40) {
@@ -961,6 +1004,13 @@ namespace cessna_digital_twin {
 											Engine__RPM = Engine__RPM_max
 											;}
 									;} ;
+							if(Equals(Utility.probability_check(Engine__failure_probability)
+							, true)) {
+											{
+											Engine__failure = true
+											;}
+									;} ;
+							Engine__fuel_consumption = Engine__fuel_consumption_max * Engine__throttle;
 							int temp_Engine__oil_pressure_normal_half = (Engine__oil_pressure_normal_max + Engine__oil_pressure_normal_min) / 2;
 							int temp_Engine__oil_temperature_normal_half = (Engine__oil_temperature_normal_max + Engine__oil_temperature_normal_min) / 2;
 							Engine__oil_pressure = temp_Engine__oil_pressure_normal_half;
@@ -986,11 +1036,27 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void update_RightWingTank() 
+		{
+			{
+			RWT__fuel_quantity = RWT__fuel_quantity - Engine__fuel_consumption / 2
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public void initialize_LeftWingTank() 
 		{
 			{
 			LWT__fuel_quantity = _Random.Next(LWT__total_capacity + 1);
 			LWT__water_sediments = false
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void update_LeftWingTank() 
+		{
+			{
+			LWT__fuel_quantity = LWT__fuel_quantity - Engine__fuel_consumption / 2
 			;}
 			return;
 		}
@@ -1396,6 +1462,8 @@ namespace cessna_digital_twin {
 			{
 			update_general_values();
 			update_Engine();
+			update_LeftWingTank();
+			update_RightWingTank();
 			update_Propeller();
 			update_Tire();
 			update_Brake();

@@ -22,6 +22,8 @@ agent Aircraft on AgentLayer{
 	{
 		update_general_values()
 		update_Engine()
+		update_LeftWingTank()
+		update_RightWingTank()
 		update_Propeller()
 		update_Tire()
 		update_Brake()
@@ -36,6 +38,10 @@ agent Aircraft on AgentLayer{
 	//TODO: Add calculation of heading between two points to pilot to remove this
 	var Aircraft__heading_mode : string // either "BEARING" or "COORDINATES"
 	
+	//Classes
+	var Utility = new Util()
+	
+	//Making sure only one pilot controls the aircraft
 	var occupied : bool = false
 	passive Get_occupy_bool() => return occupied
 	passive Set_occupied() => occupied = true
@@ -273,6 +279,9 @@ agent Aircraft on AgentLayer{
 	observe var Engine__ignition_switch : string  // "OFF", "L", "R", "BOTH" or "START"
 	observe var Engine__RPM : real  //calculated via formula with power coefficient
 	observe var Engine__running : bool
+	observe var Engine__failure_probability : real // percentage per tick 0..1
+	observe var Engine__failure : bool
+	observe var Engine__fuel_consumption : real // liters/s
 	
 	//Power Coefficient (See Excel "Calculation Table")
 	//Note: assumption cp = f(V/(n*d)) with n*d=1
@@ -305,9 +314,7 @@ agent Aircraft on AgentLayer{
 	var Engine__oil_temperature_normal_max = 116
 	var Engine__RPM_max : integer = 2750
 	var Engine__power_max : integer = 75000 // W
-	
-	//TODO, dependent on throttle settings!
-	//observe var Engine__fuel_consumption : real
+	var Engine__fuel_consumption_max : real = 0.0079 // liters/s (correspond to 7.5 gallon per hour)
 	
 	//TODO Think about implementation
 	//observe var Engine__oil_pump_condition : bool
@@ -326,6 +333,9 @@ agent Aircraft on AgentLayer{
 		Engine__running = false
 		Engine__oil_pressure = 101325
 		Engine__oil_temperature = 15
+		Engine__failure_probability = 10**(-6)
+		Engine__failure = false
+		Engine__fuel_consumption = 0.0
 		
 		Engine__power_coefficient_slope = -0.0009	
 	}
@@ -339,10 +349,10 @@ agent Aircraft on AgentLayer{
 	
 	def update_Engine()
 	{
-		if (Engine__running === false)
+		if (Engine__running === false or Engine__failure === true)
 		{
 			Set_Engine__not_running_values()
-			if (Engine__ignition_switch === "START" and CIP__master_switch === "ON")
+			if (Engine__ignition_switch === "START" and CIP__master_switch === "ON" and Engine__failure === false)
 			{
 				if (random(100) <= 40) // 40% chance for engine to start
 				{
@@ -362,6 +372,15 @@ agent Aircraft on AgentLayer{
 			{
 				Engine__RPM = Engine__RPM_max
 			}
+			
+			// Engine Failure Probability
+			if (Utility.probability_check(Engine__failure_probability) === true)
+			{
+				Engine__failure = true
+			}
+			
+			// Engine fuel_consumption
+			Engine__fuel_consumption = Engine__fuel_consumption_max * Engine__throttle 
 			
 			//Engine Oil TODO: Make dependent on engine__oil_pump and possible leakage
 			var temp_Engine__oil_pressure_normal_half = (Engine__oil_pressure_normal_max + Engine__oil_pressure_normal_min) / 2
@@ -399,6 +418,11 @@ agent Aircraft on AgentLayer{
 		RWT__water_sediments = false
 	}
 	
+	def update_RightWingTank()
+	{
+		RWT__fuel_quantity = RWT__fuel_quantity - Engine__fuel_consumption/2 //half to each tank
+	}
+	
 	// -----Left Wing Tank (LWT)-----
 	observe var LWT__fuel_quantity : real // Litre
 	observe var LWT__water_sediments : bool
@@ -413,7 +437,10 @@ agent Aircraft on AgentLayer{
 		LWT__water_sediments = false
 	}
 	
-	
+	def update_LeftWingTank()
+	{
+		LWT__fuel_quantity = LWT__fuel_quantity - Engine__fuel_consumption/2 //half to each tank
+	}	
 	
 	
 	// -----Tire-----
@@ -605,3 +632,19 @@ agent Aircraft on AgentLayer{
 	}
 }
 
+class Util
+{
+	def probability_check(probability : real) : bool
+	// Probability Checker for events with a precision of 10^6
+	{
+		var random_value = random(1000000)/1000000
+		if (random_value>probability)
+		{
+			return false
+		}
+		else
+		{
+			return true
+		}
+	}
+}

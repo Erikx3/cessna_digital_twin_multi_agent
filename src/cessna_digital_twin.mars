@@ -771,7 +771,7 @@ agent Pilot on AgentLayer{
 		
 		else if (next_action === "ReadyForRotate")
 		{
-			timehandler.create_action_duration(2, 1, "pilot_age_and_experience")  // simulating check of instrument every 2 sec
+			timehandler.create_action_duration(3, 1, "pilot_age_and_experience")  // simulating check of instrument every 2 sec
 			if (timehandler.hold_action_time(timehandler.action_duration))  
 			{
 				if (Check_Instrument_Aircraft__speed_x() > 30)
@@ -786,17 +786,17 @@ agent Pilot on AgentLayer{
 		
 		else if (next_action === "ControlAircraft")
 		{
-			timehandler.create_action_duration(2, 1, "pilot_age_and_experience")  // simulating check of instrument every 2 sec
+			timehandler.create_action_duration(1, 1, "pilot_age_and_experience")  // simulating check of instrument every 2 sec
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				if (Check_Instrument_Aircraft__climb_rate() > 3)
 				{
-					temp_pitch_value = temp_pitch_value - 0.5
+					temp_pitch_value = temp_pitch_value - 1
 					Apply_Aircraft__pitch(temp_pitch_value)
 				}
 				else if (Check_Instrument_Aircraft__climb_rate() < 1)
 				{
-					temp_pitch_value = temp_pitch_value + 0.5
+					temp_pitch_value = temp_pitch_value + 1
 					Apply_Aircraft__pitch(temp_pitch_value)
 				}
 			}

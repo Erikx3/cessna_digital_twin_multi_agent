@@ -873,7 +873,7 @@ namespace cessna_digital_twin {
 					;} else {
 							if(Equals(next_action, "ReadyForRotate")) {
 											{
-											timehandler.create_action_duration(2,1,"pilot_age_and_experience");
+											timehandler.create_action_duration(3,1,"pilot_age_and_experience");
 											if(timehandler.hold_action_time(timehandler.action_duration)
 											) {
 															{
@@ -890,19 +890,19 @@ namespace cessna_digital_twin {
 									;} else {
 											if(Equals(next_action, "ControlAircraft")) {
 															{
-															timehandler.create_action_duration(2,1,"pilot_age_and_experience");
+															timehandler.create_action_duration(1,1,"pilot_age_and_experience");
 															if(timehandler.hold_action_time(timehandler.action_duration)
 															) {
 																			{
 																			if(Check_Instrument_Aircraft__climb_rate() > 3) {
 																							{
-																							temp_pitch_value = temp_pitch_value - 0.5;
+																							temp_pitch_value = temp_pitch_value - 1;
 																							Apply_Aircraft__pitch(temp_pitch_value)
 																							;}
 																					;} else {
 																							if(Check_Instrument_Aircraft__climb_rate() < 1) {
 																											{
-																											temp_pitch_value = temp_pitch_value + 0.5;
+																											temp_pitch_value = temp_pitch_value + 1;
 																											Apply_Aircraft__pitch(temp_pitch_value)
 																											;}
 																									;} 
