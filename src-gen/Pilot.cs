@@ -291,15 +291,16 @@ namespace cessna_digital_twin {
 											) {
 															{
 															bool check_value = Check_Visual_RWT__water_sediments();
-															if(Equals(check_value, true) && Equals(skip_action(0.05,"Repair_RWT__water_sediments"), false)) {
+															next_action = "Check_RWT__fuel_quantity";
+															if(Equals(check_value, true)) {
 																			{
-																			next_action = "Repair_RWT__water_sediments"
+																			if(Equals(skip_action(0.05,"Repair_RWT__water_sediments"), false)) {
+																							{
+																							next_action = "Repair_RWT__water_sediments"
+																							;}
+																					;} 
 																			;}
-																	;} else {
-																			{
-																			next_action = "Check_RWT__fuel_quantity"
-																			;}
-																		;}
+																	;} 
 															;}
 													;} 
 											;}
@@ -339,95 +340,115 @@ namespace cessna_digital_twin {
 																							) {
 																											{
 																											double check_value = Check_Visual_Engine__oil();
-																											if(check_value >= 0) {
+																											next_action = "Check_TireNoseWheel__inflation";
+																											if(check_value < myAircraft.Get_Engine__oil_min()
+																											) {
 																															{
-																															next_action = "Check_TireNoseWheel__inflation"
+																															if(Equals(skip_action(0.05,"Refill_Engine__oil"), false)) {
+																																			{
+																																			next_action = "Refill_Engine__oil"
+																																			;}
+																																	;} 
 																															;}
 																													;} 
 																											;}
 																									;} 
 																							;}
 																					;} else {
-																							if(Equals(next_action, "Check_TireNoseWheel__inflation")) {
+																							if(Equals(next_action, "Refill_Engine__oil")) {
 																											{
-																											timehandler.create_action_duration(10,10,"pilot_age_and_experience");
+																											timehandler.create_action_duration(20,20,"pilot_age_and_experience");
 																											if(timehandler.hold_action_time(timehandler.action_duration)
 																											) {
 																															{
-																															int check_value = Check_Visual_TireNoseWheel__inflation();
-																															if(check_value >= 0) {
-																																			{
-																																			next_action = "Check_TireLeftMainWheel__inflation"
-																																			;}
-																																	;} 
+																															Refill_Visual_Engine__oil();
+																															next_action = "Check_TireNoseWheel__inflation"
 																															;}
 																													;} 
 																											;}
 																									;} else {
-																											if(Equals(next_action, "Check_TireLeftMainWheel__inflation")) {
+																											if(Equals(next_action, "Check_TireNoseWheel__inflation")) {
 																															{
 																															timehandler.create_action_duration(10,10,"pilot_age_and_experience");
 																															if(timehandler.hold_action_time(timehandler.action_duration)
 																															) {
 																																			{
-																																			int check_value = Check_Visual_TireLeftMainWheel__inflation();
+																																			int check_value = Check_Visual_TireNoseWheel__inflation();
 																																			if(check_value >= 0) {
 																																							{
-																																							next_action = "Check_LWT__water_sediments"
+																																							next_action = "Check_TireLeftMainWheel__inflation"
 																																							;}
 																																					;} 
 																																			;}
 																																	;} 
 																															;}
 																													;} else {
-																															if(Equals(next_action, "Check_LWT__water_sediments")) {
+																															if(Equals(next_action, "Check_TireLeftMainWheel__inflation")) {
 																																			{
-																																			timehandler.create_action_duration(20,20,"pilot_age_and_experience");
+																																			timehandler.create_action_duration(10,10,"pilot_age_and_experience");
 																																			if(timehandler.hold_action_time(timehandler.action_duration)
 																																			) {
 																																							{
-																																							bool check_value = Check_Visual_LWT__water_sediments();
-																																							if(Equals(check_value, true) && Equals(skip_action(0.05,"Repair_LWT__water_sediments"), false)) {
+																																							int check_value = Check_Visual_TireLeftMainWheel__inflation();
+																																							if(check_value >= 0) {
 																																											{
-																																											next_action = "Repair_LWT__water_sediments"
+																																											next_action = "Check_LWT__water_sediments"
 																																											;}
-																																									;} else {
-																																											{
-																																											next_action = "Check_LWT__fuel_quantity"
-																																											;}
-																																										;}
+																																									;} 
 																																							;}
 																																					;} 
 																																			;}
 																																	;} else {
-																																			if(Equals(next_action, "Repair_LWT__water_sediments")) {
+																																			if(Equals(next_action, "Check_LWT__water_sediments")) {
 																																							{
 																																							timehandler.create_action_duration(20,20,"pilot_age_and_experience");
 																																							if(timehandler.hold_action_time(timehandler.action_duration)
 																																							) {
 																																											{
-																																											Repair_Visual_LWT__water_sediments();
-																																											next_action = "Check_LWT__fuel_quantity"
-																																											;}
-																																									;} 
-																																							;}
-																																					;} else {
-																																							if(Equals(next_action, "Check_LWT__fuel_quantity")) {
-																																											{
-																																											timehandler.create_action_duration(20,20,"pilot_age_and_experience");
-																																											if(timehandler.hold_action_time(timehandler.action_duration)
-																																											) {
+																																											bool check_value = Check_Visual_LWT__water_sediments();
+																																											next_action = "Check_LWT__fuel_quantity";
+																																											if(Equals(check_value, true)) {
 																																															{
-																																															double check_value = Check_Visual_LWT__fuel_quantity();
-																																															if(check_value >= 0) {
+																																															if(Equals(skip_action(0.05,"Repair_LWT__water_sediments"), false)) {
 																																																			{
-																																																			next_action = "End_of_Actions"
+																																																			next_action = "Repair_LWT__water_sediments"
 																																																			;}
 																																																	;} 
 																																															;}
 																																													;} 
 																																											;}
 																																									;} 
+																																							;}
+																																					;} else {
+																																							if(Equals(next_action, "Repair_LWT__water_sediments")) {
+																																											{
+																																											timehandler.create_action_duration(20,20,"pilot_age_and_experience");
+																																											if(timehandler.hold_action_time(timehandler.action_duration)
+																																											) {
+																																															{
+																																															Repair_Visual_LWT__water_sediments();
+																																															next_action = "Check_LWT__fuel_quantity"
+																																															;}
+																																													;} 
+																																											;}
+																																									;} else {
+																																											if(Equals(next_action, "Check_LWT__fuel_quantity")) {
+																																															{
+																																															timehandler.create_action_duration(20,20,"pilot_age_and_experience");
+																																															if(timehandler.hold_action_time(timehandler.action_duration)
+																																															) {
+																																																			{
+																																																			double check_value = Check_Visual_LWT__fuel_quantity();
+																																																			if(check_value >= 0) {
+																																																							{
+																																																							next_action = "End_of_Actions"
+																																																							;}
+																																																					;} 
+																																																			;}
+																																																	;} 
+																																															;}
+																																													;} 
+																																										;}
 																																						;}
 																																		;}
 																														;}
@@ -1374,6 +1395,15 @@ namespace cessna_digital_twin {
 			return myAircraft.Get_Engine__oil()
 			;}
 			return default(double);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void Refill_Visual_Engine__oil() 
+		{
+			{
+			System.Console.WriteLine("Refill engine oil");;
+			myAircraft.Refill_Engine__oil()
+			;}
+			return;
 		}
 		internal bool _isAlive;
 		internal int _executionFrequency;

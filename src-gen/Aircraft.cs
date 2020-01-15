@@ -978,7 +978,40 @@ namespace cessna_digital_twin {
 			{
 			Engine__RPM = 0.0;
 			Engine__oil_pressure = 101325;
-			Engine__oil_temperature = 15
+			Engine__oil_temperature = 15;
+			Engine__fuel_consumption = 0.0
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void Add_Engine__failure_probability(double add) 
+		{
+			{
+			Engine__failure_probability = Engine__failure_probability + add
+					;
+			}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void Calculate_Engine__failure_probability() 
+		{
+			{
+			Engine__failure_probability = Mars.Components.Common.Math.Pow(10, (-6));
+			if(Equals(RWT__water_sediments, true)) {
+							{
+							Add_Engine__failure_probability(Mars.Components.Common.Math.Pow(10, (-4)))
+							;}
+					;} ;
+			if(Equals(RWT__water_sediments, true)) {
+							{
+							Add_Engine__failure_probability(Mars.Components.Common.Math.Pow(10, (-4)))
+							;}
+					;} ;
+			if(Engine__oil < Engine__oil_normal) {
+							{
+							Add_Engine__failure_probability(Mars.Components.Common.Math.Pow(10, (-4)))
+							;}
+					;} 
 			;}
 			return;
 		}
@@ -1013,6 +1046,7 @@ namespace cessna_digital_twin {
 											Engine__RPM = Engine__RPM_max
 											;}
 									;} ;
+							Calculate_Engine__failure_probability();
 							if(Equals(Utility.probability_check(Engine__failure_probability)
 							, true)) {
 											{
@@ -1180,6 +1214,15 @@ namespace cessna_digital_twin {
 			return default(string);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public int Get_Engine__oil_min() {
+			{
+			return Engine__oil_min
+					;
+			}
+			
+			return default(int);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public bool Get_Engine__running() {
 			{
 			return Engine__running
@@ -1196,6 +1239,15 @@ namespace cessna_digital_twin {
 			}
 			
 			return default(double);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void Refill_Engine__oil() {
+			{
+			Engine__oil = Engine__oil_max
+					;
+			}
+			
+			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public double Get_RWT__fuel_quantity() {

@@ -342,11 +342,32 @@ agent Aircraft on AgentLayer{
 		Engine__power_coefficient_slope = -0.0009	
 	}
 	
+	passive Get_Engine__oil_min() => return Engine__oil_min
+	
 	def Set_Engine__not_running_values()
 	{
 		Engine__RPM = 0.0
 		Engine__oil_pressure = 101325
 		Engine__oil_temperature = 15
+		Engine__fuel_consumption = 0.0
+	}
+	
+	def Add_Engine__failure_probability(add : real) => Engine__failure_probability = Engine__failure_probability + add
+	def Calculate_Engine__failure_probability()
+	{
+		Engine__failure_probability = 10**(-6)
+		if (RWT__water_sediments === true)
+		{
+			Add_Engine__failure_probability(10**(-4))
+		}
+		if (RWT__water_sediments === true)
+		{
+			Add_Engine__failure_probability(10**(-4))
+		}
+		if (Engine__oil < Engine__oil_normal)
+		{
+			Add_Engine__failure_probability(10**(-4))
+		}
 	}
 	
 	def update_Engine()
@@ -376,6 +397,7 @@ agent Aircraft on AgentLayer{
 			}
 			
 			// Engine Failure Probability
+			Calculate_Engine__failure_probability()
 			if (Utility.probability_check(Engine__failure_probability) === true)
 			{
 				event_info = "Engine Failure"
@@ -392,7 +414,6 @@ agent Aircraft on AgentLayer{
 			Engine__oil_temperature = temp_Engine__oil_temperature_normal_half //TODO: maybe add dependence to throttle here at least
 			if (Engine__oil < Engine__oil_normal)
 			{
-				//TODO: Add effect on Engine failure probability
 				Engine__oil_pressure = Engine__oil_pressure - ((temp_Engine__oil_pressure_normal_half - Engine__oil_pressure_normal_min) * (Engine__oil_normal - Engine__oil))
 				Engine__oil_temperature = Engine__oil_temperature + ((Engine__oil_temperature_normal_max - temp_Engine__oil_temperature_normal_half) * (Engine__oil_normal - Engine__oil))
 			}
@@ -403,6 +424,7 @@ agent Aircraft on AgentLayer{
 	
 	passive Get_Engine__running() => return Engine__running
 	passive Get_Engine__oil() => return Engine__oil
+	passive Refill_Engine__oil() => Engine__oil = Engine__oil_max
 	
 	
 	
