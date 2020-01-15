@@ -245,7 +245,7 @@ namespace cessna_digital_twin {
 			double random_value = Mars.Mathematics.Statistics.RandomHelper.NextDouble(_Random, 0, Mars.Components.Common.Math.Pow(10, 6))
 			 / Mars.Components.Common.Math.Pow(10, 6);
 			double threshold_value = base_probability + flight_experience / flight_experience_max * 0.1;
-			if(random_value > threshold_value) {
+			if(random_value >= threshold_value) {
 							{
 							return false
 							;}
@@ -496,7 +496,11 @@ namespace cessna_digital_twin {
 											if(timehandler.hold_action_time(timehandler.action_duration)
 											) {
 															{
-															Set_Engine__mixture_control(0);
+															if(Equals(skip_action(0.9,"Set_Engine__mixture_control"), false)) {
+																			{
+																			Set_Engine__mixture_control("RICH")
+																			;}
+																	;} ;
 															next_action = "Set_CIP__master_switch"
 															;}
 													;} 
@@ -730,7 +734,11 @@ namespace cessna_digital_twin {
 															if(timehandler.hold_action_time(timehandler.action_duration)
 															) {
 																			{
-																			Set_Engine__mixture_control(0.0);
+																			if(Equals(skip_action(0.9,"Set_Engine__mixture_control"), false)) {
+																							{
+																							Set_Engine__mixture_control("RICH")
+																							;}
+																					;} ;
 																			next_action = "Apply_Engine__throttle_to_1700RPM";
 																			temp_throttle_value = 0.20
 																			;}
@@ -1280,7 +1288,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Set_Engine__mixture_control(double input) 
+		public void Set_Engine__mixture_control(string input) 
 		{
 			{
 			System.Console.WriteLine("Set Mixture Control");;

@@ -275,7 +275,7 @@ agent Aircraft on AgentLayer{
 	observe var Engine__oil : real  // litre
 	observe var Engine__oil_pressure : real // normal between 205000 and 410000 Pa
 	observe var Engine__oil_temperature : real // normal between 38°C and 116°C
-	observe var Engine__mixture_control : real  // percentage RICH 0..1 LEAN
+	observe var Engine__mixture_control : string  // either "RICH" or "LEAN"
 	observe var Engine__throttle : real  // percentage NO THROTTLE 0..1 FULL THROTTLE
 	observe var Engine__power : real // between 0W and 75000W 
 	observe var Engine__ignition_switch : string  // "OFF", "L", "R", "BOTH" or "START"
@@ -327,7 +327,7 @@ agent Aircraft on AgentLayer{
 	def initialize_Engine()
 	{
 		Engine__oil = 3.1 + random(3) + (random(10) / 10.0)
-		Engine__mixture_control = random(101) / 100.0
+		Engine__mixture_control = "LEAN"
 		Engine__throttle = random(10) / 10.0
 		Engine__ignition_switch = "OFF"
 		Engine__RPM = 0.0
@@ -368,6 +368,10 @@ agent Aircraft on AgentLayer{
 		{
 			Add_Engine__failure_probability(10**(-4))
 		}
+		if (Engine__mixture_control === "LEAN")
+		{
+			Add_Engine__failure_probability(10**(-4))
+		}
 	}
 	
 	def update_Engine()
@@ -387,8 +391,14 @@ agent Aircraft on AgentLayer{
 		
 		if (Engine__running === true and Engine__failure === false)
 		{
-			//Engine RPM Calculation
+			//Engine Power Calculation
 			Engine__power = Engine__power_max * Engine__throttle
+			if (Engine__mixture_control === "LEAN")
+			{
+				Engine__power = Engine__power - Engine__power * 0.2 // simulating power loss due to wrong settings during on ground
+			}
+			
+			//Engine RPM Calculation
 			Engine__power_coefficient = Get_Engine__power_coefficient()
 			Engine__RPM = (Engine__power/(Engine__power_coefficient*agentlayer.Get_Weather__density()*Propeller__diameter**5))**0.3333 * 60 // FACTOR 60 TO CONVERT INTO PER MINUTE
 			if (Engine__RPM > Engine__RPM_max)
@@ -597,7 +607,7 @@ agent Aircraft on AgentLayer{
 		Brake__deceleration_application = input
 	}
 	
-	passive CIP_Set_Engine__mixture_control(input : real)
+	passive CIP_Set_Engine__mixture_control(input : string)
 	{
 		Engine__mixture_control = input
 	}
@@ -665,7 +675,7 @@ class Util
 	// Probability Checker for events with a precision of 10^6
 	{
 		var random_value = random(10**6)/10**6
-		if (random_value>probability)
+		if (random_value >= probability)
 		{
 			return false
 		}

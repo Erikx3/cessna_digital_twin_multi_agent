@@ -362,12 +362,12 @@ namespace cessna_digital_twin {
 				if(System.Math.Abs(__Engine__oil_temperature - value) > 0.0000001) __Engine__oil_temperature = value;
 			}
 		}
-		private double __Engine__mixture_control
-			 = default(double);
-		public double Engine__mixture_control { 
+		private string __Engine__mixture_control
+			 = default(string);
+		public string Engine__mixture_control { 
 			get { return __Engine__mixture_control; }
 			set{
-				if(System.Math.Abs(__Engine__mixture_control - value) > 0.0000001) __Engine__mixture_control = value;
+				if(__Engine__mixture_control != value) __Engine__mixture_control = value;
 			}
 		}
 		private double __Engine__throttle
@@ -955,8 +955,7 @@ namespace cessna_digital_twin {
 			Engine__oil = 3.1 + _Random.Next(3)
 			 + (_Random.Next(10)
 			 / 10.0);
-			Engine__mixture_control = _Random.Next(101)
-			 / 100.0;
+			Engine__mixture_control = "LEAN";
 			Engine__throttle = _Random.Next(10)
 			 / 10.0;
 			Engine__ignition_switch = "OFF";
@@ -1011,6 +1010,11 @@ namespace cessna_digital_twin {
 							{
 							Add_Engine__failure_probability(Mars.Components.Common.Math.Pow(10, (-4)))
 							;}
+					;} ;
+			if(Equals(Engine__mixture_control, "LEAN")) {
+							{
+							Add_Engine__failure_probability(Mars.Components.Common.Math.Pow(10, (-4)))
+							;}
 					;} 
 			;}
 			return;
@@ -1038,6 +1042,11 @@ namespace cessna_digital_twin {
 			if(Equals(Engine__running, true) && Equals(Engine__failure, false)) {
 							{
 							Engine__power = Engine__power_max * Engine__throttle;
+							if(Equals(Engine__mixture_control, "LEAN")) {
+											{
+											Engine__power = Engine__power - Engine__power * 0.2
+											;}
+									;} ;
 							Engine__power_coefficient = Get_Engine__power_coefficient();
 							Engine__RPM = Mars.Components.Common.Math.Pow((Engine__power / (Engine__power_coefficient * agentlayer.Get_Weather__density()
 							 * Mars.Components.Common.Math.Pow(Propeller__diameter, 5))), 0.3333) * 60;
@@ -1415,7 +1424,7 @@ namespace cessna_digital_twin {
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public void CIP_Set_Engine__mixture_control(
-		double input) {
+		string input) {
 			{
 			Engine__mixture_control = input
 			;}

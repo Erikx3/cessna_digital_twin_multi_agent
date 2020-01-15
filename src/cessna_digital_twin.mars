@@ -229,7 +229,7 @@ agent Pilot on AgentLayer{
 		// the probability of skiping repair action increases with flight experience
 		var random_value = random(10**6)/10**6
 		var threshold_value = base_probability + flight_experience/flight_experience_max * 0.1
-		if (random_value > threshold_value)
+		if (random_value >= threshold_value)
 		{
 			return false
 		}
@@ -433,7 +433,10 @@ agent Pilot on AgentLayer{
 			timehandler.create_action_duration(4, 2, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
-				Set_Engine__mixture_control(0) // set to rich
+				if(skip_action(0.9, "Set_Engine__mixture_control") === false)
+				{
+					Set_Engine__mixture_control("RICH") // set to rich
+				}
 				next_action = "Set_CIP__master_switch"
 			}
 		}
@@ -627,7 +630,10 @@ agent Pilot on AgentLayer{
 			timehandler.create_action_duration(4, 2, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
-				Set_Engine__mixture_control(0.0) //set to RICH
+				if(skip_action(0.9, "Set_Engine__mixture_control") === false)
+				{
+					Set_Engine__mixture_control("RICH") // set to rich
+				}
 				next_action = "Apply_Engine__throttle_to_1700RPM"
 				temp_throttle_value = 0.20 //starting point for throttle
 			}
@@ -1092,7 +1098,7 @@ agent Pilot on AgentLayer{
 		myAircraft.CIP_Set_Brake__parking_brake(input)
 	}
 	
-	def Set_Engine__mixture_control(input : real)
+	def Set_Engine__mixture_control(input : string)
 	{
 		println "Set Mixture Control"
 		myAircraft.CIP_Set_Engine__mixture_control(input)
