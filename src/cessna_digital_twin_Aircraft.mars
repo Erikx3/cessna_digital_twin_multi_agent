@@ -89,6 +89,7 @@ agent Aircraft on AgentLayer{
 	
 	passive Get_callsign() => return Aircraft__callsign
 	
+	
 	//-----Aircraft(Movement and Physics)-----
 	observe var Aircraft__acceleration_x : real // m/s^2 with x in direction of plane heading
 	observe var Aircraft__speed_x : real // m/s
@@ -105,8 +106,22 @@ agent Aircraft on AgentLayer{
 	
 	observe var Aircraft__drag : real // newton
 	
+	passive Get_Aircraft__acceleration_x() => return Aircraft__acceleration_x
+	passive Get_Aircraft__acceleration_z() => return Aircraft__acceleration_z
+	passive Get_Aircraft__stall_sound() : bool
+	{
+		if (Aircraft__angle_of_attack >= Aircraft__stall_angle -1)
+		{
+			return true
+		}
+		else
+		{
+			return false
+		}
+	}
+	
 	//lift coefficient calculation (See Excel "Calculation_Table")
-	var Aircraft__lift_coefficient : real
+	observe var Aircraft__lift_coefficient : real
 	var Aircraft__lift_coefficient_slope : real = 4.9
 	var Aircraft__zero_lift_angle : real 
 	var Aircraft__total_stall_angle : real = 18.0 // deg, only for calculation purpose
@@ -122,7 +137,7 @@ agent Aircraft on AgentLayer{
 		}
 		else
 		{
-			Aircraft__lift_coefficient = (2 * Aircraft__zero_lift_angle - Aircraft__angle_of_attack) * Constants.Pi / 180 * Aircraft__lift_coefficient_slope
+			Aircraft__lift_coefficient = (2 * Aircraft__stall_angle - Aircraft__angle_of_attack) * Constants.Pi / 180 * Aircraft__lift_coefficient_slope
 		}
 		return Aircraft__lift_coefficient
 	}
@@ -207,9 +222,6 @@ agent Aircraft on AgentLayer{
 				move me Aircraft__movement_x to Aircraft__heading_bearing
 			}
 		}
-		
-		
-		
 	}
 		
 	//-----Brake System-----
@@ -395,7 +407,7 @@ agent Aircraft on AgentLayer{
 			Engine__power = Engine__power_max * Engine__throttle
 			if (Engine__mixture_control === "LEAN")
 			{
-				Engine__power = Engine__power - Engine__power * 0.2 // simulating power loss due to wrong settings during on ground
+				Engine__power = Engine__power - Engine__power * 0.1 // simulating power loss due to wrong settings during on ground
 			}
 			
 			//Engine RPM Calculation

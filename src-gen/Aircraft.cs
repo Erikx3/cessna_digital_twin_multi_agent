@@ -204,7 +204,7 @@ namespace cessna_digital_twin {
 		}
 		private double __Aircraft__lift_coefficient
 			 = default(double);
-		internal double Aircraft__lift_coefficient { 
+		public double Aircraft__lift_coefficient { 
 			get { return __Aircraft__lift_coefficient; }
 			set{
 				if(System.Math.Abs(__Aircraft__lift_coefficient - value) > 0.0000001) __Aircraft__lift_coefficient = value;
@@ -755,7 +755,7 @@ namespace cessna_digital_twin {
 											;}
 									;} else {
 											{
-											Aircraft__lift_coefficient = (2 * Aircraft__zero_lift_angle - Aircraft__angle_of_attack) * Mars.Components.Common.Constants.Pi / 180 * Aircraft__lift_coefficient_slope
+											Aircraft__lift_coefficient = (2 * Aircraft__stall_angle - Aircraft__angle_of_attack) * Mars.Components.Common.Constants.Pi / 180 * Aircraft__lift_coefficient_slope
 											;}
 										;}
 						;};
@@ -837,18 +837,18 @@ namespace cessna_digital_twin {
 											{
 											new System.Func<Tuple<double,double>>(() => {
 												
-												var _speed203_6782 = Aircraft__movement_x
+												var _speed218_7120 = Aircraft__movement_x
 											;
 												
-												var _entity203_6782 = this;
+												var _entity218_7120 = this;
 												
-												Func<double[], bool> _predicate203_6782 = null;
+												Func<double[], bool> _predicate218_7120 = null;
 												
-												var _target203_6782 = Aircraft__heading_coordinates;
-												_AgentLayer._AircraftEnvironment.MoveTo(_entity203_6782,
-													 _target203_6782.Item1, _target203_6782.Item2, 
-													_speed203_6782, 
-													_predicate203_6782);
+												var _target218_7120 = Aircraft__heading_coordinates;
+												_AgentLayer._AircraftEnvironment.MoveTo(_entity218_7120,
+													 _target218_7120.Item1, _target218_7120.Item2, 
+													_speed218_7120, 
+													_predicate218_7120);
 												
 												return new Tuple<double, double>(Position.X, Position.Y);
 											}).Invoke()
@@ -858,14 +858,14 @@ namespace cessna_digital_twin {
 															{
 															new System.Func<Tuple<double,double>>(() => {
 																
-																var _speed207_6912 = Aircraft__movement_x
+																var _speed222_7250 = Aircraft__movement_x
 															;
 																
-																var _entity207_6912 = this;
+																var _entity222_7250 = this;
 																
-																Func<double[], bool> _predicate207_6912 = null;
+																Func<double[], bool> _predicate222_7250 = null;
 																
-																_AgentLayer._AircraftEnvironment.MoveTowards(_entity207_6912, Aircraft__heading_bearing, _speed207_6912);	
+																_AgentLayer._AircraftEnvironment.MoveTowards(_entity222_7250, Aircraft__heading_bearing, _speed222_7250);	
 																
 																return new Tuple<double, double>(Position.X, Position.Y);
 															}).Invoke()
@@ -1044,7 +1044,7 @@ namespace cessna_digital_twin {
 							Engine__power = Engine__power_max * Engine__throttle;
 							if(Equals(Engine__mixture_control, "LEAN")) {
 											{
-											Engine__power = Engine__power - Engine__power * 0.2
+											Engine__power = Engine__power - Engine__power * 0.1
 											;}
 									;} ;
 							Engine__power_coefficient = Get_Engine__power_coefficient();
@@ -1221,6 +1221,40 @@ namespace cessna_digital_twin {
 			}
 			
 			return default(string);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public double Get_Aircraft__acceleration_x() {
+			{
+			return Aircraft__acceleration_x
+					;
+			}
+			
+			return default(double);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public double Get_Aircraft__acceleration_z() {
+			{
+			return Aircraft__acceleration_z
+					;
+			}
+			
+			return default(double);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public bool Get_Aircraft__stall_sound() {
+			{
+			if(Aircraft__angle_of_attack >= Aircraft__stall_angle - 1) {
+							{
+							return true
+							;}
+					;} else {
+							{
+							return false
+							;}
+						;}
+			;}
+			
+			return default(bool);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public int Get_Engine__oil_min() {

@@ -162,6 +162,14 @@ namespace cessna_digital_twin {
 				if(System.Math.Abs(__distance_to_next_point - value) > 0.0000001) __distance_to_next_point = value;
 			}
 		}
+		private double __V_rotate
+			 = 30;
+		internal double V_rotate { 
+			get { return __V_rotate; }
+			set{
+				if(System.Math.Abs(__V_rotate - value) > 0.0000001) __V_rotate = value;
+			}
+		}
 		private int __age
 			 = default(int);
 		public int age { 
@@ -222,13 +230,13 @@ namespace cessna_digital_twin {
 			{
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget207_5663 = (myAircraft.Get_position()
+				var _taget208_5690 = (myAircraft.Get_position()
 				);
 				
-				var _object207_5663 = this;
+				var _object208_5690 = this;
 				
-				_AgentLayer._PilotEnvironment.PosAt(_object207_5663, 
-					_taget207_5663.Item1, _taget207_5663.Item2
+				_AgentLayer._PilotEnvironment.PosAt(_object208_5690, 
+					_taget208_5690.Item1, _taget208_5690.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
@@ -496,7 +504,7 @@ namespace cessna_digital_twin {
 											if(timehandler.hold_action_time(timehandler.action_duration)
 											) {
 															{
-															if(Equals(skip_action(0.9,"Set_Engine__mixture_control"), false)) {
+															if(Equals(skip_action(0.05,"Set_Engine__mixture_control"), false)) {
 																			{
 																			Set_Engine__mixture_control("RICH")
 																			;}
@@ -734,7 +742,7 @@ namespace cessna_digital_twin {
 															if(timehandler.hold_action_time(timehandler.action_duration)
 															) {
 																			{
-																			if(Equals(skip_action(0.9,"Set_Engine__mixture_control"), false)) {
+																			if(Equals(skip_action(0.05,"Set_Engine__mixture_control"), false)) {
 																							{
 																							Set_Engine__mixture_control("RICH")
 																							;}
@@ -754,7 +762,7 @@ namespace cessna_digital_twin {
 																							Apply_Engine__throttle(temp_throttle_value);
 																							if(Check_Instrument_Engine__RPM() < 1700) {
 																											{
-																											temp_throttle_value = temp_throttle_value + 0.02;
+																											temp_throttle_value = temp_throttle_value + 0.05;
 																											next_action = "Apply_Engine__throttle_to_1700RPM"
 																											;}
 																									;} else {
@@ -976,44 +984,80 @@ namespace cessna_digital_twin {
 											if(timehandler.hold_action_time(timehandler.action_duration)
 											) {
 															{
-															if(Check_Instrument_Aircraft__speed_x() > 30) {
+															if(Check_Instrument_Aircraft__speed_x() > V_rotate) {
 																			{
 																			temp_pitch_value = 8;
 																			Apply_Aircraft__pitch(temp_pitch_value);
-																			next_action = "ControlAircraft"
+																			next_action = "HoldAircraft"
 																			;}
 																	;} 
 															;}
 													;} 
 											;}
 									;} else {
-											if(Equals(next_action, "ControlAircraft")) {
+											if(Equals(next_action, "HoldAircraft")) {
 															{
-															timehandler.create_action_duration(1,1,"pilot_age_and_experience");
+															timehandler.create_action_duration(5,1,"pilot_age_and_experience");
 															if(timehandler.hold_action_time(timehandler.action_duration)
 															) {
 																			{
-																			if(Check_Instrument_Aircraft__climb_rate() > 3) {
+																			if(Check_Instrument_Aircraft__height() > 0) {
 																							{
-																							temp_pitch_value = temp_pitch_value - 1;
-																							Apply_Aircraft__pitch(temp_pitch_value)
+																							next_action = "ControlAircraft"
 																							;}
 																					;} else {
-																							if(Check_Instrument_Aircraft__climb_rate() < 1) {
-																											{
-																											temp_pitch_value = temp_pitch_value + 1;
-																											Apply_Aircraft__pitch(temp_pitch_value)
-																											;}
-																									;} 
+																							{
+																							temp_pitch_value = 0;
+																							Apply_Aircraft__pitch(temp_pitch_value);
+																							V_rotate = V_rotate + 5;
+																							next_action = "ReadyForRotate"
+																							;}
 																						;}
 																			;}
-																	;} ;
-															System.Console.WriteLine("Aircraft Speed:");;
-															System.Console.WriteLine(Check_Instrument_Aircraft__speed_x());;
-															System.Console.WriteLine("Aircraft Height:");;
-															System.Console.WriteLine(Check_Instrument_Aircraft__height());
+																	;} 
 															;}
-													;} 
+													;} else {
+															if(Equals(next_action, "ControlAircraft")) {
+																			{
+																			timehandler.create_action_duration(1,1,"pilot_age_and_experience");
+																			if(timehandler.hold_action_time(timehandler.action_duration)
+																			) {
+																							{
+																							if(Equals(Hear_Aircraft__stall_sound(), true)) {
+																											{
+																											temp_pitch_value = temp_pitch_value - 1
+																											;}
+																									;} else {
+																											if(Check_Instrument_Aircraft__climb_rate() > 3) {
+																															{
+																															if(Equals(Feel_Aircraft__deceleration_z(), false)) {
+																																			{
+																																			temp_pitch_value = temp_pitch_value - 0.5
+																																			;}
+																																	;} 
+																															;}
+																													;} else {
+																															if(Check_Instrument_Aircraft__climb_rate() < 1) {
+																																			{
+																																			if(Equals(Feel_Aircraft__acceleration_z(), false)) {
+																																							{
+																																							temp_pitch_value = temp_pitch_value + 0.5
+																																							;}
+																																					;} 
+																																			;}
+																																	;} 
+																														;}
+																										;};
+																							Apply_Aircraft__pitch(temp_pitch_value)
+																							;}
+																					;} ;
+																			System.Console.WriteLine("Aircraft Speed:");;
+																			System.Console.WriteLine(Check_Instrument_Aircraft__speed_x());;
+																			System.Console.WriteLine("Aircraft Height:");;
+																			System.Console.WriteLine(Check_Instrument_Aircraft__height());
+																			;}
+																	;} 
+														;}
 										;}
 						;}
 			;}
@@ -1025,24 +1069,25 @@ namespace cessna_digital_twin {
 			{
 			if(distance_to_next_point < 5) {
 							{
+							temp_throttle_value = 0.1;
 							Apply_Brake__deceleration(0.5);
-							Apply_Engine__throttle(0.10);
 							next_action = "End_of_Actions"
 							;}
 					;} else {
 							{
 							if(Check_Instrument_Aircraft__speed_x() > 5) {
 											{
-											Apply_Engine__throttle(0.10);
+											temp_throttle_value = 0.1;
 											Apply_Brake__deceleration(0.2)
 											;}
 									;} else {
 											{
-											Apply_Engine__throttle(0.15)
+											Taxiing_normal()
 											;}
 										;}
 							;}
-						;}
+						;};
+			Apply_Engine__throttle(temp_throttle_value)
 			;}
 			return;
 		}
@@ -1052,19 +1097,34 @@ namespace cessna_digital_twin {
 			{
 			if(Check_Instrument_Aircraft__speed_x() > 8) {
 							{
-							Apply_Engine__throttle(0.10)
+							if(Equals(Feel_Aircraft__deceleration_x(), false)) {
+											{
+											temp_throttle_value = temp_throttle_value - 0.1
+											;}
+									;} 
 							;}
 					;} else {
-							if(Check_Instrument_Aircraft__speed_x() < 5) {
+							if(Check_Instrument_Aircraft__speed_x() < 2) {
 											{
-											Apply_Engine__throttle(0.40)
+											if(Equals(Feel_Aircraft__acceleration_x(), false)) {
+															{
+															temp_throttle_value = temp_throttle_value + 0.30
+															;}
+													;} 
 											;}
 									;} else {
-											{
-											Apply_Engine__throttle(0.20)
-											;}
+											if(Check_Instrument_Aircraft__speed_x() < 7) {
+															{
+															if(Equals(Feel_Aircraft__acceleration_x(), false)) {
+																			{
+																			temp_throttle_value = temp_throttle_value + 0.05
+																			;}
+																	;} 
+															;}
+													;} 
 										;}
-						;}
+						;};
+			Apply_Engine__throttle(temp_throttle_value)
 			;}
 			return;
 		}
@@ -1223,6 +1283,82 @@ namespace cessna_digital_twin {
 			return myAircraft.IP_Get_LWT__fuel_quantity()
 			;}
 			return default(double);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public bool Feel_Aircraft__acceleration_x() 
+		{
+			{
+			if(myAircraft.Get_Aircraft__acceleration_x()
+			 > 0.2) {
+							{
+							return true
+							;}
+					;} else {
+							{
+							return false
+							;}
+						;}
+			;}
+			return default(bool);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public bool Feel_Aircraft__deceleration_x() 
+		{
+			{
+			if(myAircraft.Get_Aircraft__acceleration_x()
+			 < -0.2) {
+							{
+							return true
+							;}
+					;} else {
+							{
+							return false
+							;}
+						;}
+			;}
+			return default(bool);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public bool Feel_Aircraft__acceleration_z() 
+		{
+			{
+			if(myAircraft.Get_Aircraft__acceleration_z()
+			 > 0.2) {
+							{
+							return true
+							;}
+					;} else {
+							{
+							return false
+							;}
+						;}
+			;}
+			return default(bool);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public bool Feel_Aircraft__deceleration_z() 
+		{
+			{
+			if(myAircraft.Get_Aircraft__acceleration_z()
+			 < -0.2) {
+							{
+							return true
+							;}
+					;} else {
+							{
+							return false
+							;}
+						;}
+			;}
+			return default(bool);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public bool Hear_Aircraft__stall_sound() 
+		{
+			{
+			return myAircraft.Get_Aircraft__stall_sound()
+			;}
+			return default(bool);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public void Set_Aircraft__heading_bearing(int input) 
