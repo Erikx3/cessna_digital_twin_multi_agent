@@ -58,6 +58,14 @@ namespace cessna_digital_twin {
 				if(__current_activity != value) __current_activity = value;
 			}
 		}
+		private string __event_info
+			 = default(string);
+		public string event_info { 
+			get { return __event_info; }
+			set{
+				if(__event_info != value) __event_info = value;
+			}
+		}
 		private cessna_digital_twin.Aircraft __myAircraft
 			 = default(cessna_digital_twin.Aircraft);
 		internal cessna_digital_twin.Aircraft myAircraft { 
@@ -154,6 +162,22 @@ namespace cessna_digital_twin {
 				if(System.Math.Abs(__distance_to_next_point - value) > 0.0000001) __distance_to_next_point = value;
 			}
 		}
+		private int __age
+			 = default(int);
+		public int age { 
+			get { return __age; }
+			set{
+				if(__age != value) __age = value;
+			}
+		}
+		private int __flight_experience
+			 = default(int);
+		public int flight_experience { 
+			get { return __flight_experience; }
+			set{
+				if(__flight_experience != value) __flight_experience = value;
+			}
+		}
 		private int __age_max
 			 = 75;
 		internal int age_max { 
@@ -170,20 +194,12 @@ namespace cessna_digital_twin {
 				if(__age_min != value) __age_min = value;
 			}
 		}
-		private int __age
-			 = default(int);
-		public int age { 
-			get { return __age; }
+		private int __flight_experience_max
+			 = 57;
+		internal int flight_experience_max { 
+			get { return __flight_experience_max; }
 			set{
-				if(__age != value) __age = value;
-			}
-		}
-		private int __flight_experience
-			 = default(int);
-		public int flight_experience { 
-			get { return __flight_experience; }
-			set{
-				if(__flight_experience != value) __flight_experience = value;
+				if(__flight_experience_max != value) __flight_experience_max = value;
 			}
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
@@ -206,13 +222,13 @@ namespace cessna_digital_twin {
 			{
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget210_5684 = (myAircraft.Get_position()
+				var _taget207_5663 = (myAircraft.Get_position()
 				);
 				
-				var _object210_5684 = this;
+				var _object207_5663 = this;
 				
-				_AgentLayer._PilotEnvironment.PosAt(_object210_5684, 
-					_taget210_5684.Item1, _taget210_5684.Item2
+				_AgentLayer._PilotEnvironment.PosAt(_object207_5663, 
+					_taget207_5663.Item1, _taget207_5663.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
@@ -221,6 +237,26 @@ namespace cessna_digital_twin {
 			current_activity = next_action
 			;}
 			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public bool skip_action(double base_probability, string action_name) 
+		{
+			{
+			double random_value = Mars.Mathematics.Statistics.RandomHelper.NextDouble(_Random, 0, Mars.Components.Common.Math.Pow(10, 6))
+			 / Mars.Components.Common.Math.Pow(10, 6);
+			double threshold_value = base_probability + flight_experience / flight_experience_max * 0.1;
+			if(random_value > threshold_value) {
+							{
+							return false
+							;}
+					;} else {
+							{
+							event_info = "Skipped " + action_name;
+							return true
+							;}
+						;}
+			;}
+			return default(bool);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public void PreflightInspection_action() 
@@ -255,111 +291,145 @@ namespace cessna_digital_twin {
 											) {
 															{
 															bool check_value = Check_Visual_RWT__water_sediments();
-															if(Equals(check_value, true) || Equals(check_value, false)) {
+															if(Equals(check_value, true) && Equals(skip_action(0.05,"Repair_RWT__water_sediments"), false)) {
+																			{
+																			next_action = "Repair_RWT__water_sediments"
+																			;}
+																	;} else {
 																			{
 																			next_action = "Check_RWT__fuel_quantity"
 																			;}
-																	;} 
+																		;}
 															;}
 													;} 
 											;}
 									;} else {
-											if(Equals(next_action, "Check_RWT__fuel_quantity")) {
+											if(Equals(next_action, "Repair_RWT__water_sediments")) {
 															{
 															timehandler.create_action_duration(20,20,"pilot_age_and_experience");
 															if(timehandler.hold_action_time(timehandler.action_duration)
 															) {
 																			{
-																			double check_value = Check_Visual_RWT__fuel_quantity();
-																			if(check_value >= 0) {
-																							{
-																							next_action = "Check_Engine__oil"
-																							;}
-																					;} 
+																			Repair_Visual_RWT__water_sediments();
+																			next_action = "Check_RWT__fuel_quantity"
 																			;}
 																	;} 
 															;}
 													;} else {
-															if(Equals(next_action, "Check_Engine__oil")) {
+															if(Equals(next_action, "Check_RWT__fuel_quantity")) {
 																			{
 																			timehandler.create_action_duration(20,20,"pilot_age_and_experience");
 																			if(timehandler.hold_action_time(timehandler.action_duration)
 																			) {
 																							{
-																							double check_value = Check_Visual_Engine__oil();
+																							double check_value = Check_Visual_RWT__fuel_quantity();
 																							if(check_value >= 0) {
 																											{
-																											next_action = "Check_TireNoseWheel__inflation"
+																											next_action = "Check_Engine__oil"
 																											;}
 																									;} 
 																							;}
 																					;} 
 																			;}
 																	;} else {
-																			if(Equals(next_action, "Check_TireNoseWheel__inflation")) {
+																			if(Equals(next_action, "Check_Engine__oil")) {
 																							{
-																							timehandler.create_action_duration(10,10,"pilot_age_and_experience");
+																							timehandler.create_action_duration(20,20,"pilot_age_and_experience");
 																							if(timehandler.hold_action_time(timehandler.action_duration)
 																							) {
 																											{
-																											int check_value = Check_Visual_TireNoseWheel__inflation();
+																											double check_value = Check_Visual_Engine__oil();
 																											if(check_value >= 0) {
 																															{
-																															next_action = "Check_TireLeftMainWheel__inflation"
+																															next_action = "Check_TireNoseWheel__inflation"
 																															;}
 																													;} 
 																											;}
 																									;} 
 																							;}
 																					;} else {
-																							if(Equals(next_action, "Check_TireLeftMainWheel__inflation")) {
+																							if(Equals(next_action, "Check_TireNoseWheel__inflation")) {
 																											{
 																											timehandler.create_action_duration(10,10,"pilot_age_and_experience");
 																											if(timehandler.hold_action_time(timehandler.action_duration)
 																											) {
 																															{
-																															int check_value = Check_Visual_TireLeftMainWheel__inflation();
+																															int check_value = Check_Visual_TireNoseWheel__inflation();
 																															if(check_value >= 0) {
 																																			{
-																																			next_action = "Check_LWT__water_sediments"
+																																			next_action = "Check_TireLeftMainWheel__inflation"
 																																			;}
 																																	;} 
 																															;}
 																													;} 
 																											;}
 																									;} else {
-																											if(Equals(next_action, "Check_LWT__water_sediments")) {
+																											if(Equals(next_action, "Check_TireLeftMainWheel__inflation")) {
 																															{
-																															timehandler.create_action_duration(20,20,"pilot_age_and_experience");
+																															timehandler.create_action_duration(10,10,"pilot_age_and_experience");
 																															if(timehandler.hold_action_time(timehandler.action_duration)
 																															) {
 																																			{
-																																			bool check_value = Check_Visual_LWT__water_sediments();
-																																			if(Equals(check_value, true) || Equals(check_value, false)) {
+																																			int check_value = Check_Visual_TireLeftMainWheel__inflation();
+																																			if(check_value >= 0) {
 																																							{
-																																							next_action = "Check_LWT__fuel_quantity"
+																																							next_action = "Check_LWT__water_sediments"
 																																							;}
 																																					;} 
 																																			;}
 																																	;} 
 																															;}
 																													;} else {
-																															if(Equals(next_action, "Check_LWT__fuel_quantity")) {
+																															if(Equals(next_action, "Check_LWT__water_sediments")) {
 																																			{
 																																			timehandler.create_action_duration(20,20,"pilot_age_and_experience");
 																																			if(timehandler.hold_action_time(timehandler.action_duration)
 																																			) {
 																																							{
-																																							double check_value = Check_Visual_LWT__fuel_quantity();
-																																							if(check_value >= 0) {
+																																							bool check_value = Check_Visual_LWT__water_sediments();
+																																							if(Equals(check_value, true) && Equals(skip_action(0.05,"Repair_LWT__water_sediments"), false)) {
 																																											{
-																																											next_action = "End_of_Actions"
+																																											next_action = "Repair_LWT__water_sediments"
 																																											;}
-																																									;} 
+																																									;} else {
+																																											{
+																																											next_action = "Check_LWT__fuel_quantity"
+																																											;}
+																																										;}
 																																							;}
 																																					;} 
 																																			;}
-																																	;} 
+																																	;} else {
+																																			if(Equals(next_action, "Repair_LWT__water_sediments")) {
+																																							{
+																																							timehandler.create_action_duration(20,20,"pilot_age_and_experience");
+																																							if(timehandler.hold_action_time(timehandler.action_duration)
+																																							) {
+																																											{
+																																											Repair_Visual_LWT__water_sediments();
+																																											next_action = "Check_LWT__fuel_quantity"
+																																											;}
+																																									;} 
+																																							;}
+																																					;} else {
+																																							if(Equals(next_action, "Check_LWT__fuel_quantity")) {
+																																											{
+																																											timehandler.create_action_duration(20,20,"pilot_age_and_experience");
+																																											if(timehandler.hold_action_time(timehandler.action_duration)
+																																											) {
+																																															{
+																																															double check_value = Check_Visual_LWT__fuel_quantity();
+																																															if(check_value >= 0) {
+																																																			{
+																																																			next_action = "End_of_Actions"
+																																																			;}
+																																																	;} 
+																																															;}
+																																													;} 
+																																											;}
+																																									;} 
+																																						;}
+																																		;}
 																														;}
 																										;}
 																						;}
@@ -1261,6 +1331,15 @@ namespace cessna_digital_twin {
 			return default(bool);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void Repair_Visual_RWT__water_sediments() 
+		{
+			{
+			System.Console.WriteLine("Repairing right wing tank water sediments");;
+			myAircraft.Repair_RWT__water_sediments()
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public bool Check_Visual_LWT__water_sediments() 
 		{
 			{
@@ -1268,6 +1347,15 @@ namespace cessna_digital_twin {
 			return myAircraft.Get_LWT__water_sediments()
 			;}
 			return default(bool);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void Repair_Visual_LWT__water_sediments() 
+		{
+			{
+			System.Console.WriteLine("Repairing left wing tank water sediments");;
+			myAircraft.Repair_LWT__water_sediments()
+			;}
+			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public bool Check_Visual_Engine__running() 
@@ -1361,6 +1449,7 @@ namespace cessna_digital_twin {
 			update_general_values();
 			state = "PreflightInspection";
 			current_activity = "Initialization:)";
+			event_info = "None";
 			age = age_min + _Random.Next((age_max - age_min) + 1);
 			flight_experience = _Random.Next(age - age_min)
 			 + 1;

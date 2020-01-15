@@ -58,6 +58,14 @@ namespace cessna_digital_twin {
 				if(__occupied != value) __occupied = value;
 			}
 		}
+		private string __event_info
+			 = default(string);
+		public string event_info { 
+			get { return __event_info; }
+			set{
+				if(__event_info != value) __event_info = value;
+			}
+		}
 		private string __Aircraft__callsign
 			 = default(string);
 		public string Aircraft__callsign { 
@@ -690,18 +698,19 @@ namespace cessna_digital_twin {
 			double y_spawn = agentlayer.Get_spawn_y_coord();
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget57_1435 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget57_1428 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object57_1435 = this;
+				var _object57_1428 = this;
 				
-				_AgentLayer._AircraftEnvironment.PosAt(_object57_1435, 
-					_taget57_1435.Item1, _taget57_1435.Item2
+				_AgentLayer._AircraftEnvironment.PosAt(_object57_1428, 
+					_taget57_1428.Item1, _taget57_1428.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
 			Longitude = this.Position.X;
 			Latitude = this.Position.Y;
-			Aircraft__heading_mode = "COORDINATES"
+			Aircraft__heading_mode = "COORDINATES";
+			event_info = "None"
 			;}
 			return;
 		}
@@ -828,18 +837,18 @@ namespace cessna_digital_twin {
 											{
 											new System.Func<Tuple<double,double>>(() => {
 												
-												var _speed201_6762 = Aircraft__movement_x
+												var _speed203_6782 = Aircraft__movement_x
 											;
 												
-												var _entity201_6762 = this;
+												var _entity203_6782 = this;
 												
-												Func<double[], bool> _predicate201_6762 = null;
+												Func<double[], bool> _predicate203_6782 = null;
 												
-												var _target201_6762 = Aircraft__heading_coordinates;
-												_AgentLayer._AircraftEnvironment.MoveTo(_entity201_6762,
-													 _target201_6762.Item1, _target201_6762.Item2, 
-													_speed201_6762, 
-													_predicate201_6762);
+												var _target203_6782 = Aircraft__heading_coordinates;
+												_AgentLayer._AircraftEnvironment.MoveTo(_entity203_6782,
+													 _target203_6782.Item1, _target203_6782.Item2, 
+													_speed203_6782, 
+													_predicate203_6782);
 												
 												return new Tuple<double, double>(Position.X, Position.Y);
 											}).Invoke()
@@ -849,14 +858,14 @@ namespace cessna_digital_twin {
 															{
 															new System.Func<Tuple<double,double>>(() => {
 																
-																var _speed205_6892 = Aircraft__movement_x
+																var _speed207_6912 = Aircraft__movement_x
 															;
 																
-																var _entity205_6892 = this;
+																var _entity207_6912 = this;
 																
-																Func<double[], bool> _predicate205_6892 = null;
+																Func<double[], bool> _predicate207_6912 = null;
 																
-																_AgentLayer._AircraftEnvironment.MoveTowards(_entity205_6892, Aircraft__heading_bearing, _speed205_6892);	
+																_AgentLayer._AircraftEnvironment.MoveTowards(_entity207_6912, Aircraft__heading_bearing, _speed207_6912);	
 																
 																return new Tuple<double, double>(Position.X, Position.Y);
 															}).Invoke()
@@ -993,7 +1002,7 @@ namespace cessna_digital_twin {
 									;} 
 							;}
 					;} ;
-			if(Equals(Engine__running, true)) {
+			if(Equals(Engine__running, true) && Equals(Engine__failure, false)) {
 							{
 							Engine__power = Engine__power_max * Engine__throttle;
 							Engine__power_coefficient = Get_Engine__power_coefficient();
@@ -1007,6 +1016,7 @@ namespace cessna_digital_twin {
 							if(Equals(Utility.probability_check(Engine__failure_probability)
 							, true)) {
 											{
+											event_info = "Engine Failure";
 											Engine__failure = true
 											;}
 									;} ;
@@ -1031,7 +1041,7 @@ namespace cessna_digital_twin {
 		{
 			{
 			RWT__fuel_quantity = _Random.Next(RWT__total_capacity + 1);
-			RWT__water_sediments = false
+			RWT__water_sediments = Utility.probability_check(0.5)
 			;}
 			return;
 		}
@@ -1048,7 +1058,7 @@ namespace cessna_digital_twin {
 		{
 			{
 			LWT__fuel_quantity = _Random.Next(LWT__total_capacity + 1);
-			LWT__water_sediments = false
+			LWT__water_sediments = Utility.probability_check(0.5)
 			;}
 			return;
 		}
@@ -1206,6 +1216,15 @@ namespace cessna_digital_twin {
 			return default(bool);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void Repair_RWT__water_sediments() {
+			{
+			RWT__water_sediments = false
+					;
+			}
+			
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public double Get_LWT__fuel_quantity() {
 			{
 			return LWT__fuel_quantity
@@ -1222,6 +1241,15 @@ namespace cessna_digital_twin {
 			}
 			
 			return default(bool);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void Repair_LWT__water_sediments() {
+			{
+			LWT__water_sediments = false
+					;
+			}
+			
+			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public int Get_TireRightMainWheel__inflation() {

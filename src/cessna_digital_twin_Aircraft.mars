@@ -48,7 +48,7 @@ agent Aircraft on AgentLayer{
 	
 	// TODO: Think about this for documentation
 	//observe var passive_activity: string // activity by pilot is more precise
-	//observe var malfunction_notification // maybe add something like this or think about it
+	observe var event_info : string // maybe add something like this or think about it
 	
 	def initialize_general_values()
 	{
@@ -59,6 +59,8 @@ agent Aircraft on AgentLayer{
 		Longitude = xcor
 		Latitude = ycor
 		Aircraft__heading_mode = "COORDINATES"
+		
+		event_info = "None"
 	}
 	
 	def update_general_values()
@@ -362,7 +364,7 @@ agent Aircraft on AgentLayer{
 			}
 		}
 		
-		if (Engine__running === true)
+		if (Engine__running === true and Engine__failure === false)
 		{
 			//Engine RPM Calculation
 			Engine__power = Engine__power_max * Engine__throttle
@@ -376,6 +378,7 @@ agent Aircraft on AgentLayer{
 			// Engine Failure Probability
 			if (Utility.probability_check(Engine__failure_probability) === true)
 			{
+				event_info = "Engine Failure"
 				Engine__failure = true
 			}
 			
@@ -411,11 +414,12 @@ agent Aircraft on AgentLayer{
 		
 	passive Get_RWT__fuel_quantity() => return RWT__fuel_quantity
 	passive Get_RWT__water_sediments() => return RWT__water_sediments
+	passive Repair_RWT__water_sediments() => RWT__water_sediments = false
 	
 	def initialize_RightWingTank()
 	{
 		RWT__fuel_quantity = random(RWT__total_capacity+1)
-		RWT__water_sediments = false
+		RWT__water_sediments = Utility.probability_check(0.5) // either true or false
 	}
 	
 	def update_RightWingTank()
@@ -430,11 +434,12 @@ agent Aircraft on AgentLayer{
 	
 	passive Get_LWT__fuel_quantity() => return LWT__fuel_quantity // return of fuel quantity "visual"
 	passive Get_LWT__water_sediments() => return LWT__water_sediments
+	passive Repair_LWT__water_sediments() => LWT__water_sediments = false
 	
 	def initialize_LeftWingTank()
 	{
 		LWT__fuel_quantity = random(LWT__total_capacity+1)
-		LWT__water_sediments = false
+		LWT__water_sediments = Utility.probability_check(0.5) // either true or false
 	}
 	
 	def update_LeftWingTank()
@@ -637,7 +642,7 @@ class Util
 	def probability_check(probability : real) : bool
 	// Probability Checker for events with a precision of 10^6
 	{
-		var random_value = random(1000000)/1000000
+		var random_value = random(10**6)/10**6
 		if (random_value>probability)
 		{
 			return false

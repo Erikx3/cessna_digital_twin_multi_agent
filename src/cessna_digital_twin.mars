@@ -120,7 +120,7 @@ agent Pilot on AgentLayer{
 		update_general_values() // so first row of csv is not empty
 		state = "PreflightInspection" // always first state so far
 		current_activity = "Initialization:)"
-		
+		event_info = "None"
 		
 		// Pilot attributes and share them with classes
 		age = age_min + random((age_max - age_min) + 1)
@@ -173,6 +173,7 @@ agent Pilot on AgentLayer{
 	observe var myAircraft_callsign : string
 	observe var state : string
 	observe var current_activity : string
+	observe var event_info : string
 	
 	//Classes
 	var myAircraft : Aircraft // for accessing the real aircraft
@@ -189,10 +190,6 @@ agent Pilot on AgentLayer{
 	var heading_information : integer // for saving heading value
 	var state_after_taxiing : string
 	var distance_to_next_point : real
-	
-	//Settings
-	var age_max : integer = 75
-	var age_min : integer = 18
 	
 	def go_to_next_state(_state : string)
 	{
@@ -218,9 +215,31 @@ agent Pilot on AgentLayer{
 	observe var age: integer // years
 	observe var flight_experience : integer // years
 		
+	//Settings
+	var age_max : integer = 75
+	var age_min : integer = 18
+	var flight_experience_max : integer = 57
 	
 	
 	//-----State Preflight Inspection-----
+	
+	//help function:
+	def skip_action(base_probability: real, action_name : string) : bool
+	{
+		// the probability of skiping repair action increases with flight experience
+		var random_value = random(10**6)/10**6
+		var threshold_value = base_probability + flight_experience/flight_experience_max * 0.1
+		if (random_value > threshold_value)
+		{
+			return false
+		}
+		else
+		{
+			event_info = "Skipped " + action_name
+			return true
+		}
+	}
+	
 	def PreflightInspection_action()
 	{
 		// Flag for first action and architecture like this avoids loose of one tick
@@ -240,8 +259,7 @@ agent Pilot on AgentLayer{
 				{
 					next_action = "Check_RWT__water_sediments"
 				}
-			}
-			
+			}	
 		}		
 		
 		else if (next_action === "Check_RWT__water_sediments")
@@ -250,12 +268,25 @@ agent Pilot on AgentLayer{
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				var check_value = Check_Visual_RWT__water_sediments()
-				if (check_value === true or check_value === false) 
+				if (check_value === true and skip_action(0.05, "Repair_RWT__water_sediments") === false)
+				{
+					next_action = "Repair_RWT__water_sediments"
+				}
+				else
 				{
 					next_action = "Check_RWT__fuel_quantity"
 				}
 			}
-			
+		}
+		
+		else if(next_action === "Repair_RWT__water_sediments")
+		{
+			timehandler.create_action_duration(20, 20, "pilot_age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				Repair_Visual_RWT__water_sediments()
+				next_action = "Check_RWT__fuel_quantity"
+			}
 		}
 		
 		else if (next_action === "Check_RWT__fuel_quantity")
@@ -316,10 +347,24 @@ agent Pilot on AgentLayer{
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				var check_value = Check_Visual_LWT__water_sediments()
-				if (check_value === true or check_value === false)
+				if (check_value === true and skip_action(0.05, "Repair_LWT__water_sediments") === false)
+				{
+					next_action = "Repair_LWT__water_sediments"
+				}
+				else
 				{
 					next_action = "Check_LWT__fuel_quantity"
 				}
+			}
+		}
+		
+		else if(next_action === "Repair_LWT__water_sediments")
+		{
+			timehandler.create_action_duration(20, 20, "pilot_age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				Repair_Visual_LWT__water_sediments()
+				next_action = "Check_LWT__fuel_quantity"
 			}
 		}					
 					
@@ -1083,10 +1128,22 @@ agent Pilot on AgentLayer{
 		return myAircraft.Get_RWT__water_sediments()
 	}
 	
+	def Repair_Visual_RWT__water_sediments()
+	{
+		println "Repairing right wing tank water sediments"
+		myAircraft.Repair_RWT__water_sediments()
+	}
+	
 	def Check_Visual_LWT__water_sediments()
 	{
 		println "Checking left wing tank for water sediments"
 		return myAircraft.Get_LWT__water_sediments()
+	}
+	
+	def Repair_Visual_LWT__water_sediments()
+	{
+		println "Repairing left wing tank water sediments"
+		myAircraft.Repair_LWT__water_sediments()
 	}
 	
 	//------Visual (or acoustic) Engine Functions------

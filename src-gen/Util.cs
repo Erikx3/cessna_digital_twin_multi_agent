@@ -22,8 +22,8 @@ namespace cessna_digital_twin {
 		public bool probability_check(double probability) 
 		{
 			{
-			int random_value = _Random.Next(1000000)
-			 / 1000000;
+			double random_value = Mars.Mathematics.Statistics.RandomHelper.NextDouble(_Random, 0, Mars.Components.Common.Math.Pow(10, 6))
+			 / Mars.Components.Common.Math.Pow(10, 6);
 			if(random_value > probability) {
 							{
 							return false
