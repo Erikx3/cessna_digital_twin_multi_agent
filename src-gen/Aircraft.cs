@@ -1338,6 +1338,15 @@ namespace cessna_digital_twin {
 			return default(int);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public bool Get_Engine__failure() {
+			{
+			return Engine__failure
+					;
+			}
+			
+			return default(bool);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public bool Get_Engine__running() {
 			{
 			return Engine__running

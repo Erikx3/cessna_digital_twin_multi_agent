@@ -334,6 +334,9 @@ agent Aircraft on AgentLayer{
 	passive Get_Engine__oil_temperature_normal_max() => return Engine__oil_temperature_normal_max
 	passive Get_Engine__oil_pressure_normal_min() => return Engine__oil_pressure_normal_min
 	
+	// TODO: Help function as long as handling for TakeOff and Taxi is being difficult
+	passive Get_Engine__failure() => return Engine__failure
+	
 	def initialize_Engine()
 	{
 		Engine__oil_pump_condition = Utility.probability_check(0.98) // either true (98%) or false

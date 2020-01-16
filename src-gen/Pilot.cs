@@ -792,8 +792,6 @@ namespace cessna_digital_twin {
 															Check_Instrument_Aircraft__climb_rate();
 															Check_Instrument_Aircraft__angle_of_attack();
 															Check_Instrument_Aircraft__speed_x();
-															Check_Instrument_Engine__oil_temperature();
-															Check_Instrument_Engine__oil_pressure();
 															next_action = "Set_Engine__mixture_control"
 															;}
 													;} 
@@ -843,9 +841,26 @@ namespace cessna_digital_twin {
 																							if(timehandler.hold_action_time(timehandler.action_duration)
 																							) {
 																											{
-																											Check_Instrument_Engine__oil_temperature();
-																											Check_Instrument_Engine__oil_pressure();
-																											Check_Instrument_Engine__RPM();
+																											if(Check_Instrument_Engine__oil_temperature() > myAircraft.Get_Engine__oil_temperature_normal_max()
+																											) {
+																															{
+																															if(Equals(skip_action(0.05,"Check_Instrument_Engine__oil_temperature"), false)) {
+																																			{
+																																			remove_me_and_my_aircraft("high engine oil temperature")
+																																			;}
+																																	;} 
+																															;}
+																													;} ;
+																											if(Check_Instrument_Engine__oil_pressure() < myAircraft.Get_Engine__oil_pressure_normal_min()
+																											) {
+																															{
+																															if(Equals(skip_action(0.05,"Check_Instrument_Engine__oil_pressure"), false)) {
+																																			{
+																																			remove_me_and_my_aircraft("low engine oil pressure")
+																																			;}
+																																	;} 
+																															;}
+																													;} ;
 																											next_action = "Apply_Engine__throttle_idle";
 																											temp_throttle_value = 0.10
 																											;}
@@ -1122,7 +1137,13 @@ namespace cessna_digital_twin {
 																	;} 
 														;}
 										;}
-						;}
+						;};
+			if(Equals(myAircraft.Get_Engine__failure()
+			, true)) {
+							{
+							remove_me_and_my_aircraft("Engine__Failure during TakeOff")
+							;}
+					;} 
 			;}
 			return;
 		}
@@ -1261,6 +1282,12 @@ namespace cessna_digital_twin {
 							go_to_next_state(state_after_taxiing);
 							System.Console.WriteLine("Next state -->" + state);;
 							first_action_set = false
+							;}
+					;} ;
+			if(Equals(myAircraft.Get_Engine__failure()
+			, true)) {
+							{
+							remove_me_and_my_aircraft("Engine__Failure during Taxiing")
 							;}
 					;} 
 			;}
