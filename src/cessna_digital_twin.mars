@@ -189,6 +189,7 @@ agent Pilot on AgentLayer{
 	var heading_information : integer // for saving heading value
 	var state_after_taxiing : string
 	var distance_to_next_point : real
+	var first_fixing_attempt : bool = true
 	var V_rotate : real = 30
 	
 	def go_to_next_state(_state : string)
@@ -200,6 +201,13 @@ agent Pilot on AgentLayer{
 			//reset placed here
 			active_taxi_point_number = 0
 		}
+	}
+	
+	def remove_me_and_my_aircraft(info : string)
+	{
+		event_info = "Abort flight mission due to " + info
+		myAircraft.Remove()
+		kill me
 	}
 	
 	def update_general_values()
@@ -504,8 +512,24 @@ agent Pilot on AgentLayer{
 			timehandler.create_action_duration(30, 2, "pilot_age_and_experience") // includes holding pattern
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
-				Check_Instrument_Engine__oil_pressure()
 				next_action = "Check_Instrument_Engine__oil_temperature"
+				if (Check_Instrument_Engine__oil_pressure() < myAircraft.Get_Engine__oil_pressure_normal_min())
+				{
+					if(skip_action(0.05, "Check_Instrument_Engine__oil_pressure") === false)
+					{
+						if (first_fixing_attempt === true)
+						{
+							event_info = "Engine__oil_pressure too low, back to state PreflightInspection"
+							go_to_next_state("PreflightInspection")
+							first_fixing_attempt = false
+							Set_Engine__ignition_switch("OFF")
+						}
+						else
+						{
+							remove_me_and_my_aircraft("low engine oil pressure")
+						}
+					}
+				}
 			}
 		}
 		
@@ -514,8 +538,24 @@ agent Pilot on AgentLayer{
 			timehandler.create_action_duration(3, 2, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
-				Check_Instrument_Engine__oil_temperature()
 				next_action = "End_of_Actions"
+				if (Check_Instrument_Engine__oil_temperature() > myAircraft.Get_Engine__oil_temperature_normal_max())
+				{
+					if(skip_action(0.05, "Check_Instrument_Engine__oil_temperature") === false)
+					{
+						if (first_fixing_attempt === true)
+						{
+							event_info = "Engine__oil_temperature too high, back to state PreflightInspection"
+							go_to_next_state("PreflightInspection")
+							first_fixing_attempt = false
+							Set_Engine__ignition_switch("OFF")
+						}
+						else
+						{
+							remove_me_and_my_aircraft("high engine oil temperature")
+						}
+					}
+				}				
 			}
 		}
 		
@@ -525,7 +565,6 @@ agent Pilot on AgentLayer{
 			go_to_next_state("TakeOffPreparationRequest")
 			println "Next state -->" + state
 		}
-		
 	}
 	
 	

@@ -14,9 +14,9 @@ namespace cessna_digital_twin {
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("ReSharper", "ExpressionIsAlwaysNull")]
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("ReSharper", "MemberInitializerValueIgnored")]
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("ReSharper", "RedundantCheckBeforeAssignment")]
-	public class Util {
+	public class UtilityClass {
 		private static readonly Mars.Common.Logging.ILogger _Logger = 
-					Mars.Common.Logging.LoggerFactory.GetLogger(typeof(Util));
+					Mars.Common.Logging.LoggerFactory.GetLogger(typeof(UtilityClass));
 		private readonly System.Random _Random = new System.Random();
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public bool probability_check(double probability) 

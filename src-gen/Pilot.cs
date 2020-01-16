@@ -162,6 +162,14 @@ namespace cessna_digital_twin {
 				if(System.Math.Abs(__distance_to_next_point - value) > 0.0000001) __distance_to_next_point = value;
 			}
 		}
+		private bool __first_fixing_attempt
+			 = true;
+		internal bool first_fixing_attempt { 
+			get { return __first_fixing_attempt; }
+			set{
+				if(__first_fixing_attempt != value) __first_fixing_attempt = value;
+			}
+		}
 		private double __V_rotate
 			 = 30;
 		internal double V_rotate { 
@@ -225,18 +233,33 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void remove_me_and_my_aircraft(string info) 
+		{
+			{
+			event_info = "Abort flight mission due to " + info;
+			myAircraft.Remove();
+			new System.Action(() => {
+				var _target210_5823 = this;
+				if (_target210_5823 != null) {
+					_AgentLayer._KillPilot(_target210_5823, _target210_5823._executionFrequency);
+				}
+			}).Invoke()
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public void update_general_values() 
 		{
 			{
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget207_5688 = (myAircraft.Get_position()
+				var _taget215_5875 = (myAircraft.Get_position()
 				);
 				
-				var _object207_5688 = this;
+				var _object215_5875 = this;
 				
-				_AgentLayer._PilotEnvironment.PosAt(_object207_5688, 
-					_taget207_5688.Item1, _taget207_5688.Item2
+				_AgentLayer._PilotEnvironment.PosAt(_object215_5875, 
+					_taget215_5875.Item1, _taget215_5875.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
@@ -591,8 +614,28 @@ namespace cessna_digital_twin {
 																																			if(timehandler.hold_action_time(timehandler.action_duration)
 																																			) {
 																																							{
-																																							Check_Instrument_Engine__oil_pressure();
-																																							next_action = "Check_Instrument_Engine__oil_temperature"
+																																							next_action = "Check_Instrument_Engine__oil_temperature";
+																																							if(Check_Instrument_Engine__oil_pressure() < myAircraft.Get_Engine__oil_pressure_normal_min()
+																																							) {
+																																											{
+																																											if(Equals(skip_action(0.05,"Check_Instrument_Engine__oil_pressure"), false)) {
+																																															{
+																																															if(Equals(first_fixing_attempt, true)) {
+																																																			{
+																																																			event_info = "Engine__oil_pressure too low, back to state PreflightInspection";
+																																																			go_to_next_state("PreflightInspection");
+																																																			first_fixing_attempt = false;
+																																																			Set_Engine__ignition_switch("OFF")
+																																																			;}
+																																																	;} else {
+																																																			{
+																																																			remove_me_and_my_aircraft("low engine oil pressure")
+																																																			;}
+																																																		;}
+																																															;}
+																																													;} 
+																																											;}
+																																									;} 
 																																							;}
 																																					;} 
 																																			;}
@@ -603,8 +646,28 @@ namespace cessna_digital_twin {
 																																							if(timehandler.hold_action_time(timehandler.action_duration)
 																																							) {
 																																											{
-																																											Check_Instrument_Engine__oil_temperature();
-																																											next_action = "End_of_Actions"
+																																											next_action = "End_of_Actions";
+																																											if(Check_Instrument_Engine__oil_temperature() > myAircraft.Get_Engine__oil_temperature_normal_max()
+																																											) {
+																																															{
+																																															if(Equals(skip_action(0.05,"Check_Instrument_Engine__oil_temperature"), false)) {
+																																																			{
+																																																			if(Equals(first_fixing_attempt, true)) {
+																																																							{
+																																																							event_info = "Engine__oil_temperature too high, back to state PreflightInspection";
+																																																							go_to_next_state("PreflightInspection");
+																																																							first_fixing_attempt = false;
+																																																							Set_Engine__ignition_switch("OFF")
+																																																							;}
+																																																					;} else {
+																																																							{
+																																																							remove_me_and_my_aircraft("high engine oil temperature")
+																																																							;}
+																																																						;}
+																																																			;}
+																																																	;} 
+																																															;}
+																																													;} 
 																																											;}
 																																									;} 
 																																							;}

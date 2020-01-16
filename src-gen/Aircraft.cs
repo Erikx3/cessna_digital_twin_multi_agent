@@ -42,9 +42,9 @@ namespace cessna_digital_twin {
 				if(__Aircraft__heading_mode != value) __Aircraft__heading_mode = value;
 			}
 		}
-		private cessna_digital_twin.Util __Utility
-			 = new cessna_digital_twin.Util();
-		internal cessna_digital_twin.Util Utility { 
+		private cessna_digital_twin.UtilityClass __Utility
+			 = new cessna_digital_twin.UtilityClass();
+		internal cessna_digital_twin.UtilityClass Utility { 
 			get { return __Utility; }
 			set{
 				if(__Utility != value) __Utility = value;
@@ -706,12 +706,12 @@ namespace cessna_digital_twin {
 			double y_spawn = agentlayer.Get_spawn_y_coord();
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget56_1425 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget56_1341 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object56_1425 = this;
+				var _object56_1341 = this;
 				
-				_AgentLayer._AircraftEnvironment.PosAt(_object56_1425, 
-					_taget56_1425.Item1, _taget56_1425.Item2
+				_AgentLayer._AircraftEnvironment.PosAt(_object56_1341, 
+					_taget56_1341.Item1, _taget56_1341.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
@@ -845,18 +845,18 @@ namespace cessna_digital_twin {
 											{
 											new System.Func<Tuple<double,double>>(() => {
 												
-												var _speed217_7117 = Aircraft__movement_x
+												var _speed217_7033 = Aircraft__movement_x
 											;
 												
-												var _entity217_7117 = this;
+												var _entity217_7033 = this;
 												
-												Func<double[], bool> _predicate217_7117 = null;
+												Func<double[], bool> _predicate217_7033 = null;
 												
-												var _target217_7117 = Aircraft__heading_coordinates;
-												_AgentLayer._AircraftEnvironment.MoveTo(_entity217_7117,
-													 _target217_7117.Item1, _target217_7117.Item2, 
-													_speed217_7117, 
-													_predicate217_7117);
+												var _target217_7033 = Aircraft__heading_coordinates;
+												_AgentLayer._AircraftEnvironment.MoveTo(_entity217_7033,
+													 _target217_7033.Item1, _target217_7033.Item2, 
+													_speed217_7033, 
+													_predicate217_7033);
 												
 												return new Tuple<double, double>(Position.X, Position.Y);
 											}).Invoke()
@@ -866,14 +866,14 @@ namespace cessna_digital_twin {
 															{
 															new System.Func<Tuple<double,double>>(() => {
 																
-																var _speed221_7247 = Aircraft__movement_x
+																var _speed221_7163 = Aircraft__movement_x
 															;
 																
-																var _entity221_7247 = this;
+																var _entity221_7163 = this;
 																
-																Func<double[], bool> _predicate221_7247 = null;
+																Func<double[], bool> _predicate221_7163 = null;
 																
-																_AgentLayer._AircraftEnvironment.MoveTowards(_entity221_7247, Aircraft__heading_bearing, _speed221_7247);	
+																_AgentLayer._AircraftEnvironment.MoveTowards(_entity221_7163, Aircraft__heading_bearing, _speed221_7163);	
 																
 																return new Tuple<double, double>(Position.X, Position.Y);
 															}).Invoke()
@@ -1235,6 +1235,20 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void Remove() {
+			{
+			new System.Action(() => {
+				var _target48_1106 = this;
+				if (_target48_1106 != null) {
+					_AgentLayer._KillAircraft(_target48_1106, _target48_1106._executionFrequency);
+				}
+			}).Invoke()
+					;
+			}
+			
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public System.Tuple<double,double> Get_position() {
 			{
 			return new System.Tuple<double,double>(this.Position.X,this.Position.Y)
@@ -1300,6 +1314,24 @@ namespace cessna_digital_twin {
 		public int Get_Engine__oil_min() {
 			{
 			return Engine__oil_min
+					;
+			}
+			
+			return default(int);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public int Get_Engine__oil_temperature_normal_max() {
+			{
+			return Engine__oil_temperature_normal_max
+					;
+			}
+			
+			return default(int);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public int Get_Engine__oil_pressure_normal_min() {
+			{
+			return Engine__oil_pressure_normal_min
 					;
 			}
 			

@@ -38,15 +38,15 @@ agent Aircraft on AgentLayer{
 	var Aircraft__heading_mode : string // either "BEARING" or "COORDINATES"
 	
 	//Classes
-	var Utility = new Util()
+	var Utility = new UtilityClass()
 	
 	//Making sure only one pilot controls the aircraft
 	var occupied : bool = false
 	passive Get_occupy_bool() => return occupied
 	passive Set_occupied() => occupied = true
 	
-	// TODO: Think about this for documentation
-	//observe var passive_activity: string // activity by pilot is more precise
+	passive Remove() => kill me
+
 	observe var event_info : string // maybe add something like this or think about it
 	
 	def initialize_general_values()
@@ -330,7 +330,9 @@ agent Aircraft on AgentLayer{
 	var Engine__power_max : integer = 75000 // W
 	var Engine__fuel_consumption_max : real = 0.0079 // liters/s (correspond to 7.5 gallon per hour)
 	
-	
+	passive Get_Engine__oil_min() => return Engine__oil_min
+	passive Get_Engine__oil_temperature_normal_max() => return Engine__oil_temperature_normal_max
+	passive Get_Engine__oil_pressure_normal_min() => return Engine__oil_pressure_normal_min
 	
 	def initialize_Engine()
 	{
@@ -356,7 +358,6 @@ agent Aircraft on AgentLayer{
 		Engine__power_coefficient_slope = -0.0009	
 	}
 	
-	passive Get_Engine__oil_min() => return Engine__oil_min
 	
 	def Set_Engine__not_running_values()
 	{
@@ -703,7 +704,7 @@ agent Aircraft on AgentLayer{
 	}
 }
 
-class Util
+class UtilityClass
 {
 	def probability_check(probability : real) : bool
 	// Probability Checker for events with a precision of 10^6
