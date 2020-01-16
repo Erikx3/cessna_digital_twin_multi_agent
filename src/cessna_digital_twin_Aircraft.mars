@@ -3,7 +3,6 @@ model cessna_digital_twin
 use Mars
 
 agent Aircraft on AgentLayer{
-	
 	initialize
 	{
 		initialize_general_values()
@@ -290,12 +289,14 @@ agent Aircraft on AgentLayer{
 	observe var Engine__mixture_control : string  // either "RICH" or "LEAN"
 	observe var Engine__throttle : real  // percentage NO THROTTLE 0..1 FULL THROTTLE
 	observe var Engine__power : real // between 0W and 75000W 
-	observe var Engine__ignition_switch : string  // "OFF", "L", "R", "BOTH" or "START"
+	observe var Engine__ignition_switch : string  // "OFF", "BOTH" or "START" (not used so far: "L", "R")
 	observe var Engine__RPM : real  //calculated via formula with power coefficient
 	observe var Engine__running : bool
 	observe var Engine__failure_probability : real // percentage per tick 0..1
 	observe var Engine__failure : bool
 	observe var Engine__fuel_consumption : real // liters/s
+	observe var Engine__oil_pump_condition : bool // either true (healthy) or false (faulty)
+	observe var Engine__oil_leakage : real // either 0 or low value
 	
 	//Power Coefficient (See Excel "Calculation Table")
 	//Note: assumption cp = f(V/(n*d)) with n*d=1
@@ -319,33 +320,34 @@ agent Aircraft on AgentLayer{
 
 	//Settings
 	var Engine__oil_max : integer = 6
-	var Engine__oil_normal : integer = 5
 	var Engine__oil_min : integer = 4
+	var Engine__oil_critical_min : integer = 3
 	var Engine__oil_pressure_normal_min = 205000
 	var Engine__oil_pressure_normal_max = 410000
-	var Engine__oil_pressure_min = 70000
-	var Engine__oil_temperature_normal_min = 38
+	var Engine__oil_temperature_normal_min = 38 // normal value, but higher one would be better for linear assumption in calculation later
 	var Engine__oil_temperature_normal_max = 116
 	var Engine__RPM_max : integer = 2750
 	var Engine__power_max : integer = 75000 // W
 	var Engine__fuel_consumption_max : real = 0.0079 // liters/s (correspond to 7.5 gallon per hour)
 	
-	//TODO Think about implementation
-	//observe var Engine__oil_pump_condition : bool
-	//observe var Engine__oil_pressure_gauge_condition : bool
-	//observe var Engine__oil_leakage : real
 	
 	
 	def initialize_Engine()
 	{
+		Engine__oil_pump_condition = Utility.probability_check(0.98) // either true (98%) or false
+		Engine__oil_leakage = 0.0
+		if (Utility.probability_check(0.02) === true)
+		{
+			Engine__oil_leakage = 0.01
+		}
 		Engine__oil = 3.1 + random(3) + (random(10) / 10.0)
-		Engine__mixture_control = "LEAN"
+		Engine__mixture_control = #["LEAN", "RICH"].Get(random(2))
 		Engine__throttle = random(10) / 10.0
 		Engine__ignition_switch = "OFF"
 		Engine__RPM = 0.0
 		Engine__power = 0.0
 		Engine__running = false
-		Engine__oil_pressure = 101325
+		Engine__oil_pressure = 101325 //TODO: Set equal to ambient pressure
 		Engine__oil_temperature = 15
 		Engine__failure_probability = 10**(-6)
 		Engine__failure = false
@@ -358,7 +360,9 @@ agent Aircraft on AgentLayer{
 	
 	def Set_Engine__not_running_values()
 	{
+		Engine__running = false
 		Engine__RPM = 0.0
+		Engine__power = 0.0
 		Engine__oil_pressure = 101325
 		Engine__oil_temperature = 15
 		Engine__fuel_consumption = 0.0
@@ -372,13 +376,21 @@ agent Aircraft on AgentLayer{
 		{
 			Add_Engine__failure_probability(10**(-4))
 		}
-		if (RWT__water_sediments === true)
+		if (LWT__water_sediments === true)
 		{
 			Add_Engine__failure_probability(10**(-4))
 		}
-		if (Engine__oil < Engine__oil_normal)
+		if (Engine__oil < Engine__oil_min)
 		{
-			Add_Engine__failure_probability(10**(-4))
+			Add_Engine__failure_probability(5 * 10**(-4))
+		}
+		if (Engine__oil < Engine__oil_critical_min)
+		{
+			Add_Engine__failure_probability(5 * 10**(-2))
+		}
+		if (Engine__oil_pump_condition === false)
+		{
+			Add_Engine__failure_probability(5 * 10**(-4))
 		}
 		if (Engine__mixture_control === "LEAN")
 		{
@@ -426,21 +438,31 @@ agent Aircraft on AgentLayer{
 				Engine__failure = true
 			}
 			
+			// Engine turned off
+			if (Engine__ignition_switch === "OFF")
+			{
+				Engine__running = false
+			}
+			
 			// Engine fuel_consumption
 			Engine__fuel_consumption = Engine__fuel_consumption_max * Engine__throttle 
 			
-			//Engine Oil TODO: Make dependent on engine__oil_pump and possible leakage
-			var temp_Engine__oil_pressure_normal_half = (Engine__oil_pressure_normal_max + Engine__oil_pressure_normal_min) / 2
-			var temp_Engine__oil_temperature_normal_half = (Engine__oil_temperature_normal_max + Engine__oil_temperature_normal_min) / 2
-			Engine__oil_pressure = temp_Engine__oil_pressure_normal_half // Normal Operations
-			Engine__oil_temperature = temp_Engine__oil_temperature_normal_half //TODO: maybe add dependence to throttle here at least
-			if (Engine__oil < Engine__oil_normal)
+			//Engine Oil
+			Engine__oil = Engine__oil - Engine__oil_leakage
+			var Engine__oil_temperature_slope = (Engine__oil_temperature_normal_min - Engine__oil_temperature_normal_max) / (Engine__oil_max - Engine__oil_min)
+			var Engine__oil_pressure_slope = (Engine__oil_pressure_normal_max - Engine__oil_pressure_normal_min) / (Engine__oil_max - Engine__oil_min)
+			Engine__oil_pressure = (Engine__oil_pressure_normal_min - Engine__oil_pressure_slope * Engine__oil_min) + Engine__oil_pressure_slope * Engine__oil
+			Engine__oil_temperature = (Engine__oil_temperature_normal_max - Engine__oil_temperature_slope * Engine__oil_min) + Engine__oil_temperature_slope * Engine__oil
+			if (Engine__oil_pump_condition === false)
 			{
-				Engine__oil_pressure = Engine__oil_pressure - ((temp_Engine__oil_pressure_normal_half - Engine__oil_pressure_normal_min) * (Engine__oil_normal - Engine__oil))
-				Engine__oil_temperature = Engine__oil_temperature + ((Engine__oil_temperature_normal_max - temp_Engine__oil_temperature_normal_half) * (Engine__oil_normal - Engine__oil))
+				// simulating faulty engine pump values
+				Engine__oil_temperature = Engine__oil_temperature + (Engine__oil_temperature_normal_max - Engine__oil_temperature_normal_min)/2
+				Engine__oil_pressure = Engine__oil_pressure - (Engine__oil_pressure_normal_max - Engine__oil_pressure_normal_min)/2
 			}
-			
-			
+			if (Engine__oil_pressure < 101325)
+			{
+				Engine__oil_pressure = 101325
+			}
 		}
 	}
 	

@@ -434,6 +434,22 @@ namespace cessna_digital_twin {
 				if(System.Math.Abs(__Engine__fuel_consumption - value) > 0.0000001) __Engine__fuel_consumption = value;
 			}
 		}
+		private bool __Engine__oil_pump_condition
+			 = default(bool);
+		public bool Engine__oil_pump_condition { 
+			get { return __Engine__oil_pump_condition; }
+			set{
+				if(__Engine__oil_pump_condition != value) __Engine__oil_pump_condition = value;
+			}
+		}
+		private double __Engine__oil_leakage
+			 = default(double);
+		public double Engine__oil_leakage { 
+			get { return __Engine__oil_leakage; }
+			set{
+				if(System.Math.Abs(__Engine__oil_leakage - value) > 0.0000001) __Engine__oil_leakage = value;
+			}
+		}
 		private double __Engine__power_coefficient
 			 = default(double);
 		internal double Engine__power_coefficient { 
@@ -474,20 +490,20 @@ namespace cessna_digital_twin {
 				if(__Engine__oil_max != value) __Engine__oil_max = value;
 			}
 		}
-		private int __Engine__oil_normal
-			 = 5;
-		internal int Engine__oil_normal { 
-			get { return __Engine__oil_normal; }
-			set{
-				if(__Engine__oil_normal != value) __Engine__oil_normal = value;
-			}
-		}
 		private int __Engine__oil_min
 			 = 4;
 		internal int Engine__oil_min { 
 			get { return __Engine__oil_min; }
 			set{
 				if(__Engine__oil_min != value) __Engine__oil_min = value;
+			}
+		}
+		private int __Engine__oil_critical_min
+			 = 3;
+		internal int Engine__oil_critical_min { 
+			get { return __Engine__oil_critical_min; }
+			set{
+				if(__Engine__oil_critical_min != value) __Engine__oil_critical_min = value;
 			}
 		}
 		private int __Engine__oil_pressure_normal_min
@@ -504,14 +520,6 @@ namespace cessna_digital_twin {
 			get { return __Engine__oil_pressure_normal_max; }
 			set{
 				if(__Engine__oil_pressure_normal_max != value) __Engine__oil_pressure_normal_max = value;
-			}
-		}
-		private int __Engine__oil_pressure_min
-			 = 70000;
-		internal int Engine__oil_pressure_min { 
-			get { return __Engine__oil_pressure_min; }
-			set{
-				if(__Engine__oil_pressure_min != value) __Engine__oil_pressure_min = value;
 			}
 		}
 		private int __Engine__oil_temperature_normal_min
@@ -698,12 +706,12 @@ namespace cessna_digital_twin {
 			double y_spawn = agentlayer.Get_spawn_y_coord();
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget57_1428 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget56_1425 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object57_1428 = this;
+				var _object56_1425 = this;
 				
-				_AgentLayer._AircraftEnvironment.PosAt(_object57_1428, 
-					_taget57_1428.Item1, _taget57_1428.Item2
+				_AgentLayer._AircraftEnvironment.PosAt(_object56_1425, 
+					_taget56_1425.Item1, _taget56_1425.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
@@ -837,18 +845,18 @@ namespace cessna_digital_twin {
 											{
 											new System.Func<Tuple<double,double>>(() => {
 												
-												var _speed218_7120 = Aircraft__movement_x
+												var _speed217_7117 = Aircraft__movement_x
 											;
 												
-												var _entity218_7120 = this;
+												var _entity217_7117 = this;
 												
-												Func<double[], bool> _predicate218_7120 = null;
+												Func<double[], bool> _predicate217_7117 = null;
 												
-												var _target218_7120 = Aircraft__heading_coordinates;
-												_AgentLayer._AircraftEnvironment.MoveTo(_entity218_7120,
-													 _target218_7120.Item1, _target218_7120.Item2, 
-													_speed218_7120, 
-													_predicate218_7120);
+												var _target217_7117 = Aircraft__heading_coordinates;
+												_AgentLayer._AircraftEnvironment.MoveTo(_entity217_7117,
+													 _target217_7117.Item1, _target217_7117.Item2, 
+													_speed217_7117, 
+													_predicate217_7117);
 												
 												return new Tuple<double, double>(Position.X, Position.Y);
 											}).Invoke()
@@ -858,14 +866,14 @@ namespace cessna_digital_twin {
 															{
 															new System.Func<Tuple<double,double>>(() => {
 																
-																var _speed222_7250 = Aircraft__movement_x
+																var _speed221_7247 = Aircraft__movement_x
 															;
 																
-																var _entity222_7250 = this;
+																var _entity221_7247 = this;
 																
-																Func<double[], bool> _predicate222_7250 = null;
+																Func<double[], bool> _predicate221_7247 = null;
 																
-																_AgentLayer._AircraftEnvironment.MoveTowards(_entity222_7250, Aircraft__heading_bearing, _speed222_7250);	
+																_AgentLayer._AircraftEnvironment.MoveTowards(_entity221_7247, Aircraft__heading_bearing, _speed221_7247);	
 																
 																return new Tuple<double, double>(Position.X, Position.Y);
 															}).Invoke()
@@ -952,10 +960,19 @@ namespace cessna_digital_twin {
 		public void initialize_Engine() 
 		{
 			{
+			Engine__oil_pump_condition = Utility.probability_check(0.98);
+			Engine__oil_leakage = 0.0;
+			if(Equals(Utility.probability_check(0.02)
+			, true)) {
+							{
+							Engine__oil_leakage = 0.01
+							;}
+					;} ;
 			Engine__oil = 3.1 + _Random.Next(3)
 			 + (_Random.Next(10)
 			 / 10.0);
-			Engine__mixture_control = "LEAN";
+			Engine__mixture_control = (new Mars.Components.Common.MarsList<string>() { "LEAN","RICH" }).Get(_Random.Next(2)
+			);
 			Engine__throttle = _Random.Next(10)
 			 / 10.0;
 			Engine__ignition_switch = "OFF";
@@ -975,7 +992,9 @@ namespace cessna_digital_twin {
 		public void Set_Engine__not_running_values() 
 		{
 			{
+			Engine__running = false;
 			Engine__RPM = 0.0;
+			Engine__power = 0.0;
 			Engine__oil_pressure = 101325;
 			Engine__oil_temperature = 15;
 			Engine__fuel_consumption = 0.0
@@ -1001,14 +1020,24 @@ namespace cessna_digital_twin {
 							Add_Engine__failure_probability(Mars.Components.Common.Math.Pow(10, (-4)))
 							;}
 					;} ;
-			if(Equals(RWT__water_sediments, true)) {
+			if(Equals(LWT__water_sediments, true)) {
 							{
 							Add_Engine__failure_probability(Mars.Components.Common.Math.Pow(10, (-4)))
 							;}
 					;} ;
-			if(Engine__oil < Engine__oil_normal) {
+			if(Engine__oil < Engine__oil_min) {
 							{
-							Add_Engine__failure_probability(Mars.Components.Common.Math.Pow(10, (-4)))
+							Add_Engine__failure_probability(5 * Mars.Components.Common.Math.Pow(10, (-4)))
+							;}
+					;} ;
+			if(Engine__oil < Engine__oil_critical_min) {
+							{
+							Add_Engine__failure_probability(5 * Mars.Components.Common.Math.Pow(10, (-2)))
+							;}
+					;} ;
+			if(Equals(Engine__oil_pump_condition, false)) {
+							{
+							Add_Engine__failure_probability(5 * Mars.Components.Common.Math.Pow(10, (-4)))
 							;}
 					;} ;
 			if(Equals(Engine__mixture_control, "LEAN")) {
@@ -1063,15 +1092,26 @@ namespace cessna_digital_twin {
 											Engine__failure = true
 											;}
 									;} ;
-							Engine__fuel_consumption = Engine__fuel_consumption_max * Engine__throttle;
-							int temp_Engine__oil_pressure_normal_half = (Engine__oil_pressure_normal_max + Engine__oil_pressure_normal_min) / 2;
-							int temp_Engine__oil_temperature_normal_half = (Engine__oil_temperature_normal_max + Engine__oil_temperature_normal_min) / 2;
-							Engine__oil_pressure = temp_Engine__oil_pressure_normal_half;
-							Engine__oil_temperature = temp_Engine__oil_temperature_normal_half;
-							if(Engine__oil < Engine__oil_normal) {
+							if(Equals(Engine__ignition_switch, "OFF")) {
 											{
-											Engine__oil_pressure = Engine__oil_pressure - ((temp_Engine__oil_pressure_normal_half - Engine__oil_pressure_normal_min) * (Engine__oil_normal - Engine__oil));
-											Engine__oil_temperature = Engine__oil_temperature + ((Engine__oil_temperature_normal_max - temp_Engine__oil_temperature_normal_half) * (Engine__oil_normal - Engine__oil))
+											Engine__running = false
+											;}
+									;} ;
+							Engine__fuel_consumption = Engine__fuel_consumption_max * Engine__throttle;
+							Engine__oil = Engine__oil - Engine__oil_leakage;
+							int Engine__oil_temperature_slope = (Engine__oil_temperature_normal_min - Engine__oil_temperature_normal_max) / (Engine__oil_max - Engine__oil_min);
+							int Engine__oil_pressure_slope = (Engine__oil_pressure_normal_max - Engine__oil_pressure_normal_min) / (Engine__oil_max - Engine__oil_min);
+							Engine__oil_pressure = (Engine__oil_pressure_normal_min - Engine__oil_pressure_slope * Engine__oil_min) + Engine__oil_pressure_slope * Engine__oil;
+							Engine__oil_temperature = (Engine__oil_temperature_normal_max - Engine__oil_temperature_slope * Engine__oil_min) + Engine__oil_temperature_slope * Engine__oil;
+							if(Equals(Engine__oil_pump_condition, false)) {
+											{
+											Engine__oil_temperature = Engine__oil_temperature + (Engine__oil_temperature_normal_max - Engine__oil_temperature_normal_min) / 2;
+											Engine__oil_pressure = Engine__oil_pressure - (Engine__oil_pressure_normal_max - Engine__oil_pressure_normal_min) / 2
+											;}
+									;} ;
+							if(Engine__oil_pressure < 101325) {
+											{
+											Engine__oil_pressure = 101325
 											;}
 									;} 
 							;}
