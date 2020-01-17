@@ -34,14 +34,6 @@ namespace cessna_digital_twin {
 				if(System.Math.Abs(__Longitude - value) > 0.0000001) __Longitude = value;
 			}
 		}
-		private string __Aircraft__heading_mode
-			 = default(string);
-		internal string Aircraft__heading_mode { 
-			get { return __Aircraft__heading_mode; }
-			set{
-				if(__Aircraft__heading_mode != value) __Aircraft__heading_mode = value;
-			}
-		}
 		private cessna_digital_twin.UtilityClass __Utility
 			 = new cessna_digital_twin.UtilityClass();
 		internal cessna_digital_twin.UtilityClass Utility { 
@@ -130,20 +122,12 @@ namespace cessna_digital_twin {
 				if(System.Math.Abs(__Aircraft__movement_x - value) > 0.0000001) __Aircraft__movement_x = value;
 			}
 		}
-		private int __Aircraft__heading_bearing
-			 = default(int);
-		internal int Aircraft__heading_bearing { 
+		private double __Aircraft__heading_bearing
+			 = default(double);
+		public double Aircraft__heading_bearing { 
 			get { return __Aircraft__heading_bearing; }
 			set{
-				if(__Aircraft__heading_bearing != value) __Aircraft__heading_bearing = value;
-			}
-		}
-		private System.Tuple<double,double> __Aircraft__heading_coordinates
-			 = default(System.Tuple<double,double>);
-		internal System.Tuple<double,double> Aircraft__heading_coordinates { 
-			get { return __Aircraft__heading_coordinates; }
-			set{
-				if(__Aircraft__heading_coordinates != value) __Aircraft__heading_coordinates = value;
+				if(System.Math.Abs(__Aircraft__heading_bearing - value) > 0.0000001) __Aircraft__heading_bearing = value;
 			}
 		}
 		private double __Aircraft__height
@@ -706,18 +690,17 @@ namespace cessna_digital_twin {
 			double y_spawn = agentlayer.Get_spawn_y_coord();
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget56_1341 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget54_1186 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object56_1341 = this;
+				var _object54_1186 = this;
 				
-				_AgentLayer._AircraftEnvironment.PosAt(_object56_1341, 
-					_taget56_1341.Item1, _taget56_1341.Item2
+				_AgentLayer._AircraftEnvironment.PosAt(_object54_1186, 
+					_taget54_1186.Item1, _taget54_1186.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
 			Longitude = this.Position.X;
 			Latitude = this.Position.Y;
-			Aircraft__heading_mode = "COORDINATES";
 			event_info = "None"
 			;}
 			return;
@@ -841,45 +824,19 @@ namespace cessna_digital_twin {
 			Aircraft__movement_x = Aircraft__speed_x;
 			if(Aircraft__movement_x > 0) {
 							{
-							if(Equals(Aircraft__heading_mode, "COORDINATES")) {
-											{
-											new System.Func<Tuple<double,double>>(() => {
-												
-												var _speed217_7033 = Aircraft__movement_x
-											;
-												
-												var _entity217_7033 = this;
-												
-												Func<double[], bool> _predicate217_7033 = null;
-												
-												var _target217_7033 = Aircraft__heading_coordinates;
-												_AgentLayer._AircraftEnvironment.MoveTo(_entity217_7033,
-													 _target217_7033.Item1, _target217_7033.Item2, 
-													_speed217_7033, 
-													_predicate217_7033);
-												
-												return new Tuple<double, double>(Position.X, Position.Y);
-											}).Invoke()
-											;}
-									;} else {
-											if(Equals(Aircraft__heading_mode, "BEARING")) {
-															{
-															new System.Func<Tuple<double,double>>(() => {
-																
-																var _speed221_7163 = Aircraft__movement_x
-															;
-																
-																var _entity221_7163 = this;
-																
-																Func<double[], bool> _predicate221_7163 = null;
-																
-																_AgentLayer._AircraftEnvironment.MoveTowards(_entity221_7163, Aircraft__heading_bearing, _speed221_7163);	
-																
-																return new Tuple<double, double>(Position.X, Position.Y);
-															}).Invoke()
-															;}
-													;} 
-										;}
+							new System.Func<Tuple<double,double>>(() => {
+								
+								var _speed210_6614 = Aircraft__movement_x
+							;
+								
+								var _entity210_6614 = this;
+								
+								Func<double[], bool> _predicate210_6614 = null;
+								
+								_AgentLayer._AircraftEnvironment.MoveTowards(_entity210_6614, Aircraft__heading_bearing, _speed210_6614);	
+								
+								return new Tuple<double, double>(Position.X, Position.Y);
+							}).Invoke()
 							;}
 					;} 
 			;}
@@ -1238,9 +1195,9 @@ namespace cessna_digital_twin {
 		public void Remove() {
 			{
 			new System.Action(() => {
-				var _target48_1106 = this;
-				if (_target48_1106 != null) {
-					_AgentLayer._KillAircraft(_target48_1106, _target48_1106._executionFrequency);
+				var _target46_951 = this;
+				if (_target46_951 != null) {
+					_AgentLayer._KillAircraft(_target46_951, _target46_951._executionFrequency);
 				}
 			}).Invoke()
 					;
@@ -1256,16 +1213,6 @@ namespace cessna_digital_twin {
 			}
 			
 			return default(System.Tuple<double,double>);;
-		}
-		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Set_Aircraft__heading_mode(
-		string input) {
-			{
-			Aircraft__heading_mode = input
-					;
-			}
-			
-			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public string Get_callsign() {
@@ -1485,18 +1432,9 @@ namespace cessna_digital_twin {
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public void CIP_Set_Aircraft__heading_bearing(
-		int input) {
+		double input) {
 			{
 			Aircraft__heading_bearing = input
-			;}
-			
-			return;
-		}
-		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void CIP_Set_Aircraft__heading_coordinates(
-		System.Tuple<double,double> input) {
-			{
-			Aircraft__heading_coordinates = input
 			;}
 			
 			return;

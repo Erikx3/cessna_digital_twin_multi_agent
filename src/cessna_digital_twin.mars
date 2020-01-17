@@ -881,7 +881,6 @@ agent Pilot on AgentLayer{
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				// Set Aircraft Heading
-				myAircraft.Set_Aircraft__heading_mode("BEARING")
 				Set_Aircraft__heading_bearing(heading_information)
 				Apply_Engine__throttle(1.0)
 				Apply_Brake__deceleration(0.0)
@@ -1039,9 +1038,7 @@ agent Pilot on AgentLayer{
 			// Get active Taxi point
 			var active_taxi_point = taxi_path.Get(active_taxi_point_number)
 			// Set Aircraft Heading
-			myAircraft.Set_Aircraft__heading_mode("COORDINATES")
-			Set_Aircraft__heading_coordinates(active_taxi_point)
-			
+			Set_Aircraft__heading_bearing(formula.bearing(myAircraft.Get_position(), active_taxi_point))
 			//Distance and throttle handling
 			distance_to_next_point = formula.haversine(myAircraft.Get_position(), active_taxi_point)			
 			if (distance_to_next_point < 20)
@@ -1210,16 +1207,10 @@ agent Pilot on AgentLayer{
 	
 	
 	//-----Control_Input_Panel(CIP) Functions-----
-	def Set_Aircraft__heading_bearing(input: integer)
+	def Set_Aircraft__heading_bearing(input: real)
 	{
 		println "Apply heading bearing " + input
 		myAircraft.CIP_Set_Aircraft__heading_bearing(input)
-	}
-	
-	def Set_Aircraft__heading_coordinates(input: Tuple<real, real>)
-	{
-		println "Apply heading coordinates"
-		myAircraft.CIP_Set_Aircraft__heading_coordinates(input)
 	}
 	
 	def Apply_Engine__throttle(input : real)
@@ -1494,11 +1485,11 @@ class Formula
 		//Returns the distance between two points
 		//Note: Math functions in Mars are using RADIANS [rad]
 		//Input assumed: In GeoJson and Mars the order is (Lon[°], Lat[°])!
-		var rad_factor = Constants.Pi / 180
-		var lon1 = point1.Item1() * rad_factor
-		var lat1 = point1.Item2() * rad_factor
-		var lon2 = point2.Item1() * rad_factor
-		var lat2 = point2.Item2() * rad_factor
+		var deg_to_rad_factor = Constants.Pi / 180
+		var lon1 = point1.Item1() * deg_to_rad_factor
+		var lat1 = point1.Item2() * deg_to_rad_factor
+		var lon2 = point2.Item1() * deg_to_rad_factor
+		var lat2 = point2.Item2() * deg_to_rad_factor
 		
 		var dlon = lon2 - lon1
 		var dlat = lat2 - lat1
@@ -1512,12 +1503,38 @@ class Formula
 		var a = summand1 + (factor1 * factor2 * factor3)	
 		
 		//c = 2 * asin(sqrt(a)) 
-		var c : real = 2 * Math.Asin(a**0.5)
-		
+		var c : real = 2 * Math.Atan2(a**0.5, (1-a)**0.5)
 		var r = 6371000 //Radius of earth in meters
 		
 	    return c*r
 		                                                                 
+	}
+	
+	def bearing(point1 : Tuple<real, real>, point2: Tuple<real, real>)
+	{
+		// returns the bearing from point 1 TO point 2
+		//Note: Math functions in Mars are using RADIANS [rad]
+		//Input assumed: In GeoJson and Mars the order is (Lon[°], Lat[°])!
+		var deg_to_rad_factor = Constants.Pi / 180
+		var rad_to_deg_factor = 180 / Constants.Pi
+		var lon1 = point1.Item1() * deg_to_rad_factor
+		var lat1 = point1.Item2() * deg_to_rad_factor
+		var lon2 = point2.Item1() * deg_to_rad_factor
+		var lat2 = point2.Item2() * deg_to_rad_factor
+		
+		var dlon = lon2 - lon1
+		
+		//Workaround, since some problems with type appeared
+		// bearing = atan2(sin(dlon) * cos(lat2), cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dlon))
+		var y : real = Math.Sin(dlon) * Math.Cos(lat2)
+		var x1 : real = Math.Cos(lat1) * Math.Sin(lat2)
+		var x2: real = Math.Sin(lat1) * Math.Cos(lat2)
+		var x3 : real = Math.Cos(dlon)
+		var x : real = x1 - x2 * x3
+		
+		var bearing : real = Math.Atan2(y, x) * rad_to_deg_factor
+		bearing = (bearing + 360) % 360
+		return bearing
 	}
 }
 

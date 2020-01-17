@@ -98,3 +98,19 @@
 [ERROR] 2020-01-16 11:20:57,200 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
 [ERROR] 2020-01-16 11:20:57,200 | Mars.Core.SimulationStarter.SimulationStarter - The process cannot access the file 'C:\Users\eriks\Google Drive\Bachelorarbeit\02_Eclipse_Workspace\cessna_digital_twin\src-gen\Pilot.csv' because it is being used by another process. 
 [ERROR] 2020-01-16 11:20:57,200 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2020-01-17 08:42:30,378 | Mars.Core.SimulationStarter.SimulationStarter - MARS simulation execution crashed by IOException 
+[ERROR] 2020-01-17 08:42:30,402 | Mars.Core.SimulationStarter.SimulationStarter - Exception message: 
+[ERROR] 2020-01-17 08:42:30,403 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2020-01-17 08:42:30,403 | Mars.Core.SimulationStarter.SimulationStarter - The process cannot access the file 'C:\Users\eriks\Google Drive\Bachelorarbeit\02_Eclipse_Workspace\cessna_digital_twin\src-gen\Pilot.csv' because it is being used by another process. 
+[ERROR] 2020-01-17 08:42:30,403 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2020-01-17 08:42:59,981 | Mars.Core.SimulationStarter.SimulationStarter - MARS simulation execution crashed by IOException 
+[ERROR] 2020-01-17 08:43:00,006 | Mars.Core.SimulationStarter.SimulationStarter - Exception message: 
+[ERROR] 2020-01-17 08:43:00,006 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2020-01-17 08:43:00,006 | Mars.Core.SimulationStarter.SimulationStarter - The process cannot access the file 'C:\Users\eriks\Google Drive\Bachelorarbeit\02_Eclipse_Workspace\cessna_digital_twin\src-gen\Pilot.csv' because it is being used by another process. 
+[ERROR] 2020-01-17 08:43:00,006 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2020-01-17 16:42:00,151 | Mars.Core.SimulationStepExecutor.Implementation.StepExecutionUseCase - The direction bearing is outside the range of 0-360 
+[ERROR] 2020-01-17 16:42:00,164 | Mars.Core.SimulationStarter.SimulationStarter - MARS simulation execution crashed by AggregateException 
+[ERROR] 2020-01-17 16:42:00,164 | Mars.Core.SimulationStarter.SimulationStarter - Exception message: 
+[ERROR] 2020-01-17 16:42:00,164 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2020-01-17 16:42:00,165 | Mars.Core.SimulationStarter.SimulationStarter - One or more errors occurred. (The direction bearing is outside the range of 0-360) 
+[ERROR] 2020-01-17 16:42:00,165 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 

@@ -1047,7 +1047,6 @@ namespace cessna_digital_twin {
 							if(timehandler.hold_action_time(timehandler.action_duration)
 							) {
 											{
-											myAircraft.Set_Aircraft__heading_mode("BEARING");
 											Set_Aircraft__heading_bearing(heading_information);
 											Apply_Engine__throttle(1.0);
 											Apply_Brake__deceleration(0.0);
@@ -1240,8 +1239,9 @@ namespace cessna_digital_twin {
 							if(Equals(next_action, "Taxiing")) {
 											{
 											System.Tuple<double,double> active_taxi_point = taxi_path.Get(active_taxi_point_number);
-											myAircraft.Set_Aircraft__heading_mode("COORDINATES");
-											Set_Aircraft__heading_coordinates(active_taxi_point);
+											Set_Aircraft__heading_bearing(formula.bearing(myAircraft.Get_position(),
+											active_taxi_point)
+											);
 											distance_to_next_point = formula.haversine(myAircraft.Get_position(),
 											active_taxi_point);
 											if(distance_to_next_point < 20) {
@@ -1451,20 +1451,11 @@ namespace cessna_digital_twin {
 			return default(bool);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Set_Aircraft__heading_bearing(int input) 
+		public void Set_Aircraft__heading_bearing(double input) 
 		{
 			{
 			System.Console.WriteLine("Apply heading bearing " + input);;
 			myAircraft.CIP_Set_Aircraft__heading_bearing(input)
-			;}
-			return;
-		}
-		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Set_Aircraft__heading_coordinates(System.Tuple<double,double> input) 
-		{
-			{
-			System.Console.WriteLine("Apply heading coordinates");;
-			myAircraft.CIP_Set_Aircraft__heading_coordinates(input)
 			;}
 			return;
 		}

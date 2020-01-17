@@ -34,8 +34,6 @@ agent Aircraft on AgentLayer{
 	// -----General Values and Functions (Settings and Doc)-----
 	observe var Latitude : real
 	observe var Longitude : real
-	//TODO: Add calculation of heading between two points to pilot to remove this
-	var Aircraft__heading_mode : string // either "BEARING" or "COORDINATES"
 	
 	//Classes
 	var Utility = new UtilityClass()
@@ -57,7 +55,6 @@ agent Aircraft on AgentLayer{
 		
 		Longitude = xcor
 		Latitude = ycor
-		Aircraft__heading_mode = "COORDINATES"
 		
 		event_info = "None"
 	}
@@ -69,7 +66,6 @@ agent Aircraft on AgentLayer{
 	}
 	
 	passive Get_position() => return #(xcor, ycor) // for returning the position of the aircraft
-	passive Set_Aircraft__heading_mode(input : string) => Aircraft__heading_mode = input
 	
 	
 	//-----Aircraft Characteristics-----
@@ -93,8 +89,7 @@ agent Aircraft on AgentLayer{
 	observe var Aircraft__acceleration_x : real // m/s^2 with x in direction of plane heading
 	observe var Aircraft__speed_x : real // m/s
 	var Aircraft__movement_x : real // m
-	var Aircraft__heading_bearing : integer //heading integer, usage depends on Aircraft_heading_mode
-	var Aircraft__heading_coordinates : Tuple<real, real> //heading tuple coordinate
+	observe var Aircraft__heading_bearing : real //heading integer, usage depends on Aircraft_heading_mode
 	
 	observe var Aircraft__height : real // m
 	observe var Aircraft__flight_phase : string // values "in-air" or "on-ground"
@@ -212,14 +207,7 @@ agent Aircraft on AgentLayer{
 		
 		if (Aircraft__movement_x > 0)
 		{
-			if (Aircraft__heading_mode === "COORDINATES")
-			{
-				move me Aircraft__movement_x to Aircraft__heading_coordinates
-			}
-			else if (Aircraft__heading_mode === "BEARING")
-			{
-				move me Aircraft__movement_x to Aircraft__heading_bearing
-			}
+			move me Aircraft__movement_x to Aircraft__heading_bearing
 		}
 	}
 		
@@ -616,13 +604,9 @@ agent Aircraft on AgentLayer{
 	}
 	
 	//Both function works as heading input, since calculation for heading within pilot not yet integrated
-	passive CIP_Set_Aircraft__heading_bearing(input : integer)
+	passive CIP_Set_Aircraft__heading_bearing(input : real)
 	{
 		Aircraft__heading_bearing = input
-	}
-	passive CIP_Set_Aircraft__heading_coordinates(input : Tuple<real, real>)
-	{
-		Aircraft__heading_coordinates = input
 	}
 	
 	passive CIP_Apply_Aircraft__pitch(input : real)
