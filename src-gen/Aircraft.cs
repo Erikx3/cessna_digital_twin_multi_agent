@@ -857,14 +857,14 @@ namespace cessna_digital_twin {
 							{
 							new System.Func<Tuple<double,double>>(() => {
 								
-								var _speed227_7583 = Aircraft__movement_x
+								var _speed229_7839 = Aircraft__movement_x
 							;
 								
-								var _entity227_7583 = this;
+								var _entity229_7839 = this;
 								
-								Func<double[], bool> _predicate227_7583 = null;
+								Func<double[], bool> _predicate229_7839 = null;
 								
-								_AgentLayer._AircraftEnvironment.MoveTowards(_entity227_7583, Aircraft__heading_bearing, _speed227_7583);	
+								_AgentLayer._AircraftEnvironment.MoveTowards(_entity229_7839, Aircraft__heading_bearing, _speed229_7839);	
 								
 								return new Tuple<double, double>(Position.X, Position.Y);
 							}).Invoke()
@@ -1205,7 +1205,8 @@ namespace cessna_digital_twin {
 							{
 							Tire__friction_force = 0
 							;}
-						;}
+						;};
+			Tire__friction_force = 0
 			;}
 			return;
 		}
