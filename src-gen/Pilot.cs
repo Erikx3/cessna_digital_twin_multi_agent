@@ -789,9 +789,9 @@ namespace cessna_digital_twin {
 															Check_Instrument_LWT__fuel_quantitity();
 															Check_Instrument_RWT__fuel_quantitity();
 															Check_Instrument_Aircraft__height();
-															Check_Instrument_Aircraft__climb_rate();
-															Check_Instrument_Aircraft__angle_of_attack();
-															Check_Instrument_Aircraft__speed_x();
+															Check_Instrument_Aircraft__rate_of_climb();
+															Check_Instrument_Aircraft__pitch();
+															Check_Instrument_Aircraft__true_air_speed();
 															next_action = "Set_Engine__mixture_control"
 															;}
 													;} 
@@ -1050,6 +1050,7 @@ namespace cessna_digital_twin {
 											Set_Aircraft__heading_bearing(heading_information);
 											Apply_Engine__throttle(1.0);
 											Apply_Brake__deceleration(0.0);
+											temp_pitch_value = 0;
 											next_action = "ReadyForRotate"
 											;}
 									;} 
@@ -1057,15 +1058,19 @@ namespace cessna_digital_twin {
 					;} else {
 							if(Equals(next_action, "ReadyForRotate")) {
 											{
-											timehandler.create_action_duration(3,1,"pilot_age_and_experience");
+											timehandler.create_action_duration(1,1,"pilot_age_and_experience");
 											if(timehandler.hold_action_time(timehandler.action_duration)
 											) {
 															{
-															if(Check_Instrument_Aircraft__speed_x() > V_rotate) {
+															if(Check_Instrument_Aircraft__true_air_speed() > V_rotate) {
 																			{
-																			temp_pitch_value = 8;
+																			temp_pitch_value = temp_pitch_value + 2;
 																			Apply_Aircraft__pitch(temp_pitch_value);
-																			next_action = "HoldAircraft"
+																			if(temp_pitch_value >= 8) {
+																							{
+																							next_action = "HoldAircraft"
+																							;}
+																					;} 
 																			;}
 																	;} 
 															;}
@@ -1096,7 +1101,7 @@ namespace cessna_digital_twin {
 													;} else {
 															if(Equals(next_action, "ControlAircraft")) {
 																			{
-																			timehandler.create_action_duration(1,1,"pilot_age_and_experience");
+																			timehandler.create_action_duration(3,1,"pilot_age_and_experience");
 																			if(timehandler.hold_action_time(timehandler.action_duration)
 																			) {
 																							{
@@ -1105,7 +1110,7 @@ namespace cessna_digital_twin {
 																											temp_pitch_value = temp_pitch_value - 1
 																											;}
 																									;} else {
-																											if(Check_Instrument_Aircraft__climb_rate() > 3) {
+																											if(Check_Instrument_Aircraft__rate_of_climb() > 3) {
 																															{
 																															if(Equals(Feel_Aircraft__deceleration_z(), false)) {
 																																			{
@@ -1114,7 +1119,7 @@ namespace cessna_digital_twin {
 																																	;} 
 																															;}
 																													;} else {
-																															if(Check_Instrument_Aircraft__climb_rate() < 1) {
+																															if(Check_Instrument_Aircraft__rate_of_climb() < 1) {
 																																			{
 																																			if(Equals(Feel_Aircraft__acceleration_z(), false)) {
 																																							{
@@ -1129,7 +1134,7 @@ namespace cessna_digital_twin {
 																							;}
 																					;} ;
 																			System.Console.WriteLine("Aircraft Speed:");;
-																			System.Console.WriteLine(Check_Instrument_Aircraft__speed_x());;
+																			System.Console.WriteLine(Check_Instrument_Aircraft__true_air_speed());;
 																			System.Console.WriteLine("Aircraft Height:");;
 																			System.Console.WriteLine(Check_Instrument_Aircraft__height());
 																			;}
@@ -1158,7 +1163,7 @@ namespace cessna_digital_twin {
 							;}
 					;} else {
 							{
-							if(Check_Instrument_Aircraft__speed_x() > 5) {
+							if(Check_Instrument_Aircraft__true_air_speed() > 5) {
 											{
 											temp_throttle_value = 0.1;
 											Apply_Brake__deceleration(0.2)
@@ -1178,7 +1183,7 @@ namespace cessna_digital_twin {
 		public void Taxiing_normal() 
 		{
 			{
-			if(Check_Instrument_Aircraft__speed_x() > 8) {
+			if(Check_Instrument_Aircraft__true_air_speed() > 8) {
 							{
 							if(Equals(Feel_Aircraft__deceleration_x(), false)) {
 											{
@@ -1187,7 +1192,7 @@ namespace cessna_digital_twin {
 									;} 
 							;}
 					;} else {
-							if(Check_Instrument_Aircraft__speed_x() < 2) {
+							if(Check_Instrument_Aircraft__true_air_speed() < 2) {
 											{
 											if(Equals(Feel_Aircraft__acceleration_x(), false)) {
 															{
@@ -1196,7 +1201,7 @@ namespace cessna_digital_twin {
 													;} 
 											;}
 									;} else {
-											if(Check_Instrument_Aircraft__speed_x() < 7) {
+											if(Check_Instrument_Aircraft__true_air_speed() < 7) {
 															{
 															if(Equals(Feel_Aircraft__acceleration_x(), false)) {
 																			{
@@ -1271,7 +1276,7 @@ namespace cessna_digital_twin {
 											System.Console.WriteLine("active_taxi_point : ");;
 											System.Console.WriteLine(active_taxi_point);;
 											System.Console.WriteLine("Current speed : ");;
-											System.Console.WriteLine(Check_Instrument_Aircraft__speed_x());;
+											System.Console.WriteLine(Check_Instrument_Aircraft__true_air_speed());;
 											System.Console.WriteLine("distance: " + distance_to_next_point);
 											;}
 									;} 
@@ -1321,29 +1326,29 @@ namespace cessna_digital_twin {
 			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public double Check_Instrument_Aircraft__speed_x() 
+		public double Check_Instrument_Aircraft__true_air_speed() 
 		{
 			{
 			System.Console.WriteLine("Checking Aircraft Speed Instrument");;
-			return myAircraft.IP_Get_Aircraft__speed_x()
+			return myAircraft.IP_Get_Aircraft__true_air_speed()
 			;}
 			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public double Check_Instrument_Aircraft__angle_of_attack() 
+		public double Check_Instrument_Aircraft__pitch() 
 		{
 			{
-			System.Console.WriteLine("Checking Aircraft angle of attack via instrument");;
-			return myAircraft.IP_Get_Aircraft__angle_of_attack()
+			System.Console.WriteLine("Checking Aircraft pitch via instrument");;
+			return myAircraft.IP_Get_Aircraft__pitch()
 			;}
 			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public double Check_Instrument_Aircraft__climb_rate() 
+		public double Check_Instrument_Aircraft__rate_of_climb() 
 		{
 			{
 			System.Console.WriteLine("Checking Aircraft climb of rate via instrument");;
-			return myAircraft.IP_Get_Aircraft__climb_rate()
+			return myAircraft.IP_Get_Aircraft__rate_of_climb()
 			;}
 			return default(double);;
 		}

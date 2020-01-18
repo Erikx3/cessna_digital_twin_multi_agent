@@ -114,3 +114,20 @@
 [ERROR] 2020-01-17 16:42:00,164 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
 [ERROR] 2020-01-17 16:42:00,165 | Mars.Core.SimulationStarter.SimulationStarter - One or more errors occurred. (The direction bearing is outside the range of 0-360) 
 [ERROR] 2020-01-17 16:42:00,165 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2020-01-18 10:40:07,386 | Mars.Core.SimulationStarter.SimulationStarter - MARS simulation execution crashed by IOException 
+[ERROR] 2020-01-18 10:40:07,400 | Mars.Core.SimulationStarter.SimulationStarter - Exception message: 
+[ERROR] 2020-01-18 10:40:07,401 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2020-01-18 10:40:07,401 | Mars.Core.SimulationStarter.SimulationStarter - The process cannot access the file 'C:\Users\eriks\Google Drive\Bachelorarbeit\02_Eclipse_Workspace\cessna_digital_twin\src-gen\Pilot.csv' because it is being used by another process. 
+[ERROR] 2020-01-18 10:40:07,401 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2020-01-18 16:58:18,678 | Mars.Core.SimulationStepExecutor.Implementation.StepExecutionUseCase - The passed longitude parameter 246,945667874156 is outside of range -180 to +180 degree. 
+[ERROR] 2020-01-18 16:58:18,694 | Mars.Core.SimulationStarter.SimulationStarter - MARS simulation execution crashed by AggregateException 
+[ERROR] 2020-01-18 16:58:18,694 | Mars.Core.SimulationStarter.SimulationStarter - Exception message: 
+[ERROR] 2020-01-18 16:58:18,694 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2020-01-18 16:58:18,694 | Mars.Core.SimulationStarter.SimulationStarter - One or more errors occurred. (The passed longitude parameter 246,945667874156 is outside of range -180 to +180 degree.) 
+[ERROR] 2020-01-18 16:58:18,694 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2020-01-18 17:26:23,004 | Mars.Core.SimulationStepExecutor.Implementation.StepExecutionUseCase - The passed longitude parameter -241,146643892939 is outside of range -180 to +180 degree. 
+[ERROR] 2020-01-18 17:26:23,017 | Mars.Core.SimulationStarter.SimulationStarter - MARS simulation execution crashed by AggregateException 
+[ERROR] 2020-01-18 17:26:23,017 | Mars.Core.SimulationStarter.SimulationStarter - Exception message: 
+[ERROR] 2020-01-18 17:26:23,017 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2020-01-18 17:26:23,017 | Mars.Core.SimulationStarter.SimulationStarter - One or more errors occurred. (The passed longitude parameter -241,146643892939 is outside of range -180 to +180 degree.) 
+[ERROR] 2020-01-18 17:26:23,017 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 

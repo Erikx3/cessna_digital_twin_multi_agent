@@ -86,17 +86,21 @@ agent Aircraft on AgentLayer{
 	
 	
 	//-----Aircraft(Movement and Physics)-----
+	//Note: using a geodesic coordinate system!
 	observe var Aircraft__acceleration_x : real // m/s^2 with x in direction of plane heading
-	observe var Aircraft__speed_x : real // m/s
+	observe var Aircraft__true_air_speed_x : real // m/s
+	observe var Aircraft__true_air_speed : real // m/s
 	var Aircraft__movement_x : real // m
 	observe var Aircraft__heading_bearing : real //heading integer, usage depends on Aircraft_heading_mode
 	
 	observe var Aircraft__height : real // m
 	observe var Aircraft__flight_phase : string // values "in-air" or "on-ground"
-	observe var Aircraft__angle_of_attack : real // degree
-	observe var Aircraft__lift : real //newton
+	observe var Aircraft__angle_of_attack : real // aerodynamic angle in degrees
+	observe var Aircraft__pitch : real // value controlled by pilot in degrees, positive pitch means nose up
+	observe var Aircraft__climb_angle : real // value resulting from speeds in degrees
+	observe var Aircraft__lift : real // newton
 	observe var Aircraft__acceleration_z : real // m/s^2 with z pointing upwards
-	observe var Aircraft__climb_rate : real // m/s
+	observe var Aircraft__rate_of_climb : real // m/s
 	
 	observe var Aircraft__drag : real // newton
 	
@@ -150,13 +154,16 @@ agent Aircraft on AgentLayer{
 	def initialize_AircraftPhysics()
 	{
 		Aircraft__acceleration_x = 0.0
-		Aircraft__speed_x = 0.0
+		Aircraft__true_air_speed_x = 0.0
+		Aircraft__true_air_speed = 0.0
 		Aircraft__height = 0.0
 		Aircraft__flight_phase = "on-ground"
 		Aircraft__lift = 0.0
 		Aircraft__acceleration_z = 0.0
-		Aircraft__climb_rate = 0.0
+		Aircraft__rate_of_climb = 0.0
 		Aircraft__angle_of_attack = 0.0
+		Aircraft__pitch = 0.0
+		Aircraft__climb_angle = 0.0
 		Aircraft__drag = 0.0
 		
 		Aircraft__zero_lift_angle = -3.0
@@ -165,8 +172,7 @@ agent Aircraft on AgentLayer{
 	def update_AircraftPhysics()
 	{
 		//Note: remember, Tick size is ONE second!
-		//help variable
-		var Aircraft__AoA_rad = Aircraft__angle_of_attack * Constants.Pi / 180
+		
 		// flight state
 		if (Aircraft__height > 0)
 		{
@@ -177,34 +183,45 @@ agent Aircraft on AgentLayer{
 			Aircraft__flight_phase = "on-ground"
 		}
 		
-		// Lift calculation
+		// angle calculations
+		Aircraft__climb_angle = Math.Asin(Aircraft__rate_of_climb / Aircraft__true_air_speed) * 180 / Constants.Pi // for degree			
+		Aircraft__angle_of_attack = (Aircraft__pitch - Aircraft__rate_of_climb)
+		
+		//help variable
+		var Aircraft__pitch_rad = Aircraft__pitch * Constants.Pi / 180
+		
+		// Lift calculation - Note: True Airspeed needs to be used here!
 		Aircraft__lift_coefficient = Get_Aircraft__lift_coefficient()
-		Aircraft__lift = Aircraft__lift_coefficient * agentlayer.Get_Weather__density() * Aircraft__speed_x**2 * Aircraft__wing_area / 2
-		
-		//Z Movement calculation
-		Aircraft__acceleration_z = ((Propeller__thrust - Tire__friction_force - Aircraft__drag) * Math.Sin(Aircraft__AoA_rad) + Aircraft__lift * Math.Cos(Aircraft__AoA_rad) - Aircraft__mass * agentlayer.Get_gravity()) / Aircraft__mass 
-		Aircraft__climb_rate = Aircraft__climb_rate + Aircraft__acceleration_z
-		Aircraft__height = Aircraft__height + Aircraft__climb_rate
-		
-		if (Aircraft__height <= 0) //redundancy and deny negative values
-		{
-			Aircraft__climb_rate = 0
-			Aircraft__height = 0
-		}
+		Aircraft__lift = Aircraft__lift_coefficient * agentlayer.Get_Weather__density() * Aircraft__true_air_speed**2 * Aircraft__wing_area / 2
 		
 		// Drag calculation
 		Aircraft__drag_coefficient = Get_Aircraft__drag_coefficient()
-		Aircraft__drag = Aircraft__drag_coefficient * agentlayer.Get_Weather__density() * Aircraft__speed_x**2 * Aircraft__wing_area / 2
-	
-		//X Movement calculation
-		Aircraft__acceleration_x = ((Propeller__thrust - Tire__friction_force - Aircraft__drag) * Math.Cos(Aircraft__AoA_rad) - Aircraft__lift * Math.Sin(Aircraft__AoA_rad)) / Aircraft__mass - Brake__deceleration
-		Aircraft__speed_x = Aircraft__speed_x + Aircraft__acceleration_x
-		if (Aircraft__speed_x < 0 or Brake__parking_brake === "SET")
-		{
-			Aircraft__speed_x = 0
-		}
-		Aircraft__movement_x = Aircraft__speed_x
+		Aircraft__drag = Aircraft__drag_coefficient * agentlayer.Get_Weather__density() * Aircraft__true_air_speed**2 * Aircraft__wing_area / 2
 		
+		//Z Movement calculation
+		Aircraft__acceleration_z = ((Propeller__thrust - Tire__friction_force - Aircraft__drag) * Math.Sin(Aircraft__pitch_rad) + Aircraft__lift * Math.Cos(Aircraft__pitch_rad) - Aircraft__mass * agentlayer.Get_gravity()) / Aircraft__mass 
+		Aircraft__rate_of_climb = Aircraft__rate_of_climb + Aircraft__acceleration_z
+		Aircraft__height = Aircraft__height + Aircraft__rate_of_climb
+		
+		if (Aircraft__height < 0) //redundancy and deny negative values
+		{
+			Aircraft__rate_of_climb = 0
+			Aircraft__height = 0
+		}
+		
+		//X Movement calculation
+		Aircraft__acceleration_x = ((Propeller__thrust - Tire__friction_force - Aircraft__drag - Brake__deceleration_force) * Math.Cos(Aircraft__pitch_rad) - Aircraft__lift * Math.Sin(Aircraft__pitch_rad)) / Aircraft__mass
+		Aircraft__true_air_speed_x = Aircraft__true_air_speed_x + Aircraft__acceleration_x
+		if (Aircraft__true_air_speed_x < 0 or Brake__parking_brake === "SET")
+		{
+			Aircraft__true_air_speed_x = 0
+		}
+		Aircraft__movement_x = Aircraft__true_air_speed_x
+		
+		// True Airspeed calculation
+		Aircraft__true_air_speed = (Aircraft__true_air_speed_x**2 + Aircraft__rate_of_climb**2)**0.5
+		
+		// TODO: Add ground speed calculation here !
 		if (Aircraft__movement_x > 0)
 		{
 			move me Aircraft__movement_x to Aircraft__heading_bearing
@@ -215,21 +232,28 @@ agent Aircraft on AgentLayer{
 	observe var Brake__parking_brake : string // "SET" or "OFF"
 	
 	observe var Brake__deceleration_application : real // value No brakes applied 0...1 Full Brakes applied
-	observe var Brake__deceleration : real // m/s^2
-	var Brake__deceleration_max : real = 4 // m/s^2
+	observe var Brake__deceleration_force : real // Newton
+	var Brake__deceleration_force_max : real = 3000 // Newton
 	
 	//TODO: Add brake_health dependency on Tire inflation
 	
 	def initialize_Brake()
 	{
 		Brake__parking_brake = "SET" 
-		Brake__deceleration = 0.0
+		Brake__deceleration_force = 0.0
 		Brake__deceleration_application = 0.0
 	}
 	
 	def update_Brake()
 	{
-		Brake__deceleration = Brake__deceleration_application * Brake__deceleration_max
+		if (Aircraft__flight_phase === "on-ground")
+		{
+			Brake__deceleration_force = Brake__deceleration_application * Brake__deceleration_force_max
+		}
+		else
+		{
+			Brake__deceleration_force = 0
+		}
 	}
 	
 	
@@ -244,13 +268,18 @@ agent Aircraft on AgentLayer{
 	var Propeller__thrust_coefficient_speed_constant : real = 25.0 //Up to which speed coefficient is constant
 	def Get_Propeller__thrust_coefficient()
 	{
-		if (Aircraft__speed_x > Propeller__thrust_coefficient_speed_constant)
+		if (Aircraft__true_air_speed > Propeller__thrust_coefficient_speed_constant)
 		{
-			Propeller__thrust_coefficient = Propeller__thrust_coefficient_slope * (Aircraft__speed_x - Propeller__thrust_coefficient_speed_constant) + Propeller__thrust_coefficient_constant
+			Propeller__thrust_coefficient = Propeller__thrust_coefficient_slope * (Aircraft__true_air_speed - Propeller__thrust_coefficient_speed_constant) + Propeller__thrust_coefficient_constant
 		}
 		else
 		{
 			Propeller__thrust_coefficient = Propeller__thrust_coefficient_constant
+		}
+		
+		if (Propeller__thrust_coefficient < 0)
+		{
+			Propeller__thrust_coefficient = 0
 		}
 		return Propeller__thrust_coefficient
 	}
@@ -295,9 +324,9 @@ agent Aircraft on AgentLayer{
 	
 	def Get_Engine__power_coefficient()
 	{
-		if (Aircraft__speed_x > Engine__power_coefficient_speed_constant)
+		if (Aircraft__true_air_speed > Engine__power_coefficient_speed_constant)
 		{
-			Engine__power_coefficient = Engine__power_coefficient_slope * (Aircraft__speed_x - Engine__power_coefficient_speed_constant) + Engine__power_coefficient_constant
+			Engine__power_coefficient = Engine__power_coefficient_slope * (Aircraft__true_air_speed - Engine__power_coefficient_speed_constant) + Engine__power_coefficient_constant
 		}
 		else
 		{
@@ -611,7 +640,7 @@ agent Aircraft on AgentLayer{
 	
 	passive CIP_Apply_Aircraft__pitch(input : real)
 	{
-		Aircraft__angle_of_attack = input
+		Aircraft__pitch = input
 	}
 	
 	passive CIP_Set__master_switch(input: string)
@@ -650,22 +679,22 @@ agent Aircraft on AgentLayer{
 	}
 	
 	//airspeed_indicator
-	passive IP_Get_Aircraft__speed_x()
+	passive IP_Get_Aircraft__true_air_speed()
 	{
 		//TODO: Right Aircraft Speed indication calculation after wind implementation
-		return Aircraft__speed_x
+		return Aircraft__true_air_speed
 	}
 	
 	//artificial_horizon
-	passive IP_Get_Aircraft__angle_of_attack()
+	passive IP_Get_Aircraft__pitch()
 	{
-		return Aircraft__angle_of_attack
+		return Aircraft__pitch
 	}
 	
 	//vertival speed indicator
-	passive IP_Get_Aircraft__climb_rate()
+	passive IP_Get_Aircraft__rate_of_climb()
 	{
-		return Aircraft__climb_rate
+		return Aircraft__rate_of_climb
 	}
 	
 	//altimeter

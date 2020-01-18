@@ -655,9 +655,9 @@ agent Pilot on AgentLayer{
 				Check_Instrument_LWT__fuel_quantitity()
 				Check_Instrument_RWT__fuel_quantitity()
 				Check_Instrument_Aircraft__height()
-				Check_Instrument_Aircraft__climb_rate()
-				Check_Instrument_Aircraft__angle_of_attack()
-				Check_Instrument_Aircraft__speed_x()
+				Check_Instrument_Aircraft__rate_of_climb()
+				Check_Instrument_Aircraft__pitch()
+				Check_Instrument_Aircraft__true_air_speed()
 				next_action = "Set_Engine__mixture_control"
 			}
 		}
@@ -884,20 +884,25 @@ agent Pilot on AgentLayer{
 				Set_Aircraft__heading_bearing(heading_information)
 				Apply_Engine__throttle(1.0)
 				Apply_Brake__deceleration(0.0)
+				temp_pitch_value = 0
 				next_action = "ReadyForRotate"
 			}
 		}
 		
 		else if (next_action === "ReadyForRotate")
 		{
-			timehandler.create_action_duration(3, 1, "pilot_age_and_experience")  // simulating check of instrument
+			timehandler.create_action_duration(1, 1, "pilot_age_and_experience")  // simulating check of instrument
 			if (timehandler.hold_action_time(timehandler.action_duration))  
 			{
-				if (Check_Instrument_Aircraft__speed_x() > V_rotate) // TODO: Add calculation of V_rotate
+				if (Check_Instrument_Aircraft__true_air_speed() > V_rotate) // TODO: Add calculation of V_rotate
 				{
-					temp_pitch_value = 8
+					temp_pitch_value = temp_pitch_value + 2
 					Apply_Aircraft__pitch(temp_pitch_value)
-					next_action = "HoldAircraft"
+					if (temp_pitch_value >= 8)
+					{
+						next_action = "HoldAircraft"
+					}
+					
 				}
 			}
 		}
@@ -923,21 +928,21 @@ agent Pilot on AgentLayer{
 		
 		else if (next_action === "ControlAircraft")
 		{
-			timehandler.create_action_duration(1, 1, "pilot_age_and_experience")  // simulating check of instrument every 2 sec
+			timehandler.create_action_duration(3, 1, "pilot_age_and_experience")  // simulating check of instrument every 2 sec
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				if (Hear_Aircraft__stall_sound() === true)
 				{
 					temp_pitch_value = temp_pitch_value - 1
 				}
-				else if (Check_Instrument_Aircraft__climb_rate() > 3)
+				else if (Check_Instrument_Aircraft__rate_of_climb() > 3)
 				{
 					if (Feel_Aircraft__deceleration_z === false)
 					{
 						temp_pitch_value = temp_pitch_value - 0.5
 					}
 				}
-				else if (Check_Instrument_Aircraft__climb_rate() < 1)
+				else if (Check_Instrument_Aircraft__rate_of_climb() < 1)
 				{
 					if (Feel_Aircraft__acceleration_z === false)
 					{
@@ -948,7 +953,7 @@ agent Pilot on AgentLayer{
 			}
 						
 			println "Aircraft Speed:"
-			println Check_Instrument_Aircraft__speed_x()
+			println Check_Instrument_Aircraft__true_air_speed()
 			println "Aircraft Height:"
 			println Check_Instrument_Aircraft__height()
 		}
@@ -973,7 +978,7 @@ agent Pilot on AgentLayer{
 		}
 		else
 		{
-			if (Check_Instrument_Aircraft__speed_x() > 5)
+			if (Check_Instrument_Aircraft__true_air_speed() > 5)
 			{
 				temp_throttle_value = 0.1
 				Apply_Brake__deceleration(0.2)
@@ -988,21 +993,21 @@ agent Pilot on AgentLayer{
 	
 	def Taxiing_normal()  // Throttle handling in normal case	
 	{
-		if (Check_Instrument_Aircraft__speed_x() > 8)
+		if (Check_Instrument_Aircraft__true_air_speed() > 8)
 		{	
 			if (Feel_Aircraft__deceleration_x() === false)
 			{
 				temp_throttle_value = temp_throttle_value - 0.1
 			}
 		}
-		else if (Check_Instrument_Aircraft__speed_x() < 2)
+		else if (Check_Instrument_Aircraft__true_air_speed() < 2)
 		{
 			if (Feel_Aircraft__acceleration_x() === false)
 			{
 				temp_throttle_value = temp_throttle_value + 0.30
 			}
 		}
-		else if (Check_Instrument_Aircraft__speed_x() < 7)
+		else if (Check_Instrument_Aircraft__true_air_speed() < 7)
 		{
 			if (Feel_Aircraft__acceleration_x() === false)
 			{
@@ -1070,7 +1075,7 @@ agent Pilot on AgentLayer{
 			println "active_taxi_point : "
 			println active_taxi_point
 			println "Current speed : "
-			println Check_Instrument_Aircraft__speed_x()
+			println Check_Instrument_Aircraft__true_air_speed()
 			println "distance: " + distance_to_next_point
 			
 		}
@@ -1111,22 +1116,22 @@ agent Pilot on AgentLayer{
 		return myAircraft.IP_Get_Engine__oil_temperature()
 	}
 	
-	def Check_Instrument_Aircraft__speed_x()
+	def Check_Instrument_Aircraft__true_air_speed()
 	{
 		println "Checking Aircraft Speed Instrument"
-		return myAircraft.IP_Get_Aircraft__speed_x()
+		return myAircraft.IP_Get_Aircraft__true_air_speed()
 	}
 	
-	def Check_Instrument_Aircraft__angle_of_attack()
+	def Check_Instrument_Aircraft__pitch()
 	{
-		println "Checking Aircraft angle of attack via instrument"
-		return myAircraft.IP_Get_Aircraft__angle_of_attack()
+		println "Checking Aircraft pitch via instrument"
+		return myAircraft.IP_Get_Aircraft__pitch()
 	}
 	
-	def Check_Instrument_Aircraft__climb_rate()
+	def Check_Instrument_Aircraft__rate_of_climb()
 	{
 		println "Checking Aircraft climb of rate via instrument"
-		return myAircraft.IP_Get_Aircraft__climb_rate()
+		return myAircraft.IP_Get_Aircraft__rate_of_climb()
 	}
 	
 	def Check_Instrument_Aircraft__height()
