@@ -868,6 +868,11 @@ namespace cessna_digital_twin {
 					 	Aircraft__ground_speed_x = Aircraft__ground_speed_x + Aircraft__acceleration_x / n_cycle;
 					 	Aircraft__true_air_speed_x = Aircraft__ground_speed_x + agentlayer.Get_Weather__wind_speed()
 					 	 * Mars.Components.Common.Math.Cos(delta_wind_bearing_rad);
+					 	if(Aircraft__true_air_speed_x < 0) {
+					 					{
+					 					Aircraft__true_air_speed_x = 0
+					 					;}
+					 			;} ;
 					 	if(Aircraft__ground_speed_x < 0 || Equals(Brake__parking_brake, "SET")) {
 					 					{
 					 					Aircraft__ground_speed_x = 0
@@ -881,14 +886,14 @@ namespace cessna_digital_twin {
 							{
 							new System.Func<Tuple<double,double>>(() => {
 								
-								var _speed243_8687 = Aircraft__movement_x
+								var _speed249_8898 = Aircraft__movement_x
 							;
 								
-								var _entity243_8687 = this;
+								var _entity249_8898 = this;
 								
-								Func<double[], bool> _predicate243_8687 = null;
+								Func<double[], bool> _predicate249_8898 = null;
 								
-								_AgentLayer._AircraftEnvironment.MoveTowards(_entity243_8687, Aircraft__heading_bearing, _speed243_8687);	
+								_AgentLayer._AircraftEnvironment.MoveTowards(_entity249_8898, Aircraft__heading_bearing, _speed249_8898);	
 								
 								return new Tuple<double, double>(Position.X, Position.Y);
 							}).Invoke()
@@ -1315,6 +1320,15 @@ namespace cessna_digital_twin {
 		public double Get_Aircraft__acceleration_z() {
 			{
 			return Aircraft__acceleration_z
+					;
+			}
+			
+			return default(double);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public double Get_Aircraft__ground_speed_x() {
+			{
+			return Aircraft__ground_speed_x
 					;
 			}
 			

@@ -55,7 +55,7 @@ namespace cessna_digital_twin {
 			}
 		}
 		private double __Weather__wind_bearing
-			 = 197;
+			 = 107;
 		internal double Weather__wind_bearing { 
 			get { return __Weather__wind_bearing; }
 			set{

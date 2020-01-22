@@ -1138,7 +1138,7 @@ namespace cessna_digital_twin {
 							;}
 					;} else {
 							{
-							if(Check_Instrument_Aircraft__true_air_speed() > 5) {
+							if(Check_Visual_Aircraft__ground_speed_x() > 5) {
 											{
 											temp_throttle_value = 0.1;
 											Apply_Brake__deceleration(0.2)
@@ -1158,16 +1158,16 @@ namespace cessna_digital_twin {
 		public void Taxiing_normal() 
 		{
 			{
-			if(Check_Instrument_Aircraft__true_air_speed() > 8) {
+			if(Check_Visual_Aircraft__ground_speed_x() > 8) {
 							{
 							if(Equals(Feel_Aircraft__deceleration_x(), false)) {
 											{
-											temp_throttle_value = temp_throttle_value - 0.1
+											temp_throttle_value = temp_throttle_value - 0.10
 											;}
 									;} 
 							;}
 					;} else {
-							if(Check_Instrument_Aircraft__true_air_speed() < 2) {
+							if(Check_Visual_Aircraft__ground_speed_x() < 2) {
 											{
 											if(Equals(Feel_Aircraft__acceleration_x(), false)) {
 															{
@@ -1176,7 +1176,7 @@ namespace cessna_digital_twin {
 													;} 
 											;}
 									;} else {
-											if(Check_Instrument_Aircraft__true_air_speed() < 7) {
+											if(Check_Visual_Aircraft__ground_speed_x() < 7) {
 															{
 															if(Equals(Feel_Aircraft__acceleration_x(), false)) {
 																			{
@@ -1328,6 +1328,14 @@ namespace cessna_digital_twin {
 		{
 			{
 			return myAircraft.IP_Get_LWT__fuel_quantity()
+			;}
+			return default(double);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public double Check_Visual_Aircraft__ground_speed_x() 
+		{
+			{
+			return myAircraft.Get_Aircraft__ground_speed_x()
 			;}
 			return default(double);;
 		}

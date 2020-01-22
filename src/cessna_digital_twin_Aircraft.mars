@@ -105,6 +105,7 @@ agent Aircraft on AgentLayer{
 	
 	passive Get_Aircraft__acceleration_x() => return Aircraft__acceleration_x
 	passive Get_Aircraft__acceleration_z() => return Aircraft__acceleration_z
+	passive Get_Aircraft__ground_speed_x() => return Aircraft__ground_speed_x
 	passive Get_Aircraft__stall_sound() : bool
 	{
 		if (Aircraft__angle_of_attack >= Aircraft__stall_angle -1)
@@ -227,6 +228,11 @@ agent Aircraft on AgentLayer{
 			Aircraft__acceleration_x = ((Propeller__thrust - Tire__friction_force - Aircraft__drag - Brake__deceleration_force) * Math.Cos(Aircraft__climb_angle_rad) - Aircraft__lift * Math.Sin(Aircraft__climb_angle_rad)) / Aircraft__mass
 			Aircraft__ground_speed_x = Aircraft__ground_speed_x + Aircraft__acceleration_x / n_cycle
 			Aircraft__true_air_speed_x = Aircraft__ground_speed_x + agentlayer.Get_Weather__wind_speed() * Math.Cos(delta_wind_bearing_rad)
+			// Remove values below zero for each speed
+			if (Aircraft__true_air_speed_x < 0)
+			{
+				Aircraft__true_air_speed_x = 0
+			}
 			if (Aircraft__ground_speed_x < 0 or Brake__parking_brake === "SET")
 			{
 				Aircraft__ground_speed_x = 0
