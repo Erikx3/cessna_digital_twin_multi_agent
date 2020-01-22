@@ -55,7 +55,7 @@ namespace cessna_digital_twin {
 			}
 		}
 		private double __Weather__wind_bearing
-			 = default(double);
+			 = 197;
 		internal double Weather__wind_bearing { 
 			get { return __Weather__wind_bearing; }
 			set{
@@ -63,7 +63,7 @@ namespace cessna_digital_twin {
 			}
 		}
 		private double __Weather__wind_speed
-			 = default(double);
+			 = 5;
 		internal double Weather__wind_speed { 
 			get { return __Weather__wind_speed; }
 			set{
@@ -155,6 +155,24 @@ namespace cessna_digital_twin {
 		{
 			{
 			return Weather__density
+					;
+			}
+			return default(double);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public double Get_Weather__wind_bearing() 
+		{
+			{
+			return Weather__wind_bearing
+					;
+			}
+			return default(double);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public double Get_Weather__wind_speed() 
+		{
+			{
+			return Weather__wind_speed
 					;
 			}
 			return default(double);;

@@ -114,6 +114,14 @@ namespace cessna_digital_twin {
 				if(System.Math.Abs(__Aircraft__true_air_speed_x - value) > 0.0000001) __Aircraft__true_air_speed_x = value;
 			}
 		}
+		private double __Aircraft__ground_speed_x
+			 = default(double);
+		public double Aircraft__ground_speed_x { 
+			get { return __Aircraft__ground_speed_x; }
+			set{
+				if(System.Math.Abs(__Aircraft__ground_speed_x - value) > 0.0000001) __Aircraft__ground_speed_x = value;
+			}
+		}
 		private double __Aircraft__true_air_speed
 			 = default(double);
 		public double Aircraft__true_air_speed { 
@@ -820,6 +828,9 @@ namespace cessna_digital_twin {
 							Aircraft__flight_phase = "on-ground"
 							;}
 						;};
+			double delta_wind_bearing = ((Aircraft__heading_bearing - agentlayer.Get_Weather__wind_bearing()
+			) + 180) % 360 - 180;
+			double delta_wind_bearing_rad = delta_wind_bearing * Mars.Components.Common.Constants.Pi / 180;
 			int n_cycle = 100;
 			Aircraft__movement_x = 0;
 			for(int i = 0;
@@ -854,13 +865,15 @@ namespace cessna_digital_twin {
 					 	Aircraft__acceleration_x = ((Propeller__thrust - Tire__friction_force - Aircraft__drag - Brake__deceleration_force) * Mars.Components.Common.Math.Cos(Aircraft__climb_angle_rad)
 					 	 - Aircraft__lift * Mars.Components.Common.Math.Sin(Aircraft__climb_angle_rad)
 					 	) / Aircraft__mass;
-					 	Aircraft__true_air_speed_x = Aircraft__true_air_speed_x + Aircraft__acceleration_x / n_cycle;
-					 	if(Aircraft__true_air_speed_x < 0 || Equals(Brake__parking_brake, "SET")) {
+					 	Aircraft__ground_speed_x = Aircraft__ground_speed_x + Aircraft__acceleration_x / n_cycle;
+					 	Aircraft__true_air_speed_x = Aircraft__ground_speed_x + agentlayer.Get_Weather__wind_speed()
+					 	 * Mars.Components.Common.Math.Cos(delta_wind_bearing_rad);
+					 	if(Aircraft__ground_speed_x < 0 || Equals(Brake__parking_brake, "SET")) {
 					 					{
-					 					Aircraft__true_air_speed_x = 0
+					 					Aircraft__ground_speed_x = 0
 					 					;}
 					 			;} ;
-					 	Aircraft__movement_x = Aircraft__movement_x + Aircraft__true_air_speed_x / n_cycle;
+					 	Aircraft__movement_x = Aircraft__movement_x + Aircraft__ground_speed_x / n_cycle;
 					 	Aircraft__true_air_speed = Mars.Components.Common.Math.Pow((Mars.Components.Common.Math.Pow(Aircraft__true_air_speed_x, 2) + Mars.Components.Common.Math.Pow(Aircraft__rate_of_climb, 2)), 0.5)
 					 	;}
 					 };
@@ -868,14 +881,14 @@ namespace cessna_digital_twin {
 							{
 							new System.Func<Tuple<double,double>>(() => {
 								
-								var _speed239_8321 = Aircraft__movement_x
+								var _speed243_8687 = Aircraft__movement_x
 							;
 								
-								var _entity239_8321 = this;
+								var _entity243_8687 = this;
 								
-								Func<double[], bool> _predicate239_8321 = null;
+								Func<double[], bool> _predicate243_8687 = null;
 								
-								_AgentLayer._AircraftEnvironment.MoveTowards(_entity239_8321, Aircraft__heading_bearing, _speed239_8321);	
+								_AgentLayer._AircraftEnvironment.MoveTowards(_entity243_8687, Aircraft__heading_bearing, _speed243_8687);	
 								
 								return new Tuple<double, double>(Position.X, Position.Y);
 							}).Invoke()

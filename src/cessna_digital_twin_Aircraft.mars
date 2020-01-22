@@ -87,6 +87,7 @@ agent Aircraft on AgentLayer{
 	//Note: using a geodesic coordinate system!
 	observe var Aircraft__acceleration_x : real // m/s^2 with x in direction of plane heading
 	observe var Aircraft__true_air_speed_x : real // m/s
+	observe var Aircraft__ground_speed_x : real // m/s
 	observe var Aircraft__true_air_speed : real // m/s
 	var Aircraft__movement_x : real // m
 	observe var Aircraft__heading_bearing : real //heading integer, usage depends on Aircraft_heading_mode
@@ -181,6 +182,9 @@ agent Aircraft on AgentLayer{
 			Aircraft__flight_phase = "on-ground"
 		}
 		
+		// -180° < delta_wind_bearing < 180°
+		var delta_wind_bearing = ((Aircraft__heading_bearing - agentlayer.Get_Weather__wind_bearing()) +180) % 360 - 180
+		var delta_wind_bearing_rad = delta_wind_bearing * Constants.Pi / 180
 		// Settings for cycle calculation
 		var n_cycle = 100
 		Aircraft__movement_x = 0
@@ -221,13 +225,13 @@ agent Aircraft on AgentLayer{
 			
 			//X Movement calculation
 			Aircraft__acceleration_x = ((Propeller__thrust - Tire__friction_force - Aircraft__drag - Brake__deceleration_force) * Math.Cos(Aircraft__climb_angle_rad) - Aircraft__lift * Math.Sin(Aircraft__climb_angle_rad)) / Aircraft__mass
-			// TODO: Add wind influence here
-			Aircraft__true_air_speed_x = Aircraft__true_air_speed_x + Aircraft__acceleration_x / n_cycle
-			if (Aircraft__true_air_speed_x < 0 or Brake__parking_brake === "SET")
+			Aircraft__ground_speed_x = Aircraft__ground_speed_x + Aircraft__acceleration_x / n_cycle
+			Aircraft__true_air_speed_x = Aircraft__ground_speed_x + agentlayer.Get_Weather__wind_speed() * Math.Cos(delta_wind_bearing_rad)
+			if (Aircraft__ground_speed_x < 0 or Brake__parking_brake === "SET")
 			{
-				Aircraft__true_air_speed_x = 0
+				Aircraft__ground_speed_x = 0
 			}
-			Aircraft__movement_x = Aircraft__movement_x + Aircraft__true_air_speed_x / n_cycle
+			Aircraft__movement_x = Aircraft__movement_x + Aircraft__ground_speed_x / n_cycle
 			
 			// True Airspeed calculation
 			Aircraft__true_air_speed = (Aircraft__true_air_speed_x**2 + Aircraft__rate_of_climb**2)**0.5

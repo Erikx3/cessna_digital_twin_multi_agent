@@ -6,10 +6,11 @@ layer AgentLayer as agentlayer
 {	
 	//Weather Values TODO: Think about another solution for weather
 	var Weather__density : real = 1.225 // kg/m^3 TODO: Add height dependent density
-	// TODO: Use wind values
-	var Weather__wind_bearing : real  // °
-	var Weather__wind_speed : real  // m/s
+	var Weather__wind_bearing : real = 197 // °
+	var Weather__wind_speed : real = 5 // m/s
 	def Get_Weather__density() => return Weather__density
+	def Get_Weather__wind_bearing() => return Weather__wind_bearing
+	def Get_Weather__wind_speed() => return Weather__wind_speed
 	
 	
 	// Physics Values
