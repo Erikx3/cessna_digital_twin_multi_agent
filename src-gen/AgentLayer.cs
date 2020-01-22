@@ -47,7 +47,7 @@ namespace cessna_digital_twin {
 		public AgentLayer _AgentLayer => this;
 		public AgentLayer agentlayer => this;
 		private double __Weather__density
-			 = 1.1;
+			 = 1.225;
 		internal double Weather__density { 
 			get { return __Weather__density; }
 			set{

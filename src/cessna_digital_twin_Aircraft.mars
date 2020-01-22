@@ -23,10 +23,8 @@ agent Aircraft on AgentLayer{
 		update_Engine()
 		update_LeftWingTank()
 		update_RightWingTank()
-		update_Propeller()
-		update_Tire()
 		update_Brake()
-		update_AircraftPhysics()
+		update_AircraftPhysics() // includes engine_rpm, propeller thrust, friction force
 	}
 	
 	
@@ -183,45 +181,57 @@ agent Aircraft on AgentLayer{
 			Aircraft__flight_phase = "on-ground"
 		}
 		
-		// angle calculations
-		Aircraft__climb_angle = Math.Asin(Aircraft__rate_of_climb / Aircraft__true_air_speed) * 180 / Constants.Pi // for degree			
-		Aircraft__angle_of_attack = (Aircraft__pitch - Aircraft__rate_of_climb)
+		// Settings for cycle calculation
+		var n_cycle = 100
+		Aircraft__movement_x = 0
 		
-		//help variable
-		var Aircraft__pitch_rad = Aircraft__pitch * Constants.Pi / 180
-		
-		// Lift calculation - Note: True Airspeed needs to be used here!
-		Aircraft__lift_coefficient = Get_Aircraft__lift_coefficient()
-		Aircraft__lift = Aircraft__lift_coefficient * agentlayer.Get_Weather__density() * Aircraft__true_air_speed**2 * Aircraft__wing_area / 2
-		
-		// Drag calculation
-		Aircraft__drag_coefficient = Get_Aircraft__drag_coefficient()
-		Aircraft__drag = Aircraft__drag_coefficient * agentlayer.Get_Weather__density() * Aircraft__true_air_speed**2 * Aircraft__wing_area / 2
-		
-		//Z Movement calculation
-		// TODO: The right angle is Aircraft__climb_angle here, but that would lead to VERY unstable behavior due to linking effects
-		Aircraft__acceleration_z = ((Propeller__thrust - Tire__friction_force - Aircraft__drag) * Math.Sin(Aircraft__pitch_rad) + Aircraft__lift * Math.Cos(Aircraft__pitch_rad) - Aircraft__mass * agentlayer.Get_gravity()) / Aircraft__mass 
-		Aircraft__rate_of_climb = Aircraft__rate_of_climb + Aircraft__acceleration_z
-		Aircraft__height = Aircraft__height + Aircraft__rate_of_climb
-		
-		if (Aircraft__height < 0) //redundancy and deny negative values
-		{
-			Aircraft__rate_of_climb = 0
-			Aircraft__height = 0
+		//artificially reducing tick size here, since movement equation require smaller time intervals
+		for (var i = 0; i<n_cycle; i++)
+		{	
+			// other components need to be updated here as well due to speed dependency!
+			update_Engine_RPM()
+			update_Propeller()  // thrust calculation
+			update_Tire_friction_force()
+			// angle calculations
+			Aircraft__climb_angle = Math.Asin(Aircraft__rate_of_climb / Aircraft__true_air_speed) * 180 / Constants.Pi // for degree			
+			Aircraft__angle_of_attack = (Aircraft__pitch - Aircraft__rate_of_climb)
+			
+			//help variable
+			var Aircraft__pitch_rad = Aircraft__pitch * Constants.Pi / 180
+			
+			// Lift calculation - Note: True Airspeed needs to be used here!
+			Aircraft__lift_coefficient = Get_Aircraft__lift_coefficient()
+			Aircraft__lift = Aircraft__lift_coefficient * agentlayer.Get_Weather__density() * Aircraft__true_air_speed**2 * Aircraft__wing_area / 2
+			
+			// Drag calculation
+			Aircraft__drag_coefficient = Get_Aircraft__drag_coefficient()
+			Aircraft__drag = Aircraft__drag_coefficient * agentlayer.Get_Weather__density() * Aircraft__true_air_speed**2 * Aircraft__wing_area / 2
+			
+			//Z Movement calculation
+			// TODO: The right angle is Aircraft__climb_angle here, but that would lead to VERY unstable behavior due to linking effects
+			Aircraft__acceleration_z = ((Propeller__thrust - Tire__friction_force - Aircraft__drag) * Math.Sin(Aircraft__pitch_rad) + Aircraft__lift * Math.Cos(Aircraft__pitch_rad) - Aircraft__mass * agentlayer.Get_gravity()) / Aircraft__mass 
+			Aircraft__rate_of_climb = Aircraft__rate_of_climb + Aircraft__acceleration_z / n_cycle
+			Aircraft__height = Aircraft__height + Aircraft__rate_of_climb / n_cycle
+			
+			if (Aircraft__height < 0) //redundancy and deny negative values
+			{
+				Aircraft__rate_of_climb = 0
+				Aircraft__height = 0
+			}
+			
+			//X Movement calculation
+			// TODO: The right angle is Aircraft__climb_angle here, but that would lead to VERY unstable behavior due to linking effects
+			Aircraft__acceleration_x = ((Propeller__thrust - Tire__friction_force - Aircraft__drag - Brake__deceleration_force) * Math.Cos(Aircraft__pitch_rad) - Aircraft__lift * Math.Sin(Aircraft__pitch_rad)) / Aircraft__mass
+			Aircraft__true_air_speed_x = Aircraft__true_air_speed_x + Aircraft__acceleration_x / n_cycle
+			if (Aircraft__true_air_speed_x < 0 or Brake__parking_brake === "SET")
+			{
+				Aircraft__true_air_speed_x = 0
+			}
+			Aircraft__movement_x = Aircraft__movement_x + Aircraft__true_air_speed_x / n_cycle
+			
+			// True Airspeed calculation
+			Aircraft__true_air_speed = (Aircraft__true_air_speed_x**2 + Aircraft__rate_of_climb**2)**0.5
 		}
-		
-		//X Movement calculation
-		// TODO: The right angle is Aircraft__climb_angle here, but that would lead to VERY unstable behavior due to linking effects
-		Aircraft__acceleration_x = ((Propeller__thrust - Tire__friction_force - Aircraft__drag - Brake__deceleration_force) * Math.Cos(Aircraft__pitch_rad) - Aircraft__lift * Math.Sin(Aircraft__pitch_rad)) / Aircraft__mass
-		Aircraft__true_air_speed_x = Aircraft__true_air_speed_x + Aircraft__acceleration_x
-		if (Aircraft__true_air_speed_x < 0 or Brake__parking_brake === "SET")
-		{
-			Aircraft__true_air_speed_x = 0
-		}
-		Aircraft__movement_x = Aircraft__true_air_speed_x
-		
-		// True Airspeed calculation
-		Aircraft__true_air_speed = (Aircraft__true_air_speed_x**2 + Aircraft__rate_of_climb**2)**0.5
 		
 		// TODO: Add ground speed calculation here !
 		if (Aircraft__movement_x > 0)
@@ -421,6 +431,18 @@ agent Aircraft on AgentLayer{
 		}
 	}
 	
+	// used in aircraft physics directly
+	def update_Engine_RPM()
+	{
+		//Engine RPM Calculation
+		Engine__power_coefficient = Get_Engine__power_coefficient()
+		Engine__RPM = (Engine__power/(Engine__power_coefficient*agentlayer.Get_Weather__density()*Propeller__diameter**5))**0.3333 * 60 // FACTOR 60 TO CONVERT INTO PER MINUTE
+		if (Engine__RPM > Engine__RPM_max)
+		{
+			Engine__RPM = Engine__RPM_max
+		}
+	}
+	
 	def update_Engine()
 	{
 		if (Engine__running === false or Engine__failure === true)
@@ -443,14 +465,6 @@ agent Aircraft on AgentLayer{
 			if (Engine__mixture_control === "LEAN")
 			{
 				Engine__power = Engine__power - Engine__power * 0.1 // simulating power loss due to wrong settings during on ground
-			}
-			
-			//Engine RPM Calculation
-			Engine__power_coefficient = Get_Engine__power_coefficient()
-			Engine__RPM = (Engine__power/(Engine__power_coefficient*agentlayer.Get_Weather__density()*Propeller__diameter**5))**0.3333 * 60 // FACTOR 60 TO CONVERT INTO PER MINUTE
-			if (Engine__RPM > Engine__RPM_max)
-			{
-				Engine__RPM = Engine__RPM_max
 			}
 			
 			// Engine Failure Probability
@@ -584,14 +598,20 @@ agent Aircraft on AgentLayer{
 		Tire__friction_force = 0
 	}
 	
-	def update_Tire()
+	// used in aircraft physics directly
+	def update_Tire_friction_force()
 	{
 		//TODO: Add friction dependency on Tire inflation
 		if (Aircraft__flight_phase === "on-ground")
 		{
-			Tire__friction_force = Tire__number_of_wheels * Aircraft__mass * agentlayer.Get_gravity() * Tire__roll_coefficient / Tire__wheel_radius
+			Tire__friction_force = (Aircraft__mass * agentlayer.Get_gravity() - Aircraft__lift) * Tire__number_of_wheels * Tire__roll_coefficient / Tire__wheel_radius
 		}
 		else
+		{
+			Tire__friction_force = 0
+		}
+		
+		if (Tire__friction_force < 0)
 		{
 			Tire__friction_force = 0
 		}		
