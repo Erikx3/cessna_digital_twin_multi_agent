@@ -832,15 +832,15 @@ namespace cessna_digital_twin {
 					 	Aircraft__climb_angle = Mars.Components.Common.Math.Asin(Aircraft__rate_of_climb / Aircraft__true_air_speed)
 					 	 * 180 / Mars.Components.Common.Constants.Pi;
 					 	Aircraft__angle_of_attack = (Aircraft__pitch - Aircraft__rate_of_climb);
-					 	double Aircraft__pitch_rad = Aircraft__pitch * Mars.Components.Common.Constants.Pi / 180;
+					 	double Aircraft__climb_angle_rad = Aircraft__climb_angle * Mars.Components.Common.Constants.Pi / 180;
 					 	Aircraft__lift_coefficient = Get_Aircraft__lift_coefficient();
 					 	Aircraft__lift = Aircraft__lift_coefficient * agentlayer.Get_Weather__density()
 					 	 * Mars.Components.Common.Math.Pow(Aircraft__true_air_speed, 2) * Aircraft__wing_area / 2;
 					 	Aircraft__drag_coefficient = Get_Aircraft__drag_coefficient();
 					 	Aircraft__drag = Aircraft__drag_coefficient * agentlayer.Get_Weather__density()
 					 	 * Mars.Components.Common.Math.Pow(Aircraft__true_air_speed, 2) * Aircraft__wing_area / 2;
-					 	Aircraft__acceleration_z = ((Propeller__thrust - Tire__friction_force - Aircraft__drag) * Mars.Components.Common.Math.Sin(Aircraft__pitch_rad)
-					 	 + Aircraft__lift * Mars.Components.Common.Math.Cos(Aircraft__pitch_rad)
+					 	Aircraft__acceleration_z = ((Propeller__thrust - Tire__friction_force - Aircraft__drag) * Mars.Components.Common.Math.Sin(Aircraft__climb_angle_rad)
+					 	 + Aircraft__lift * Mars.Components.Common.Math.Cos(Aircraft__climb_angle_rad)
 					 	 - Aircraft__mass * agentlayer.Get_gravity()
 					 	) / Aircraft__mass;
 					 	Aircraft__rate_of_climb = Aircraft__rate_of_climb + Aircraft__acceleration_z / n_cycle;
@@ -851,8 +851,8 @@ namespace cessna_digital_twin {
 					 					Aircraft__height = 0
 					 					;}
 					 			;} ;
-					 	Aircraft__acceleration_x = ((Propeller__thrust - Tire__friction_force - Aircraft__drag - Brake__deceleration_force) * Mars.Components.Common.Math.Cos(Aircraft__pitch_rad)
-					 	 - Aircraft__lift * Mars.Components.Common.Math.Sin(Aircraft__pitch_rad)
+					 	Aircraft__acceleration_x = ((Propeller__thrust - Tire__friction_force - Aircraft__drag - Brake__deceleration_force) * Mars.Components.Common.Math.Cos(Aircraft__climb_angle_rad)
+					 	 - Aircraft__lift * Mars.Components.Common.Math.Sin(Aircraft__climb_angle_rad)
 					 	) / Aircraft__mass;
 					 	Aircraft__true_air_speed_x = Aircraft__true_air_speed_x + Aircraft__acceleration_x / n_cycle;
 					 	if(Aircraft__true_air_speed_x < 0 || Equals(Brake__parking_brake, "SET")) {
@@ -868,14 +868,14 @@ namespace cessna_digital_twin {
 							{
 							new System.Func<Tuple<double,double>>(() => {
 								
-								var _speed239_8377 = Aircraft__movement_x
+								var _speed239_8321 = Aircraft__movement_x
 							;
 								
-								var _entity239_8377 = this;
+								var _entity239_8321 = this;
 								
-								Func<double[], bool> _predicate239_8377 = null;
+								Func<double[], bool> _predicate239_8321 = null;
 								
-								_AgentLayer._AircraftEnvironment.MoveTowards(_entity239_8377, Aircraft__heading_bearing, _speed239_8377);	
+								_AgentLayer._AircraftEnvironment.MoveTowards(_entity239_8321, Aircraft__heading_bearing, _speed239_8321);	
 								
 								return new Tuple<double, double>(Position.X, Position.Y);
 							}).Invoke()

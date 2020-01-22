@@ -197,7 +197,7 @@ agent Aircraft on AgentLayer{
 			Aircraft__angle_of_attack = (Aircraft__pitch - Aircraft__rate_of_climb)
 			
 			//help variable
-			var Aircraft__pitch_rad = Aircraft__pitch * Constants.Pi / 180
+			var Aircraft__climb_angle_rad = Aircraft__climb_angle * Constants.Pi / 180
 			
 			// Lift calculation - Note: True Airspeed needs to be used here!
 			Aircraft__lift_coefficient = Get_Aircraft__lift_coefficient()
@@ -209,7 +209,7 @@ agent Aircraft on AgentLayer{
 			
 			//Z Movement calculation
 			// TODO: The right angle is Aircraft__climb_angle here, but that would lead to VERY unstable behavior due to linking effects
-			Aircraft__acceleration_z = ((Propeller__thrust - Tire__friction_force - Aircraft__drag) * Math.Sin(Aircraft__pitch_rad) + Aircraft__lift * Math.Cos(Aircraft__pitch_rad) - Aircraft__mass * agentlayer.Get_gravity()) / Aircraft__mass 
+			Aircraft__acceleration_z = ((Propeller__thrust - Tire__friction_force - Aircraft__drag) * Math.Sin(Aircraft__climb_angle_rad) + Aircraft__lift * Math.Cos(Aircraft__climb_angle_rad) - Aircraft__mass * agentlayer.Get_gravity()) / Aircraft__mass 
 			Aircraft__rate_of_climb = Aircraft__rate_of_climb + Aircraft__acceleration_z / n_cycle
 			Aircraft__height = Aircraft__height + Aircraft__rate_of_climb / n_cycle
 			
@@ -220,8 +220,8 @@ agent Aircraft on AgentLayer{
 			}
 			
 			//X Movement calculation
-			// TODO: The right angle is Aircraft__climb_angle here, but that would lead to VERY unstable behavior due to linking effects
-			Aircraft__acceleration_x = ((Propeller__thrust - Tire__friction_force - Aircraft__drag - Brake__deceleration_force) * Math.Cos(Aircraft__pitch_rad) - Aircraft__lift * Math.Sin(Aircraft__pitch_rad)) / Aircraft__mass
+			Aircraft__acceleration_x = ((Propeller__thrust - Tire__friction_force - Aircraft__drag - Brake__deceleration_force) * Math.Cos(Aircraft__climb_angle_rad) - Aircraft__lift * Math.Sin(Aircraft__climb_angle_rad)) / Aircraft__mass
+			// TODO: Add wind influence here
 			Aircraft__true_air_speed_x = Aircraft__true_air_speed_x + Aircraft__acceleration_x / n_cycle
 			if (Aircraft__true_air_speed_x < 0 or Brake__parking_brake === "SET")
 			{
