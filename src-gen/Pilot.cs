@@ -491,9 +491,7 @@ namespace cessna_digital_twin {
 						;};
 			if(Equals(next_action, "End_of_Actions")) {
 							{
-							System.Console.WriteLine("Finished State -->" + state + " with next action flag -->" + next_action);;
-							go_to_next_state("StartingEngine");
-							System.Console.WriteLine("Next state -->" + state);
+							go_to_next_state("StartingEngine")
 							;}
 					;} 
 			;}
@@ -682,9 +680,7 @@ namespace cessna_digital_twin {
 						;};
 			if(Equals(next_action, "End_of_Actions")) {
 							{
-							System.Console.WriteLine("Finished State -->" + state + " with next action flag -->" + next_action);;
-							go_to_next_state("TakeOffPreparationRequest");
-							System.Console.WriteLine("Next state -->" + state);
+							go_to_next_state("TakeOffPreparationRequest")
 							;}
 					;} 
 			;}
@@ -707,7 +703,6 @@ namespace cessna_digital_twin {
 							) {
 											{
 											agentlayer.Communicate_request_on_frequency(myAircraft_callsign,"Tower","RequestTakeOffPreparationPoint");
-											System.Console.WriteLine("Communicating on frequency");;
 											next_action = "Listen_receiver_on_frequency"
 											;}
 									;} 
@@ -719,8 +714,7 @@ namespace cessna_digital_twin {
 											if(Equals(temp_receiver, myAircraft_callsign)) {
 															{
 															taxi_path = agentlayer.Listen_message_information_path_on_frequency();
-															next_action = "Clear_frequency";
-															System.Console.WriteLine("Listen on frequency successful");
+															next_action = "Clear_frequency"
 															;}
 													;} ;
 											timehandler.create_action_duration(10,5,"pilot_age_and_experience");
@@ -739,7 +733,6 @@ namespace cessna_digital_twin {
 															) {
 																			{
 																			agentlayer.Clear_frequency();
-																			System.Console.WriteLine("Clear on frequency successful");;
 																			next_action = "End_of_Actions"
 																			;}
 																	;} 
@@ -749,10 +742,8 @@ namespace cessna_digital_twin {
 						;};
 			if(Equals(next_action, "End_of_Actions")) {
 							{
-							System.Console.WriteLine("Finished State -->" + state + " with next action flag -->" + next_action);;
 							go_to_next_state("Taxiing");
-							state_after_taxiing = "TakeOffPreparation";
-							System.Console.WriteLine("Next state -->" + state);
+							state_after_taxiing = "TakeOffPreparation"
 							;}
 					;} 
 			;}
@@ -886,9 +877,7 @@ namespace cessna_digital_twin {
 						;};
 			if(Equals(next_action, "End_of_Actions")) {
 							{
-							System.Console.WriteLine("Finished State -->" + state + " with next action flag -->" + next_action);;
-							go_to_next_state("TakeOffHoldShortRequest");
-							System.Console.WriteLine("Next state -->" + state);
+							go_to_next_state("TakeOffHoldShortRequest")
 							;}
 					;} 
 			;}
@@ -911,7 +900,6 @@ namespace cessna_digital_twin {
 							) {
 											{
 											agentlayer.Communicate_request_on_frequency(myAircraft_callsign,"Tower","RequestTakeOffHoldShortPoint");
-											System.Console.WriteLine("Communicating on frequency");;
 											next_action = "Listen_receiver_on_frequency"
 											;}
 									;} 
@@ -923,8 +911,7 @@ namespace cessna_digital_twin {
 											if(Equals(temp_receiver, myAircraft_callsign)) {
 															{
 															taxi_path = agentlayer.Listen_message_information_path_on_frequency();
-															next_action = "Clear_frequency";
-															System.Console.WriteLine("Listen on frequency successful");
+															next_action = "Clear_frequency"
 															;}
 													;} ;
 											timehandler.create_action_duration(10,5,"pilot_age_and_experience");
@@ -943,7 +930,6 @@ namespace cessna_digital_twin {
 															) {
 																			{
 																			agentlayer.Clear_frequency();
-																			System.Console.WriteLine("Clear on frequency successful");;
 																			next_action = "End_of_Actions"
 																			;}
 																	;} 
@@ -953,10 +939,8 @@ namespace cessna_digital_twin {
 						;};
 			if(Equals(next_action, "End_of_Actions")) {
 							{
-							System.Console.WriteLine("Finished State -->" + state + " with next action flag -->" + next_action);;
 							go_to_next_state("Taxiing");
-							state_after_taxiing = "TakeOffRequest";
-							System.Console.WriteLine("Next state -->" + state);
+							state_after_taxiing = "TakeOffRequest"
 							;}
 					;} 
 			;}
@@ -979,7 +963,6 @@ namespace cessna_digital_twin {
 							) {
 											{
 											agentlayer.Communicate_request_on_frequency(myAircraft_callsign,"Tower","RequestTakeOff");
-											System.Console.WriteLine("Communicating on frequency");;
 											next_action = "Listen_receiver_on_frequency"
 											;}
 									;} 
@@ -992,8 +975,7 @@ namespace cessna_digital_twin {
 															{
 															taxi_path = agentlayer.Listen_message_information_path_on_frequency();
 															heading_information = agentlayer.Listen_message_information_heading();
-															next_action = "Clear_frequency";
-															System.Console.WriteLine("Listen on frequency successful");
+															next_action = "Clear_frequency"
 															;}
 													;} ;
 											timehandler.create_action_duration(10,5,"pilot_age_and_experience");
@@ -1012,7 +994,6 @@ namespace cessna_digital_twin {
 															) {
 																			{
 																			agentlayer.Clear_frequency();
-																			System.Console.WriteLine("Clear on frequency successful");;
 																			next_action = "End_of_Actions"
 																			;}
 																	;} 
@@ -1022,10 +1003,8 @@ namespace cessna_digital_twin {
 						;};
 			if(Equals(next_action, "End_of_Actions")) {
 							{
-							System.Console.WriteLine("Finished State -->" + state + " with next action flag -->" + next_action);;
 							go_to_next_state("Taxiing");
-							state_after_taxiing = "TakeOff";
-							System.Console.WriteLine("Next state -->" + state);
+							state_after_taxiing = "TakeOff"
 							;}
 					;} 
 			;}
@@ -1132,11 +1111,7 @@ namespace cessna_digital_twin {
 																										;};
 																							Apply_Aircraft__pitch(temp_pitch_value)
 																							;}
-																					;} ;
-																			System.Console.WriteLine("Aircraft Speed:");;
-																			System.Console.WriteLine(Check_Instrument_Aircraft__true_air_speed());;
-																			System.Console.WriteLine("Aircraft Height:");;
-																			System.Console.WriteLine(Check_Instrument_Aircraft__height());
+																					;} 
 																			;}
 																	;} 
 														;}
@@ -1235,7 +1210,6 @@ namespace cessna_digital_twin {
 											{
 											Set_Brake__parking_brake("OFF");
 											Apply_Brake__deceleration(0.0);
-											System.Console.WriteLine("Set braking park OFF and release brake application");;
 											next_action = "Taxiing"
 											;}
 									;} 
@@ -1266,26 +1240,13 @@ namespace cessna_digital_twin {
 															{
 															Taxiing_normal()
 															;}
-														;};
-											System.Console.WriteLine("-----Taxiing-----");;
-											System.Console.WriteLine("taxi_path_points : " + taxi_path_points);;
-											System.Console.WriteLine("active_taxi_point_number : " + active_taxi_point_number);;
-											System.Console.WriteLine("My Position : ");;
-											System.Console.WriteLine(myAircraft.Get_position()
-											);;
-											System.Console.WriteLine("active_taxi_point : ");;
-											System.Console.WriteLine(active_taxi_point);;
-											System.Console.WriteLine("Current speed : ");;
-											System.Console.WriteLine(Check_Instrument_Aircraft__true_air_speed());;
-											System.Console.WriteLine("distance: " + distance_to_next_point);
+														;}
 											;}
 									;} 
 						;};
 			if(Equals(next_action, "End_of_Actions")) {
 							{
-							System.Console.WriteLine("Finished State -->" + state + " with next action flag -->" + next_action);;
 							go_to_next_state(state_after_taxiing);
-							System.Console.WriteLine("Next state -->" + state);;
 							first_action_set = false
 							;}
 					;} ;
@@ -1302,7 +1263,6 @@ namespace cessna_digital_twin {
 		public double Check_Instrument_Engine__RPM() 
 		{
 			{
-			System.Console.WriteLine("Checking Engine RPM via instrument");;
 			return myAircraft.IP_Get_Engine__RPM()
 			;}
 			return default(double);;
@@ -1311,7 +1271,6 @@ namespace cessna_digital_twin {
 		public double Check_Instrument_Engine__oil_pressure() 
 		{
 			{
-			System.Console.WriteLine("Checking Engine oil pressure instrument");;
 			return myAircraft.IP_Get_Engine__oil_pressure()
 			;}
 			return default(double);;
@@ -1320,7 +1279,6 @@ namespace cessna_digital_twin {
 		public double Check_Instrument_Engine__oil_temperature() 
 		{
 			{
-			System.Console.WriteLine("Checking Engine oil temperature instrument");;
 			return myAircraft.IP_Get_Engine__oil_temperature()
 			;}
 			return default(double);;
@@ -1329,7 +1287,6 @@ namespace cessna_digital_twin {
 		public double Check_Instrument_Aircraft__true_air_speed() 
 		{
 			{
-			System.Console.WriteLine("Checking Aircraft Speed Instrument");;
 			return myAircraft.IP_Get_Aircraft__true_air_speed()
 			;}
 			return default(double);;
@@ -1338,7 +1295,6 @@ namespace cessna_digital_twin {
 		public double Check_Instrument_Aircraft__pitch() 
 		{
 			{
-			System.Console.WriteLine("Checking Aircraft pitch via instrument");;
 			return myAircraft.IP_Get_Aircraft__pitch()
 			;}
 			return default(double);;
@@ -1347,7 +1303,6 @@ namespace cessna_digital_twin {
 		public double Check_Instrument_Aircraft__rate_of_climb() 
 		{
 			{
-			System.Console.WriteLine("Checking Aircraft climb of rate via instrument");;
 			return myAircraft.IP_Get_Aircraft__rate_of_climb()
 			;}
 			return default(double);;
@@ -1356,7 +1311,6 @@ namespace cessna_digital_twin {
 		public double Check_Instrument_Aircraft__height() 
 		{
 			{
-			System.Console.WriteLine("Checking Aircraft height via instrument");;
 			return myAircraft.IP_Get_Aircraft__height()
 			;}
 			return default(double);;
@@ -1365,7 +1319,6 @@ namespace cessna_digital_twin {
 		public double Check_Instrument_RWT__fuel_quantitity() 
 		{
 			{
-			System.Console.WriteLine("Checking RWT fuel quantity via instrument");;
 			return myAircraft.IP_Get_RWT__fuel_quantity()
 			;}
 			return default(double);;
@@ -1374,7 +1327,6 @@ namespace cessna_digital_twin {
 		public double Check_Instrument_LWT__fuel_quantitity() 
 		{
 			{
-			System.Console.WriteLine("Checking LWT fuel quantity via instrument");;
 			return myAircraft.IP_Get_LWT__fuel_quantity()
 			;}
 			return default(double);;
@@ -1459,7 +1411,6 @@ namespace cessna_digital_twin {
 		public void Set_Aircraft__heading_bearing(double input) 
 		{
 			{
-			System.Console.WriteLine("Apply heading bearing " + input);;
 			myAircraft.CIP_Set_Aircraft__heading_bearing(input)
 			;}
 			return;
@@ -1468,7 +1419,6 @@ namespace cessna_digital_twin {
 		public void Apply_Engine__throttle(double input) 
 		{
 			{
-			System.Console.WriteLine("Apply throttle " + input);;
 			myAircraft.CIP_Apply_Engine__throttle(input)
 			;}
 			return;
@@ -1477,7 +1427,6 @@ namespace cessna_digital_twin {
 		public void Apply_Aircraft__pitch(double input) 
 		{
 			{
-			System.Console.WriteLine("Apply pitch (angle of attack):  " + input);;
 			myAircraft.CIP_Apply_Aircraft__pitch(input)
 			;}
 			return;
@@ -1486,7 +1435,6 @@ namespace cessna_digital_twin {
 		public void Set_Engine__ignition_switch(string input) 
 		{
 			{
-			System.Console.WriteLine("Set ignition switch to " + input);;
 			myAircraft.CIP_Set_Engine__ignition_switch(input)
 			;}
 			return;
@@ -1495,7 +1443,6 @@ namespace cessna_digital_twin {
 		public void Apply_Brake__deceleration(double input) 
 		{
 			{
-			System.Console.WriteLine("Apply Brake " + input);;
 			myAircraft.CIP_Apply_Brake__deceleration(input)
 			;}
 			return;
@@ -1504,7 +1451,6 @@ namespace cessna_digital_twin {
 		public void Set_Brake__parking_brake(string input) 
 		{
 			{
-			System.Console.WriteLine("Set Parking Brake to " + input);;
 			myAircraft.CIP_Set_Brake__parking_brake(input)
 			;}
 			return;
@@ -1513,7 +1459,6 @@ namespace cessna_digital_twin {
 		public void Set_Engine__mixture_control(string input) 
 		{
 			{
-			System.Console.WriteLine("Set Mixture Control");;
 			myAircraft.CIP_Set_Engine__mixture_control(input)
 			;}
 			return;
@@ -1522,7 +1467,6 @@ namespace cessna_digital_twin {
 		public void Set_CIP__master_switch(string input) 
 		{
 			{
-			System.Console.WriteLine("Set Master Switch to " + input);;
 			myAircraft.CIP_Set__master_switch(input)
 			;}
 			return;
@@ -1531,7 +1475,6 @@ namespace cessna_digital_twin {
 		public int Check_Visual_TireRightMainWheel__inflation() 
 		{
 			{
-			System.Console.WriteLine("Checking right Main Wheel Tire inflation");;
 			return myAircraft.Get_TireRightMainWheel__inflation()
 			;}
 			return default(int);;
@@ -1540,7 +1483,6 @@ namespace cessna_digital_twin {
 		public int Check_Visual_TireLeftMainWheel__inflation() 
 		{
 			{
-			System.Console.WriteLine("Checking left Main Wheel Tire inflation");;
 			return myAircraft.Get_TireLeftMainWheel__inflation()
 			;}
 			return default(int);;
@@ -1549,7 +1491,6 @@ namespace cessna_digital_twin {
 		public int Check_Visual_TireNoseWheel__inflation() 
 		{
 			{
-			System.Console.WriteLine("Checking Nose Wheel Tire inflation");;
 			return myAircraft.Get_TireNoseWheel__inflation()
 			;}
 			return default(int);;
@@ -1558,7 +1499,6 @@ namespace cessna_digital_twin {
 		public double Check_Visual_RWT__fuel_quantity() 
 		{
 			{
-			System.Console.WriteLine("Checking right wing tank fuel quantity");;
 			return myAircraft.Get_RWT__fuel_quantity()
 			;}
 			return default(double);;
@@ -1567,7 +1507,6 @@ namespace cessna_digital_twin {
 		public double Check_Visual_LWT__fuel_quantity() 
 		{
 			{
-			System.Console.WriteLine("Checking left wing tank fuel quantity");;
 			return myAircraft.Get_RWT__fuel_quantity()
 			;}
 			return default(double);;
@@ -1576,7 +1515,6 @@ namespace cessna_digital_twin {
 		public bool Check_Visual_RWT__water_sediments() 
 		{
 			{
-			System.Console.WriteLine("Checking right wing tank for water sediments");;
 			return myAircraft.Get_RWT__water_sediments()
 			;}
 			return default(bool);;
@@ -1585,7 +1523,6 @@ namespace cessna_digital_twin {
 		public void Repair_Visual_RWT__water_sediments() 
 		{
 			{
-			System.Console.WriteLine("Repairing right wing tank water sediments");;
 			myAircraft.Repair_RWT__water_sediments()
 			;}
 			return;
@@ -1594,7 +1531,6 @@ namespace cessna_digital_twin {
 		public bool Check_Visual_LWT__water_sediments() 
 		{
 			{
-			System.Console.WriteLine("Checking left wing tank for water sediments");;
 			return myAircraft.Get_LWT__water_sediments()
 			;}
 			return default(bool);;
@@ -1603,7 +1539,6 @@ namespace cessna_digital_twin {
 		public void Repair_Visual_LWT__water_sediments() 
 		{
 			{
-			System.Console.WriteLine("Repairing left wing tank water sediments");;
 			myAircraft.Repair_LWT__water_sediments()
 			;}
 			return;
@@ -1612,7 +1547,6 @@ namespace cessna_digital_twin {
 		public bool Check_Visual_Engine__running() 
 		{
 			{
-			System.Console.WriteLine("Checking Engine running");;
 			return myAircraft.Get_Engine__running()
 			;}
 			return default(bool);;
@@ -1621,7 +1555,6 @@ namespace cessna_digital_twin {
 		public double Check_Visual_Engine__oil() 
 		{
 			{
-			System.Console.WriteLine("Checking Engine oil");;
 			return myAircraft.Get_Engine__oil()
 			;}
 			return default(double);;
@@ -1630,7 +1563,6 @@ namespace cessna_digital_twin {
 		public void Refill_Visual_Engine__oil() 
 		{
 			{
-			System.Console.WriteLine("Refill engine oil");;
 			myAircraft.Refill_Engine__oil()
 			;}
 			return;

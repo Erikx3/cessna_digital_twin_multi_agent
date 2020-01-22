@@ -1087,7 +1087,6 @@ namespace cessna_digital_twin {
 											if(_Random.Next(100)
 											 <= 40) {
 															{
-															System.Console.WriteLine("The engine started successfully.");;
 															Engine__running = true
 															;}
 													;} 

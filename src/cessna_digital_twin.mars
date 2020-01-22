@@ -409,9 +409,7 @@ agent Pilot on AgentLayer{
 			
 		if (next_action === "End_of_Actions")
 		{
-			println "Finished State -->" + state + " with next action flag -->" + next_action
 			go_to_next_state("StartingEngine")
-			println "Next state -->" + state
 		}
 	}
 	
@@ -561,9 +559,7 @@ agent Pilot on AgentLayer{
 		
 		if (next_action === "End_of_Actions")
 		{
-			println "Finished State -->" + state + " with next action flag -->" + next_action
 			go_to_next_state("TakeOffPreparationRequest")
-			println "Next state -->" + state
 		}
 	}
 	
@@ -583,7 +579,6 @@ agent Pilot on AgentLayer{
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				agentlayer.Communicate_request_on_frequency(myAircraft_callsign, "Tower", "RequestTakeOffPreparationPoint")
-				println "Communicating on frequency"
 				next_action = "Listen_receiver_on_frequency"
 			}
 		}
@@ -595,7 +590,6 @@ agent Pilot on AgentLayer{
 			{
 				taxi_path = agentlayer.Listen_message_information_path_on_frequency()
 				next_action = "Clear_frequency"
-				println "Listen on frequency successful"
 			}
 			
 			//retry contacting tower after a specific period of time
@@ -613,17 +607,14 @@ agent Pilot on AgentLayer{
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				agentlayer.Clear_frequency()
-				println "Clear on frequency successful"
 				next_action = "End_of_Actions"
 			}
 		}
 		
 		if (next_action === "End_of_Actions")
 		{
-			println "Finished State -->" + state + " with next action flag -->" + next_action
 			go_to_next_state("Taxiing")
 			state_after_taxiing = "TakeOffPreparation"
-			println "Next state -->" + state
 		}
 	}
 	
@@ -736,9 +727,7 @@ agent Pilot on AgentLayer{
 		
 		if (next_action === "End_of_Actions")
 			{
-				println "Finished State -->" + state + " with next action flag -->" + next_action
 				go_to_next_state("TakeOffHoldShortRequest")
-				println "Next state -->" + state
 			}
 	}
 	
@@ -759,7 +748,6 @@ agent Pilot on AgentLayer{
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				agentlayer.Communicate_request_on_frequency(myAircraft_callsign, "Tower", "RequestTakeOffHoldShortPoint")
-				println "Communicating on frequency"
 				next_action = "Listen_receiver_on_frequency"
 			}
 		}
@@ -771,7 +759,6 @@ agent Pilot on AgentLayer{
 			{
 				taxi_path = agentlayer.Listen_message_information_path_on_frequency()
 				next_action = "Clear_frequency"
-				println "Listen on frequency successful"
 			}
 			
 			//retry contacting tower after a specific period of time
@@ -789,17 +776,14 @@ agent Pilot on AgentLayer{
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				agentlayer.Clear_frequency()
-				println "Clear on frequency successful"
 				next_action = "End_of_Actions"
 			}
 		}
 		
 		if (next_action === "End_of_Actions")
 		{
-			println "Finished State -->" + state + " with next action flag -->" + next_action
 			go_to_next_state("Taxiing")
 			state_after_taxiing = "TakeOffRequest"
-			println "Next state -->" + state
 		}
 	}
 	
@@ -820,7 +804,6 @@ agent Pilot on AgentLayer{
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				agentlayer.Communicate_request_on_frequency(myAircraft_callsign, "Tower", "RequestTakeOff")
-				println "Communicating on frequency"
 				next_action = "Listen_receiver_on_frequency"
 			}
 		}
@@ -833,7 +816,6 @@ agent Pilot on AgentLayer{
 				taxi_path = agentlayer.Listen_message_information_path_on_frequency()
 				heading_information = agentlayer.Listen_message_information_heading()
 				next_action = "Clear_frequency"
-				println "Listen on frequency successful"
 			}
 			
 			//retry contacting tower after a specific period of time
@@ -851,17 +833,14 @@ agent Pilot on AgentLayer{
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				agentlayer.Clear_frequency()
-				println "Clear on frequency successful"
 				next_action = "End_of_Actions"
 			}
 		}
 		
 		if (next_action === "End_of_Actions")
 		{
-			println "Finished State -->" + state + " with next action flag -->" + next_action
 			go_to_next_state("Taxiing")
 			state_after_taxiing = "TakeOff"
-			println "Next state -->" + state
 		}
 	}
 	
@@ -951,11 +930,6 @@ agent Pilot on AgentLayer{
 				}
 				Apply_Aircraft__pitch(temp_pitch_value)
 			}
-						
-			println "Aircraft Speed:"
-			println Check_Instrument_Aircraft__true_air_speed()
-			println "Aircraft Height:"
-			println Check_Instrument_Aircraft__height()
 		}
 		// TODO: Think about better handling and protocol
 		if (myAircraft.Get_Engine__failure() === true)
@@ -1033,7 +1007,6 @@ agent Pilot on AgentLayer{
 			{
 				Set_Brake__parking_brake("OFF")
 				Apply_Brake__deceleration(0.0)
-				println "Set braking park OFF and release brake application"
 				next_action = "Taxiing"
 			}
 		}
@@ -1063,28 +1036,12 @@ agent Pilot on AgentLayer{
 			{
 				Taxiing_normal()			
 				
-			}
-			
-			//TODO: Delete this print section
-			
-			println "-----Taxiing-----"
-			println "taxi_path_points : " + taxi_path_points
-			println "active_taxi_point_number : " + active_taxi_point_number
-			println "My Position : "
-			println myAircraft.Get_position()
-			println "active_taxi_point : "
-			println active_taxi_point
-			println "Current speed : "
-			println Check_Instrument_Aircraft__true_air_speed()
-			println "distance: " + distance_to_next_point
-			
+			}		
 		}
 		
 		if (next_action === "End_of_Actions")
 		{
-			println "Finished State -->" + state + " with next action flag -->" + next_action
 			go_to_next_state(state_after_taxiing)
-			println "Next state -->" + state
 			first_action_set = false
 		}
 		
@@ -1101,54 +1058,54 @@ agent Pilot on AgentLayer{
 	//-----Instrument Panel(IP) Functions-----
 	def Check_Instrument_Engine__RPM()
 	{
-		println "Checking Engine RPM via instrument"
+		//println "Checking Engine RPM via instrument"
 		return myAircraft.IP_Get_Engine__RPM()
 	}
 	def Check_Instrument_Engine__oil_pressure()
 	{
-		println "Checking Engine oil pressure instrument"
+		//println "Checking Engine oil pressure instrument"
 		return myAircraft.IP_Get_Engine__oil_pressure()
 	}
 	
 	def Check_Instrument_Engine__oil_temperature()
 	{
-		println "Checking Engine oil temperature instrument"
+		//println "Checking Engine oil temperature instrument"
 		return myAircraft.IP_Get_Engine__oil_temperature()
 	}
 	
 	def Check_Instrument_Aircraft__true_air_speed()
 	{
-		println "Checking Aircraft Speed Instrument"
+		//println "Checking Aircraft Speed Instrument"
 		return myAircraft.IP_Get_Aircraft__true_air_speed()
 	}
 	
 	def Check_Instrument_Aircraft__pitch()
 	{
-		println "Checking Aircraft pitch via instrument"
+		//println "Checking Aircraft pitch via instrument"
 		return myAircraft.IP_Get_Aircraft__pitch()
 	}
 	
 	def Check_Instrument_Aircraft__rate_of_climb()
 	{
-		println "Checking Aircraft climb of rate via instrument"
+		//println "Checking Aircraft climb of rate via instrument"
 		return myAircraft.IP_Get_Aircraft__rate_of_climb()
 	}
 	
 	def Check_Instrument_Aircraft__height()
 	{
-		println "Checking Aircraft height via instrument"
+		//println "Checking Aircraft height via instrument"
 		return myAircraft.IP_Get_Aircraft__height()
 	}
 	
 	def Check_Instrument_RWT__fuel_quantitity()
 	{
-		println "Checking RWT fuel quantity via instrument"
+		//println "Checking RWT fuel quantity via instrument"
 		return myAircraft.IP_Get_RWT__fuel_quantity()
 	}
 	
 	def Check_Instrument_LWT__fuel_quantitity()
 	{
-		println "Checking LWT fuel quantity via instrument"
+		//println "Checking LWT fuel quantity via instrument"
 		return myAircraft.IP_Get_LWT__fuel_quantity()
 	}
 	
@@ -1214,49 +1171,49 @@ agent Pilot on AgentLayer{
 	//-----Control_Input_Panel(CIP) Functions-----
 	def Set_Aircraft__heading_bearing(input: real)
 	{
-		println "Apply heading bearing " + input
+		//println "Apply heading bearing " + input
 		myAircraft.CIP_Set_Aircraft__heading_bearing(input)
 	}
 	
 	def Apply_Engine__throttle(input : real)
 	{
-		println "Apply throttle " + input
+		//println "Apply throttle " + input
 		myAircraft.CIP_Apply_Engine__throttle(input)
 	}
 	
 	def Apply_Aircraft__pitch(input : real)
 	{
-		println "Apply pitch (angle of attack):  " + input
+		//println "Apply pitch (angle of attack):  " + input
 		myAircraft.CIP_Apply_Aircraft__pitch(input)
 	}
 	
 	def Set_Engine__ignition_switch(input : string)
 	{
-		println "Set ignition switch to " + input
+		//println "Set ignition switch to " + input
 		myAircraft.CIP_Set_Engine__ignition_switch(input)
 	}
 	
 	def Apply_Brake__deceleration(input : real)
 	{
-		println "Apply Brake " + input
+		//println "Apply Brake " + input
 		myAircraft.CIP_Apply_Brake__deceleration(input)
 	}
 	
 	def Set_Brake__parking_brake(input : string)
 	{
-		println "Set Parking Brake to " + input
+		//println "Set Parking Brake to " + input
 		myAircraft.CIP_Set_Brake__parking_brake(input)
 	}
 	
 	def Set_Engine__mixture_control(input : string)
 	{
-		println "Set Mixture Control"
+		//println "Set Mixture Control"
 		myAircraft.CIP_Set_Engine__mixture_control(input)
 	}
 	
 	def Set_CIP__master_switch(input : string)
 	{
-		println "Set Master Switch to " + input
+		//println "Set Master Switch to " + input
 		myAircraft.CIP_Set__master_switch(input)
 	}
 	
@@ -1265,19 +1222,19 @@ agent Pilot on AgentLayer{
 	//-----Visual Tire Functions------
 	def Check_Visual_TireRightMainWheel__inflation()
 	{	
-		println "Checking right Main Wheel Tire inflation"
+		//println "Checking right Main Wheel Tire inflation"
 		return myAircraft.Get_TireRightMainWheel__inflation()
 	}
 	
 	def Check_Visual_TireLeftMainWheel__inflation()
 	{	
-		println "Checking left Main Wheel Tire inflation"
+		//println "Checking left Main Wheel Tire inflation"
 		return myAircraft.Get_TireLeftMainWheel__inflation
 	}
 	
 	def Check_Visual_TireNoseWheel__inflation()
 	{	
-		println "Checking Nose Wheel Tire inflation"
+		//println "Checking Nose Wheel Tire inflation"
 		return myAircraft.Get_TireNoseWheel__inflation
 	}
 	
@@ -1286,56 +1243,56 @@ agent Pilot on AgentLayer{
 	// Note: Right - and LeftWingTank (RWT&LWT)
 	def Check_Visual_RWT__fuel_quantity()
 	{
-		println "Checking right wing tank fuel quantity"
+		//println "Checking right wing tank fuel quantity"
 		return myAircraft.Get_RWT__fuel_quantity()
 	}
 	
 	def Check_Visual_LWT__fuel_quantity()
 	{
-		println "Checking left wing tank fuel quantity"
+		//println "Checking left wing tank fuel quantity"
 		return myAircraft.Get_RWT__fuel_quantity()
 	}
 	
 	def Check_Visual_RWT__water_sediments()
 	{
-		println "Checking right wing tank for water sediments"
+		//println "Checking right wing tank for water sediments"
 		return myAircraft.Get_RWT__water_sediments()
 	}
 	
 	def Repair_Visual_RWT__water_sediments()
 	{
-		println "Repairing right wing tank water sediments"
+		//println "Repairing right wing tank water sediments"
 		myAircraft.Repair_RWT__water_sediments()
 	}
 	
 	def Check_Visual_LWT__water_sediments()
 	{
-		println "Checking left wing tank for water sediments"
+		//println "Checking left wing tank for water sediments"
 		return myAircraft.Get_LWT__water_sediments()
 	}
 	
 	def Repair_Visual_LWT__water_sediments()
 	{
-		println "Repairing left wing tank water sediments"
+		//println "Repairing left wing tank water sediments"
 		myAircraft.Repair_LWT__water_sediments()
 	}
 	
 	//------Visual (or acoustic) Engine Functions------
 	def Check_Visual_Engine__running()
 	{
-		println "Checking Engine running"
+		//println "Checking Engine running"
 		return myAircraft.Get_Engine__running()
 	}
 	
 	def Check_Visual_Engine__oil()
 	{
-		println "Checking Engine oil"
+		//println "Checking Engine oil"
 		return myAircraft.Get_Engine__oil()
 	}
 	
 	def Refill_Visual_Engine__oil()
 	{
-		println "Refill engine oil"
+		//println "Refill engine oil"
 		myAircraft.Refill_Engine__oil()
 	}
 }
