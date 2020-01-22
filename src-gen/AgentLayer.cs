@@ -46,14 +46,6 @@ namespace cessna_digital_twin {
 		
 		public AgentLayer _AgentLayer => this;
 		public AgentLayer agentlayer => this;
-		private double __Weather__density
-			 = 1.225;
-		internal double Weather__density { 
-			get { return __Weather__density; }
-			set{
-				if(System.Math.Abs(__Weather__density - value) > 0.0000001) __Weather__density = value;
-			}
-		}
 		private double __Weather__wind_bearing
 			 = 107;
 		internal double Weather__wind_bearing { 
@@ -68,6 +60,30 @@ namespace cessna_digital_twin {
 			get { return __Weather__wind_speed; }
 			set{
 				if(System.Math.Abs(__Weather__wind_speed - value) > 0.0000001) __Weather__wind_speed = value;
+			}
+		}
+		private double __density_zero
+			 = 1.225;
+		internal double density_zero { 
+			get { return __density_zero; }
+			set{
+				if(System.Math.Abs(__density_zero - value) > 0.0000001) __density_zero = value;
+			}
+		}
+		private double __temperature_zero
+			 = 288.15;
+		internal double temperature_zero { 
+			get { return __temperature_zero; }
+			set{
+				if(System.Math.Abs(__temperature_zero - value) > 0.0000001) __temperature_zero = value;
+			}
+		}
+		private double __L_constant
+			 = 0.0065;
+		internal double L_constant { 
+			get { return __L_constant; }
+			set{
+				if(System.Math.Abs(__L_constant - value) > 0.0000001) __L_constant = value;
 			}
 		}
 		private double __gravity
@@ -151,15 +167,6 @@ namespace cessna_digital_twin {
 			}
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public double Get_Weather__density() 
-		{
-			{
-			return Weather__density
-					;
-			}
-			return default(double);;
-		}
-		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public double Get_Weather__wind_bearing() 
 		{
 			{
@@ -175,6 +182,16 @@ namespace cessna_digital_twin {
 			return Weather__wind_speed
 					;
 			}
+			return default(double);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public double Get_Weather__density(double height) 
+		{
+			{
+			double Weather__density = default(double);;
+			Weather__density = density_zero * Mars.Components.Common.Math.Pow((1 - (L_constant * height / temperature_zero)), 4.2561);
+			return Weather__density
+			;}
 			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]

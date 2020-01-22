@@ -722,12 +722,12 @@ namespace cessna_digital_twin {
 			double y_spawn = agentlayer.Get_spawn_y_coord();
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget52_1204 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget53_1265 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object52_1204 = this;
+				var _object53_1265 = this;
 				
-				_AgentLayer._AircraftEnvironment.PosAt(_object52_1204, 
-					_taget52_1204.Item1, _taget52_1204.Item2
+				_AgentLayer._AircraftEnvironment.PosAt(_object53_1265, 
+					_taget53_1265.Item1, _taget53_1265.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
@@ -801,6 +801,7 @@ namespace cessna_digital_twin {
 			{
 			Aircraft__acceleration_x = 0.0;
 			Aircraft__true_air_speed_x = 0.0;
+			Aircraft__ground_speed_x = 0.0;
 			Aircraft__true_air_speed = 0.0;
 			Aircraft__height = 0.0;
 			Aircraft__flight_phase = "on-ground";
@@ -845,10 +846,10 @@ namespace cessna_digital_twin {
 					 	Aircraft__angle_of_attack = (Aircraft__pitch - Aircraft__rate_of_climb);
 					 	double Aircraft__climb_angle_rad = Aircraft__climb_angle * Mars.Components.Common.Constants.Pi / 180;
 					 	Aircraft__lift_coefficient = Get_Aircraft__lift_coefficient();
-					 	Aircraft__lift = Aircraft__lift_coefficient * agentlayer.Get_Weather__density()
+					 	Aircraft__lift = Aircraft__lift_coefficient * agentlayer.Get_Weather__density(Aircraft__height)
 					 	 * Mars.Components.Common.Math.Pow(Aircraft__true_air_speed, 2) * Aircraft__wing_area / 2;
 					 	Aircraft__drag_coefficient = Get_Aircraft__drag_coefficient();
-					 	Aircraft__drag = Aircraft__drag_coefficient * agentlayer.Get_Weather__density()
+					 	Aircraft__drag = Aircraft__drag_coefficient * agentlayer.Get_Weather__density(Aircraft__height)
 					 	 * Mars.Components.Common.Math.Pow(Aircraft__true_air_speed, 2) * Aircraft__wing_area / 2;
 					 	Aircraft__acceleration_z = ((Propeller__thrust - Tire__friction_force - Aircraft__drag) * Mars.Components.Common.Math.Sin(Aircraft__climb_angle_rad)
 					 	 + Aircraft__lift * Mars.Components.Common.Math.Cos(Aircraft__climb_angle_rad)
@@ -886,14 +887,14 @@ namespace cessna_digital_twin {
 							{
 							new System.Func<Tuple<double,double>>(() => {
 								
-								var _speed249_8898 = Aircraft__movement_x
+								var _speed251_9025 = Aircraft__movement_x
 							;
 								
-								var _entity249_8898 = this;
+								var _entity251_9025 = this;
 								
-								Func<double[], bool> _predicate249_8898 = null;
+								Func<double[], bool> _predicate251_9025 = null;
 								
-								_AgentLayer._AircraftEnvironment.MoveTowards(_entity249_8898, Aircraft__heading_bearing, _speed249_8898);	
+								_AgentLayer._AircraftEnvironment.MoveTowards(_entity251_9025, Aircraft__heading_bearing, _speed251_9025);	
 								
 								return new Tuple<double, double>(Position.X, Position.Y);
 							}).Invoke()
@@ -964,7 +965,7 @@ namespace cessna_digital_twin {
 		{
 			{
 			Propeller__thrust_coefficient = Get_Propeller__thrust_coefficient();
-			Propeller__thrust = Propeller__thrust_coefficient * agentlayer.Get_Weather__density()
+			Propeller__thrust = Propeller__thrust_coefficient * agentlayer.Get_Weather__density(Aircraft__height)
 			 * Mars.Components.Common.Math.Pow((Engine__RPM / 60), 2) * Mars.Components.Common.Math.Pow(Propeller__diameter, 4)
 			;}
 			return;
@@ -1083,7 +1084,7 @@ namespace cessna_digital_twin {
 		{
 			{
 			Engine__power_coefficient = Get_Engine__power_coefficient();
-			Engine__RPM = Mars.Components.Common.Math.Pow((Engine__power / (Engine__power_coefficient * agentlayer.Get_Weather__density()
+			Engine__RPM = Mars.Components.Common.Math.Pow((Engine__power / (Engine__power_coefficient * agentlayer.Get_Weather__density(Aircraft__height)
 			 * Mars.Components.Common.Math.Pow(Propeller__diameter, 5))), 0.3333) * 60;
 			if(Engine__RPM > Engine__RPM_max) {
 							{
@@ -1279,9 +1280,9 @@ namespace cessna_digital_twin {
 		public void Remove() {
 			{
 			new System.Action(() => {
-				var _target44_969 = this;
-				if (_target44_969 != null) {
-					_AgentLayer._KillAircraft(_target44_969, _target44_969._executionFrequency);
+				var _target45_1030 = this;
+				if (_target45_1030 != null) {
+					_AgentLayer._KillAircraft(_target45_1030, _target45_1030._executionFrequency);
 				}
 			}).Invoke()
 					;
@@ -1700,7 +1701,9 @@ namespace cessna_digital_twin {
 			update_LeftWingTank();
 			update_RightWingTank();
 			update_Brake();
-			update_AircraftPhysics()
+			update_AircraftPhysics();
+			System.Console.WriteLine(agentlayer.Get_Weather__density(Aircraft__height)
+			);
 			;}
 		}
 		

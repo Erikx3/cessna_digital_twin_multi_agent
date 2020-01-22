@@ -239,9 +239,9 @@ namespace cessna_digital_twin {
 			event_info = "Abort flight mission due to " + info;
 			myAircraft.Remove();
 			new System.Action(() => {
-				var _target211_5932 = this;
-				if (_target211_5932 != null) {
-					_AgentLayer._KillPilot(_target211_5932, _target211_5932._executionFrequency);
+				var _target222_6236 = this;
+				if (_target222_6236 != null) {
+					_AgentLayer._KillPilot(_target222_6236, _target222_6236._executionFrequency);
 				}
 			}).Invoke()
 			;}
@@ -253,13 +253,13 @@ namespace cessna_digital_twin {
 			{
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget216_5984 = (myAircraft.Get_position()
+				var _taget227_6288 = (myAircraft.Get_position()
 				);
 				
-				var _object216_5984 = this;
+				var _object227_6288 = this;
 				
-				_AgentLayer._PilotEnvironment.PosAt(_object216_5984, 
-					_taget216_5984.Item1, _taget216_5984.Item2
+				_AgentLayer._PilotEnvironment.PosAt(_object227_6288, 
+					_taget227_6288.Item1, _taget227_6288.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
@@ -1609,17 +1609,17 @@ namespace cessna_digital_twin {
 			double y_spawn = agentlayer.Get_spawn_y_coord();
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget114_3164 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget125_3468 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object114_3164 = this;
+				var _object125_3468 = this;
 				
-				_AgentLayer._PilotEnvironment.PosAt(_object114_3164, 
-					_taget114_3164.Item1, _taget114_3164.Item2
+				_AgentLayer._PilotEnvironment.PosAt(_object125_3468, 
+					_taget125_3468.Item1, _taget125_3468.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
 			myAircraft = new Func<cessna_digital_twin.Aircraft>(() => {
-				Func<cessna_digital_twin.Aircraft, bool> _predicate117_3239 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft it) => 
+				Func<cessna_digital_twin.Aircraft, bool> _predicate128_3543 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft it) => 
 				 {
 						{
 						return Equals(it.Get_occupy_bool()
@@ -1628,21 +1628,21 @@ namespace cessna_digital_twin {
 						;
 						return default(bool);;
 				});
-				Func<cessna_digital_twin.Aircraft, bool> _predicateMod117_3239 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
+				Func<cessna_digital_twin.Aircraft, bool> _predicateMod128_3543 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
 				{
 					if (_it?.ID == this.ID)
 					{
 						return false;
-					} else if (_predicate117_3239 != null)
+					} else if (_predicate128_3543 != null)
 					{
-						return _predicate117_3239.Invoke(_it);
+						return _predicate128_3543.Invoke(_it);
 					} else return true;
 				});
 				
-				const int _range117_3239 = -1;
-				var _source117_3239 = this.Position;
+				const int _range128_3543 = -1;
+				var _source128_3543 = this.Position;
 				
-				return _AgentLayer._AircraftEnvironment.Explore(_source117_3239, _range117_3239, 1, _predicateMod117_3239)?.FirstOrDefault();
+				return _AgentLayer._AircraftEnvironment.Explore(_source128_3543, _range128_3543, 1, _predicateMod128_3543)?.FirstOrDefault();
 			}).Invoke();
 			myAircraft.Set_occupied();
 			myAircraft_callsign = myAircraft.Get_callsign();

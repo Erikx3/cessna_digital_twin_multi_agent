@@ -5,12 +5,23 @@ use Mars
 layer AgentLayer as agentlayer
 {	
 	//Weather Values TODO: Think about another solution for weather
-	var Weather__density : real = 1.225 // kg/m^3 TODO: Add height dependent density
 	var Weather__wind_bearing : real = 107 // °
 	var Weather__wind_speed : real = 5 // m/s
-	def Get_Weather__density() => return Weather__density
 	def Get_Weather__wind_bearing() => return Weather__wind_bearing
 	def Get_Weather__wind_speed() => return Weather__wind_speed
+	
+	//help variables for density calculations
+	var density_zero : real = 1.225 // kg/m^3 - mean sea level ISA
+	var temperature_zero : real = 288.15 // Kelvin - mean sea level ISA
+	var L_constant : real = 0.0065 // constant for dT/dh
+		
+	def Get_Weather__density(height : real)
+	{
+		var Weather__density : real
+		Weather__density = density_zero * (1 - (L_constant * height / temperature_zero))**4.2561
+		return Weather__density
+	}
+
 	
 	
 	// Physics Values

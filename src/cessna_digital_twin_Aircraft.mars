@@ -155,6 +155,7 @@ agent Aircraft on AgentLayer{
 	{
 		Aircraft__acceleration_x = 0.0
 		Aircraft__true_air_speed_x = 0.0
+		Aircraft__ground_speed_x = 0.0
 		Aircraft__true_air_speed = 0.0
 		Aircraft__height = 0.0
 		Aircraft__flight_phase = "on-ground"
@@ -206,11 +207,11 @@ agent Aircraft on AgentLayer{
 			
 			// Lift calculation - Note: True Airspeed needs to be used here!
 			Aircraft__lift_coefficient = Get_Aircraft__lift_coefficient()
-			Aircraft__lift = Aircraft__lift_coefficient * agentlayer.Get_Weather__density() * Aircraft__true_air_speed**2 * Aircraft__wing_area / 2
+			Aircraft__lift = Aircraft__lift_coefficient * agentlayer.Get_Weather__density(Aircraft__height) * Aircraft__true_air_speed**2 * Aircraft__wing_area / 2
 			
 			// Drag calculation
 			Aircraft__drag_coefficient = Get_Aircraft__drag_coefficient()
-			Aircraft__drag = Aircraft__drag_coefficient * agentlayer.Get_Weather__density() * Aircraft__true_air_speed**2 * Aircraft__wing_area / 2
+			Aircraft__drag = Aircraft__drag_coefficient * agentlayer.Get_Weather__density(Aircraft__height) * Aircraft__true_air_speed**2 * Aircraft__wing_area / 2
 			
 			//Z Movement calculation
 			// TODO: The right angle is Aircraft__climb_angle here, but that would lead to VERY unstable behavior due to linking effects
@@ -318,7 +319,7 @@ agent Aircraft on AgentLayer{
 	{
 		// Propeller thrust calculation
 		Propeller__thrust_coefficient = Get_Propeller__thrust_coefficient()
-		Propeller__thrust = Propeller__thrust_coefficient * agentlayer.Get_Weather__density() * (Engine__RPM/60)**2 * Propeller__diameter**4
+		Propeller__thrust = Propeller__thrust_coefficient * agentlayer.Get_Weather__density(Aircraft__height) * (Engine__RPM/60)**2 * Propeller__diameter**4
 	}
 	
 	// -----Engine-----
@@ -446,7 +447,7 @@ agent Aircraft on AgentLayer{
 	{
 		//Engine RPM Calculation
 		Engine__power_coefficient = Get_Engine__power_coefficient()
-		Engine__RPM = (Engine__power/(Engine__power_coefficient*agentlayer.Get_Weather__density()*Propeller__diameter**5))**0.3333 * 60 // FACTOR 60 TO CONVERT INTO PER MINUTE
+		Engine__RPM = (Engine__power/(Engine__power_coefficient*agentlayer.Get_Weather__density(Aircraft__height)*Propeller__diameter**5))**0.3333 * 60 // FACTOR 60 TO CONVERT INTO PER MINUTE
 		if (Engine__RPM > Engine__RPM_max)
 		{
 			Engine__RPM = Engine__RPM_max
