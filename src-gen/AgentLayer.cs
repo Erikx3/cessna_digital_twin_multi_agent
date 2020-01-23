@@ -96,22 +96,6 @@ namespace cessna_digital_twin {
 				if(System.Math.Abs(__gravity - value) > 0.0000001) __gravity = value;
 			}
 		}
-		private double __spawn_xcor
-			 = 9.4987928;
-		internal double spawn_xcor { 
-			get { return __spawn_xcor; }
-			set{
-				if(System.Math.Abs(__spawn_xcor - value) > 0.0000001) __spawn_xcor = value;
-			}
-		}
-		private double __spawn_ycor
-			 = 53.560392;
-		internal double spawn_ycor { 
-			get { return __spawn_ycor; }
-			set{
-				if(System.Math.Abs(__spawn_ycor - value) > 0.0000001) __spawn_ycor = value;
-			}
-		}
 		private int __callsign_number
 			 = 0;
 		internal int callsign_number { 
@@ -221,33 +205,6 @@ namespace cessna_digital_twin {
 			return callsign_number
 			;}
 			return default(int);;
-		}
-		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public virtual void Update_spawn_coord() 
-		{
-			{
-			spawn_xcor = spawn_xcor + _Random.Next(5)
-			 - 4;
-			spawn_ycor = spawn_ycor + _Random.Next(5)
-			 - 4
-			;}
-			return;
-		}
-		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public virtual double Get_spawn_x_coord() 
-		{
-			{
-			return spawn_xcor
-			;}
-			return default(double);;
-		}
-		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public virtual double Get_spawn_y_coord() 
-		{
-			{
-			return spawn_ycor
-			;}
-			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public virtual string Listen_receiver_on_frequency() 

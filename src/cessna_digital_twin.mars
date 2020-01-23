@@ -23,15 +23,11 @@ layer AgentLayer as agentlayer
 	}
 
 	
-	
 	// Physics Values
 	var gravity : real = 9.81 // m/s^2
 	def Get_gravity() => return gravity
 	
-	
-	//-----Spawn Handling-----
-	var spawn_xcor : real = 9.4987928
-	var spawn_ycor : real = 53.560392
+	// Callsign Handling
 	var callsign_number : integer = 0
 	
 	def Get_callsign_number()
@@ -39,24 +35,6 @@ layer AgentLayer as agentlayer
 		callsign_number = callsign_number + 1
 		return callsign_number
 	}
-	
-	def Update_spawn_coord()
-	{
-		spawn_xcor = spawn_xcor + random(5) - 4
-		spawn_ycor = spawn_ycor + random(5) - 4
-	}	
-	
-	def Get_spawn_x_coord()
-	{
-		return spawn_xcor
-	}	
-	
-	def Get_spawn_y_coord()
-	{
-		return spawn_ycor
-	}
-	
-	
 	
 	//-----Communication Handling-----
 	var frequency_blocked = false
@@ -120,14 +98,54 @@ vector-layer AirportStadeLayer as airportstadelayer
 // -----Agent Observer for spawning sequence-----
 agent Observer on AgentLayer{
 	var state_list = new List<string>
+	
+	//-----Spawn Handling-----
+	// Bottom Left of appron field
+	var left_xcor : real = 9.4987928
+	var left_ycor : real = 53.560392
+	var right_xcor : real = 9.5009108
+	var right_ycor : real = 53.5599218
+	
+	var number_of_spawning_points : integer = 5
+	
+	var spawn_xcor_list : List<real>
+	var spawn_ycor_list : List<real>
+	
+	var spawn_location_number : integer
+	
+def initialize_spawn_cor()
+	{
+		var temp_deltastep_xcor = (left_xcor - right_xcor) / (number_of_spawning_points-1)
+		var temp_deltastep_ycor = (left_ycor - right_ycor) / (number_of_spawning_points-1)
+		for (var i = 0; i < number_of_spawning_points; i++)
+		{
+			spawn_xcor_list.Add(left_xcor + temp_deltastep_xcor * i)
+			spawn_ycor_list.Add(left_ycor + temp_deltastep_ycor * i)
+		}
+		spawn_location_number = 0
+	}
+	
+def spawn_pilot_and_aircraft()
+	{
+		// Order is important, since pilot needs to find an aircraft!
+		spawn Aircraft at #(spawn_xcor_list.Get(0), spawn_ycor_list.Get(0))
+		spawn Pilot at #(spawn_xcor_list.Get(0), spawn_ycor_list.Get(0))
+		spawn_location_number = spawn_location_number + 1
+		if (spawn_location_number >= number_of_spawning_points)
+		{
+			spawn_location_number = 0
+		}
+		println "SPAWN U CUNTS"
+	}
 
 	initialize{
 		state_list = #["PreflightInspection", "StartingEngine", "TakeOffPreparationRequest", "Taxiing", "TakeOffPreparation", "TakeOffHoldShortRequest", "TakeOffRequest", "TakeOff", "LeavingAirspaceRequest"]
+		initialize_spawn_cor()
 	}
 	
 	tick
 	{	
-		if (simtime % 100 === 0)
+		if (simtime % 150 === 0)
 		{
 			println "Simulation Time: " + simtime
 			println "Number of Pilots in each State"
@@ -141,8 +159,12 @@ agent Observer on AgentLayer{
 				}
 				println state + ": " + count
 			}
-			
 			println "-----End of information-----"
+		}
+		
+		if (simtime === 1 or simtime === 5) // add for multiple spawns: or simtime % 100 === 0
+		{
+			spawn_pilot_and_aircraft()
 		}
 	}
 }
@@ -151,12 +173,7 @@ agent Observer on AgentLayer{
 agent Pilot on AgentLayer{
 		
 	initialize
-	{
-		// Spawn TODO: Add spawning management (observer agent?)
-		var x_spawn = agentlayer.Get_spawn_x_coord()
-		var y_spawn = agentlayer.Get_spawn_y_coord()
-		pos at #(x_spawn, y_spawn)
-		
+	{	
 		//General Initialization
 		myAircraft = nearest Aircraft where [it => return it.Get_occupy_bool() === false]
 		myAircraft.Set_occupied()		

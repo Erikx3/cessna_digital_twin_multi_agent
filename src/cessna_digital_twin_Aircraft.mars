@@ -46,14 +46,10 @@ agent Aircraft on AgentLayer{
 	observe var event_info : string // maybe add something like this or think about it
 	
 	def initialize_general_values()
-	{
-		var x_spawn = agentlayer.Get_spawn_x_coord()
-		var y_spawn = agentlayer.Get_spawn_y_coord()
-		pos at #(x_spawn, y_spawn)
-		
+	{	
 		Longitude = xcor
 		Latitude = ycor
-		
+			
 		event_info = "None"
 	}
 	

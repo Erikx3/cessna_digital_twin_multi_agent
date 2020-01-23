@@ -718,19 +718,6 @@ namespace cessna_digital_twin {
 		public virtual void initialize_general_values() 
 		{
 			{
-			double x_spawn = agentlayer.Get_spawn_x_coord();
-			double y_spawn = agentlayer.Get_spawn_y_coord();
-			new System.Func<System.Tuple<double,double>>(() => {
-				
-				var _taget52_1204 = new System.Tuple<double,double>(x_spawn,y_spawn);
-				
-				var _object52_1204 = this;
-				
-				_AgentLayer._AircraftEnvironment.PosAt(_object52_1204, 
-					_taget52_1204.Item1, _taget52_1204.Item2
-				);
-				return new Tuple<double, double>(Position.X, Position.Y);
-			}).Invoke();
 			Longitude = this.Position.X;
 			Latitude = this.Position.Y;
 			event_info = "None"
@@ -887,14 +874,14 @@ namespace cessna_digital_twin {
 							{
 							new System.Func<Tuple<double,double>>(() => {
 								
-								var _speed250_8964 = Aircraft__movement_x
+								var _speed246_8836 = Aircraft__movement_x
 							;
 								
-								var _entity250_8964 = this;
+								var _entity246_8836 = this;
 								
-								Func<double[], bool> _predicate250_8964 = null;
+								Func<double[], bool> _predicate246_8836 = null;
 								
-								_AgentLayer._AircraftEnvironment.MoveTowards(_entity250_8964, Aircraft__heading_bearing, _speed250_8964);	
+								_AgentLayer._AircraftEnvironment.MoveTowards(_entity246_8836, Aircraft__heading_bearing, _speed246_8836);	
 								
 								return new Tuple<double, double>(Position.X, Position.Y);
 							}).Invoke()
