@@ -50,12 +50,12 @@ namespace cessna_digital_twin {
 				if(__callsign_received != value) __callsign_received = value;
 			}
 		}
-		private int __runway_heading_calculated
-			 = default(int);
-		public int runway_heading_calculated { 
+		private double __runway_heading_calculated
+			 = default(double);
+		public double runway_heading_calculated { 
 			get { return __runway_heading_calculated; }
 			set{
-				if(__runway_heading_calculated != value) __runway_heading_calculated = value;
+				if(System.Math.Abs(__runway_heading_calculated - value) > 0.0000001) __runway_heading_calculated = value;
 			}
 		}
 		private cessna_digital_twin.TimeHandler __timehandler
@@ -88,6 +88,22 @@ namespace cessna_digital_twin {
 			get { return __request_approval; }
 			set{
 				if(__request_approval != value) __request_approval = value;
+			}
+		}
+		private Mars.Components.Common.MarsList<double> __available_runway_heading
+			 = default(Mars.Components.Common.MarsList<double>);
+		internal Mars.Components.Common.MarsList<double> available_runway_heading { 
+			get { return __available_runway_heading; }
+			set{
+				if(__available_runway_heading != value) __available_runway_heading = value;
+			}
+		}
+		private cessna_digital_twin.Formula __formula
+			 = new cessna_digital_twin.Formula();
+		internal cessna_digital_twin.Formula formula { 
+			get { return __formula; }
+			set{
+				if(__formula != value) __formula = value;
 			}
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
@@ -145,16 +161,17 @@ namespace cessna_digital_twin {
 			double y_spawn = 53.559712;
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget1447_40260 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget1440_40152 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object1447_40260 = this;
+				var _object1440_40152 = this;
 				
-				_AgentLayer._AirTrafficControllerEnvironment.PosAt(_object1447_40260, 
-					_taget1447_40260.Item1, _taget1447_40260.Item2
+				_AgentLayer._AirTrafficControllerEnvironment.PosAt(_object1440_40152, 
+					_taget1440_40152.Item1, _taget1440_40152.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
-			request_approval = false
+			request_approval = false;
+			available_runway_heading = airportstade.Get_available_runway_heading_list()
 			;}
 		}
 		
@@ -186,7 +203,21 @@ namespace cessna_digital_twin {
 											if(timehandler.hold_action_time(timehandler.action_duration)
 											) {
 															{
-															runway_heading_calculated = 107;
+															double wind_bearing = agentlayer.Get_Weather__wind_bearing();
+															double temp_delta = 180.1;
+															double saved_heading = default(double);;
+															foreach ( var temp_runway_heading in available_runway_heading ) {
+																		{
+																		if(formula.smallest_absolute_delta(temp_runway_heading,wind_bearing)
+																		 < temp_delta) {
+																						{
+																						saved_heading = temp_runway_heading;
+																						temp_delta = formula.smallest_absolute_delta(temp_runway_heading,wind_bearing)
+																						;}
+																				;} 
+																		;}
+																	};
+															runway_heading_calculated = saved_heading;
 															if(Equals(message_type_received, "RequestTakeOffPreparationPoint")) {
 																			{
 																			taxipath = airportstade.Get_taxipath_to_TakeOffPreparationPoint(runway_heading_calculated);

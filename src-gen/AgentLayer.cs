@@ -160,12 +160,12 @@ namespace cessna_digital_twin {
 				if(__message_information_path != value) __message_information_path = value;
 			}
 		}
-		private int __message_information_heading
-			 = default(int);
-		internal int message_information_heading { 
+		private double __message_information_heading
+			 = default(double);
+		internal double message_information_heading { 
 			get { return __message_information_heading; }
 			set{
-				if(__message_information_heading != value) __message_information_heading = value;
+				if(System.Math.Abs(__message_information_heading - value) > 0.0000001) __message_information_heading = value;
 			}
 		}
 		private bool __message_information_bool
@@ -286,13 +286,13 @@ namespace cessna_digital_twin {
 			return default(Mars.Components.Common.MarsList<System.Tuple<double,double>>);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public virtual int Listen_message_information_heading() 
+		public virtual double Listen_message_information_heading() 
 		{
 			{
 			return message_information_heading
 					;
 			}
-			return default(int);;
+			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public virtual bool Listen_message_information_bool() 
@@ -304,7 +304,7 @@ namespace cessna_digital_twin {
 			return default(bool);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public virtual void Communicate_answer_on_frequency(string _sender_identifier, string _receiver, string _message_type, Mars.Components.Common.MarsList<System.Tuple<double,double>> _message_information_path, int _message_information_heading, bool _message_information_bool) 
+		public virtual void Communicate_answer_on_frequency(string _sender_identifier, string _receiver, string _message_type, Mars.Components.Common.MarsList<System.Tuple<double,double>> _message_information_path, double _message_information_heading, bool _message_information_bool) 
 		{
 			{
 			if(Equals(frequency_blocked, false) || Equals(_sender_identifier, "Tower")) {

@@ -1,8 +1,8 @@
 {
     "globals": {
         // To simulate scnearios with realtime scenario
-        "startTime": "2019-01-01T18:00:00.000Z",
-        "endTime": "2019-01-01T18:14:00.000Z",
+        "startTime": "2020-01-01T18:00:00.000Z",
+        "endTime": "2020-01-01T18:14:00.000Z",
         "deltaTUnit": "seconds",
         
         // To simulate with only the steps
@@ -39,6 +39,12 @@
         },
         {
             "name":"Observer",
+            "count":1,
+            // Deactivate the output for an agent
+            "outputFrequency": -1
+        },
+        {
+            "name":"Weather",
             "count":1,
             // Deactivate the output for an agent
             "outputFrequency": -1

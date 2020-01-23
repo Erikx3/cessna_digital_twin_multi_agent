@@ -76,5 +76,15 @@ namespace cessna_digital_twin {
 			;}
 			return default(double);;
 		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public virtual double smallest_absolute_delta(double a1, double a2) 
+		{
+			{
+			double delta = 180 - Mars.Components.Common.Math.Abs(Mars.Components.Common.Math.Abs(a1 - a2)
+			 - 180);
+			return delta
+			;}
+			return default(double);;
+		}
 	}
 }

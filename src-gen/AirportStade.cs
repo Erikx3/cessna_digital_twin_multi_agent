@@ -26,17 +26,36 @@ namespace cessna_digital_twin {
 				if(__taxipath != value) __taxipath = value;
 			}
 		}
+		private Mars.Components.Common.MarsList<double> __available_runway_heading_list
+			 = (new Mars.Components.Common.MarsList<double>() { 107.0,287.0 });
+		internal Mars.Components.Common.MarsList<double> available_runway_heading_list { 
+			get { return __available_runway_heading_list; }
+			set{
+				if(__available_runway_heading_list != value) __available_runway_heading_list = value;
+			}
+		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public virtual Mars.Components.Common.MarsList<System.Tuple<double,double>> Get_taxipath_to_TakeOffPreparationPoint(int heading) 
+		public virtual Mars.Components.Common.MarsList<double> Get_available_runway_heading_list() 
 		{
 			{
-			if(Equals(heading, 107)) {
+			return available_runway_heading_list
+					;
+			}
+			return default(Mars.Components.Common.MarsList<double>);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public virtual Mars.Components.Common.MarsList<System.Tuple<double,double>> Get_taxipath_to_TakeOffPreparationPoint(double heading) 
+		{
+			{
+			if(Equals(heading, available_runway_heading_list.Get(0)
+			)) {
 							{
 							taxipath = (new Mars.Components.Common.MarsList<System.Tuple<double,double>>() { new System.Tuple<double,double>(9.4994287,53.5604441),new System.Tuple<double,double>(9.4934248,53.5617509),new System.Tuple<double,double>(9.4931937,53.5618008),new System.Tuple<double,double>(9.4930632,53.5618664) });
 							return taxipath
 							;}
 					;} else {
-							if(Equals(heading, 287)) {
+							if(Equals(heading, available_runway_heading_list.Get(1)
+							)) {
 											{
 											taxipath = (new Mars.Components.Common.MarsList<System.Tuple<double,double>>() { new System.Tuple<double,double>(9.4994287,53.5604441),new System.Tuple<double,double>(9.5010603,53.5600816),new System.Tuple<double,double>(9.5018283,53.559911),new System.Tuple<double,double>(9.5041687,53.5594248),new System.Tuple<double,double>(9.5043157,53.5594584) });
 											return taxipath
@@ -47,16 +66,18 @@ namespace cessna_digital_twin {
 			return default(Mars.Components.Common.MarsList<System.Tuple<double,double>>);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public virtual Mars.Components.Common.MarsList<System.Tuple<double,double>> Get_taxipath_to_RunwayHoldShortPoint(int heading) 
+		public virtual Mars.Components.Common.MarsList<System.Tuple<double,double>> Get_taxipath_to_RunwayHoldShortPoint(double heading) 
 		{
 			{
-			if(Equals(heading, 107)) {
+			if(Equals(heading, available_runway_heading_list.Get(0)
+			)) {
 							{
 							taxipath = (new Mars.Components.Common.MarsList<System.Tuple<double,double>>() { new System.Tuple<double,double>(9.4930632,53.5618664),new System.Tuple<double,double>(9.4930261,53.5619488),new System.Tuple<double,double>(9.4930324,53.562018),new System.Tuple<double,double>(9.4930903,53.5620665),new System.Tuple<double,double>(9.4931671,53.5621049),new System.Tuple<double,double>(9.4932789,53.5621333),new System.Tuple<double,double>(9.493448,53.5621513),new System.Tuple<double,double>(9.4936651,53.5621639),new System.Tuple<double,double>(9.4939417,53.562171) });
 							return taxipath
 							;}
 					;} else {
-							if(Equals(heading, 287)) {
+							if(Equals(heading, available_runway_heading_list.Get(1)
+							)) {
 											{
 											taxipath = (new Mars.Components.Common.MarsList<System.Tuple<double,double>>() { new System.Tuple<double,double>(9.5043157,53.5594584),new System.Tuple<double,double>(9.5044877,53.5595613),new System.Tuple<double,double>(9.5046714,53.5597239) });
 											return taxipath
@@ -67,16 +88,18 @@ namespace cessna_digital_twin {
 			return default(Mars.Components.Common.MarsList<System.Tuple<double,double>>);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public virtual Mars.Components.Common.MarsList<System.Tuple<double,double>> Get_taxipath_to_RunwayLineUpPoint(int heading) 
+		public virtual Mars.Components.Common.MarsList<System.Tuple<double,double>> Get_taxipath_to_RunwayLineUpPoint(double heading) 
 		{
 			{
-			if(Equals(heading, 107)) {
+			if(Equals(heading, available_runway_heading_list.Get(0)
+			)) {
 							{
 							taxipath = (new Mars.Components.Common.MarsList<System.Tuple<double,double>>() { new System.Tuple<double,double>(9.4939417,53.562171),new System.Tuple<double,double>(9.494201,53.5621611),new System.Tuple<double,double>(9.494446,53.5621252) });
 							return taxipath
 							;}
 					;} else {
-							if(Equals(heading, 287)) {
+							if(Equals(heading, available_runway_heading_list.Get(1)
+							)) {
 											{
 											taxipath = (new Mars.Components.Common.MarsList<System.Tuple<double,double>>() { new System.Tuple<double,double>(9.5046714,53.5597239),new System.Tuple<double,double>(9.5048527,53.5598626),new System.Tuple<double,double>(9.5028175,53.5603097) });
 											return taxipath
