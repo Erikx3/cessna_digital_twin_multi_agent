@@ -715,19 +715,19 @@ namespace cessna_digital_twin {
 			}
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void initialize_general_values() 
+		public virtual void initialize_general_values() 
 		{
 			{
 			double x_spawn = agentlayer.Get_spawn_x_coord();
 			double y_spawn = agentlayer.Get_spawn_y_coord();
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget53_1265 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget52_1204 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object53_1265 = this;
+				var _object52_1204 = this;
 				
-				_AgentLayer._AircraftEnvironment.PosAt(_object53_1265, 
-					_taget53_1265.Item1, _taget53_1265.Item2
+				_AgentLayer._AircraftEnvironment.PosAt(_object52_1204, 
+					_taget52_1204.Item1, _taget52_1204.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
@@ -738,7 +738,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void update_general_values() 
+		public virtual void update_general_values() 
 		{
 			{
 			Longitude = this.Position.X;
@@ -747,7 +747,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public double Get_Aircraft__aspect_ratio() 
+		public virtual double Get_Aircraft__aspect_ratio() 
 		{
 			{
 			return Mars.Components.Common.Math.Pow(Aircraft__wing_span, 2) / Aircraft__wing_area
@@ -756,7 +756,7 @@ namespace cessna_digital_twin {
 			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void initialize_AircraftCharacteristics() 
+		public virtual void initialize_AircraftCharacteristics() 
 		{
 			{
 			Aircraft__callsign = "Cessna" + agentlayer.Get_callsign_number()
@@ -764,7 +764,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public double Get_Aircraft__lift_coefficient() 
+		public virtual double Get_Aircraft__lift_coefficient() 
 		{
 			{
 			if(Aircraft__angle_of_attack <= Aircraft__stall_angle) {
@@ -787,7 +787,7 @@ namespace cessna_digital_twin {
 			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public double Get_Aircraft__drag_coefficient() 
+		public virtual double Get_Aircraft__drag_coefficient() 
 		{
 			{
 			Aircraft__drag_coefficient = Aircraft__zero_lift_drag_coefficient + Mars.Components.Common.Math.Pow(Aircraft__lift_coefficient, 2) / (Aircraft__oswald_factor * Mars.Components.Common.Constants.Pi * Get_Aircraft__aspect_ratio());
@@ -796,7 +796,7 @@ namespace cessna_digital_twin {
 			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void initialize_AircraftPhysics() 
+		public virtual void initialize_AircraftPhysics() 
 		{
 			{
 			Aircraft__acceleration_x = 0.0;
@@ -817,7 +817,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void update_AircraftPhysics() 
+		public virtual void update_AircraftPhysics() 
 		{
 			{
 			if(Aircraft__height > 0) {
@@ -887,14 +887,14 @@ namespace cessna_digital_twin {
 							{
 							new System.Func<Tuple<double,double>>(() => {
 								
-								var _speed251_9025 = Aircraft__movement_x
+								var _speed250_8964 = Aircraft__movement_x
 							;
 								
-								var _entity251_9025 = this;
+								var _entity250_8964 = this;
 								
-								Func<double[], bool> _predicate251_9025 = null;
+								Func<double[], bool> _predicate250_8964 = null;
 								
-								_AgentLayer._AircraftEnvironment.MoveTowards(_entity251_9025, Aircraft__heading_bearing, _speed251_9025);	
+								_AgentLayer._AircraftEnvironment.MoveTowards(_entity250_8964, Aircraft__heading_bearing, _speed250_8964);	
 								
 								return new Tuple<double, double>(Position.X, Position.Y);
 							}).Invoke()
@@ -904,7 +904,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void initialize_Brake() 
+		public virtual void initialize_Brake() 
 		{
 			{
 			Brake__parking_brake = "SET";
@@ -914,7 +914,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void update_Brake() 
+		public virtual void update_Brake() 
 		{
 			{
 			if(Equals(Aircraft__flight_phase, "on-ground")) {
@@ -930,7 +930,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public double Get_Propeller__thrust_coefficient() 
+		public virtual double Get_Propeller__thrust_coefficient() 
 		{
 			{
 			if(Aircraft__true_air_speed > Propeller__thrust_coefficient_speed_constant) {
@@ -952,7 +952,7 @@ namespace cessna_digital_twin {
 			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void initialize_Propeller() 
+		public virtual void initialize_Propeller() 
 		{
 			{
 			Propeller__thrust = 0.0;
@@ -961,7 +961,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void update_Propeller() 
+		public virtual void update_Propeller() 
 		{
 			{
 			Propeller__thrust_coefficient = Get_Propeller__thrust_coefficient();
@@ -971,7 +971,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public double Get_Engine__power_coefficient() 
+		public virtual double Get_Engine__power_coefficient() 
 		{
 			{
 			if(Aircraft__true_air_speed > Engine__power_coefficient_speed_constant) {
@@ -988,7 +988,7 @@ namespace cessna_digital_twin {
 			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void initialize_Engine() 
+		public virtual void initialize_Engine() 
 		{
 			{
 			Engine__oil_pump_condition = Utility.probability_check(0.98);
@@ -1020,7 +1020,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Set_Engine__not_running_values() 
+		public virtual void Set_Engine__not_running_values() 
 		{
 			{
 			Engine__running = false;
@@ -1033,7 +1033,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Add_Engine__failure_probability(double add) 
+		public virtual void Add_Engine__failure_probability(double add) 
 		{
 			{
 			Engine__failure_probability = Engine__failure_probability + add
@@ -1042,7 +1042,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Calculate_Engine__failure_probability() 
+		public virtual void Calculate_Engine__failure_probability() 
 		{
 			{
 			Engine__failure_probability = Mars.Components.Common.Math.Pow(10, (-6));
@@ -1080,7 +1080,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void update_Engine_RPM() 
+		public virtual void update_Engine_RPM() 
 		{
 			{
 			Engine__power_coefficient = Get_Engine__power_coefficient();
@@ -1095,7 +1095,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void update_Engine() 
+		public virtual void update_Engine() 
 		{
 			{
 			if(Equals(Engine__running, false) || Equals(Engine__failure, true)) {
@@ -1157,7 +1157,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void initialize_RightWingTank() 
+		public virtual void initialize_RightWingTank() 
 		{
 			{
 			RWT__fuel_quantity = _Random.Next(RWT__total_capacity + 1);
@@ -1166,7 +1166,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void update_RightWingTank() 
+		public virtual void update_RightWingTank() 
 		{
 			{
 			RWT__fuel_quantity = RWT__fuel_quantity - Engine__fuel_consumption / 2
@@ -1174,7 +1174,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void initialize_LeftWingTank() 
+		public virtual void initialize_LeftWingTank() 
 		{
 			{
 			LWT__fuel_quantity = _Random.Next(LWT__total_capacity + 1);
@@ -1183,7 +1183,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void update_LeftWingTank() 
+		public virtual void update_LeftWingTank() 
 		{
 			{
 			LWT__fuel_quantity = LWT__fuel_quantity - Engine__fuel_consumption / 2
@@ -1191,7 +1191,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void initialize_Tire() 
+		public virtual void initialize_Tire() 
 		{
 			{
 			if(_Random.Next(100)
@@ -1229,7 +1229,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void update_Tire_friction_force() 
+		public virtual void update_Tire_friction_force() 
 		{
 			{
 			if(Equals(Aircraft__flight_phase, "on-ground")) {
@@ -1251,7 +1251,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void initialize_CIP() 
+		public virtual void initialize_CIP() 
 		{
 			{
 			CIP__master_switch = "OFF"
@@ -1280,9 +1280,9 @@ namespace cessna_digital_twin {
 		public void Remove() {
 			{
 			new System.Action(() => {
-				var _target45_1030 = this;
-				if (_target45_1030 != null) {
-					_AgentLayer._KillAircraft(_target45_1030, _target45_1030._executionFrequency);
+				var _target44_969 = this;
+				if (_target44_969 != null) {
+					_AgentLayer._KillAircraft(_target44_969, _target44_969._executionFrequency);
 				}
 			}).Invoke()
 					;
@@ -1701,9 +1701,7 @@ namespace cessna_digital_twin {
 			update_LeftWingTank();
 			update_RightWingTank();
 			update_Brake();
-			update_AircraftPhysics();
-			System.Console.WriteLine(agentlayer.Get_Weather__density(Aircraft__height)
-			);
+			update_AircraftPhysics()
 			;}
 		}
 		

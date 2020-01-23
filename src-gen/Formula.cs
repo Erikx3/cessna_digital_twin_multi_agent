@@ -19,7 +19,7 @@ namespace cessna_digital_twin {
 					Mars.Common.Logging.LoggerFactory.GetLogger(typeof(Formula));
 		private readonly System.Random _Random = new System.Random();
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public double haversine(System.Tuple<double,double> point1, System.Tuple<double,double> point2) 
+		public virtual double haversine(System.Tuple<double,double> point1, System.Tuple<double,double> point2) 
 		{
 			{
 			double deg_to_rad_factor = Mars.Components.Common.Constants.Pi / 180;
@@ -47,7 +47,7 @@ namespace cessna_digital_twin {
 			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public double bearing(System.Tuple<double,double> point1, System.Tuple<double,double> point2) 
+		public virtual double bearing(System.Tuple<double,double> point1, System.Tuple<double,double> point2) 
 		{
 			{
 			double deg_to_rad_factor = Mars.Components.Common.Constants.Pi / 180;

@@ -66,6 +66,7 @@ layer AgentLayer as agentlayer
 	// either information is at first place "0" or contains multiple information as e.g. flight_path
 	var message_information_path : List<Tuple<real, real>>
 	var message_information_heading : integer
+	var message_information_bool : bool
 	
 	
 	def Listen_receiver_on_frequency() => return receiver
@@ -73,9 +74,10 @@ layer AgentLayer as agentlayer
 	def Listen_message_type_on_frequency() => return message_type
 	def Listen_message_information_path_on_frequency() => return message_information_path 
 	def Listen_message_information_heading() => return message_information_heading
+	def Listen_message_information_bool()=> return message_information_bool
 	
 	
-	def Communicate_answer_on_frequency(_sender_identifier : string, _receiver : string, _message_type : string, _message_information_path : List<Tuple<real, real>>, _message_information_heading : integer)
+	def Communicate_answer_on_frequency(_sender_identifier : string, _receiver : string, _message_type : string, _message_information_path : List<Tuple<real, real>>, _message_information_heading : integer, _message_information_bool : bool)
 	{
 		if (frequency_blocked === false or _sender_identifier ==="Tower")
 		{
@@ -84,7 +86,7 @@ layer AgentLayer as agentlayer
 			message_type = _message_type
 			message_information_path  = _message_information_path 
 			message_information_heading = _message_information_heading
-			
+			message_information_bool = _message_information_bool
 			frequency_blocked = true
 		}		
 	}
@@ -113,6 +115,44 @@ layer AgentLayer as agentlayer
 }
 
 vector-layer AirportStadeLayer as airportstadelayer
+
+// -----Agent Observer for spawning sequence-----
+agent Observer on AgentLayer{
+	var state_list = new List<string>()
+	
+	initialize{
+		state_list.Add("PreflightInspection")
+		state_list.Add("StartingEngine")
+		state_list.Add("TakeOffPreparationRequest")
+		state_list.Add("Taxiing")
+		state_list.Add("TakeOffPreparation")
+		state_list.Add("TakeOffHoldShortRequest")
+		state_list.Add("TakeOffRequest")
+		state_list.Add("TakeOff")
+		state_list.Add("LeavingAirspaceRequest")
+	}
+	
+	tick
+	{		
+		if (simtime % 100 === 0)
+		{
+			println "Simulation Time: " + simtime
+			println "Number of Pilots in each State"
+			each (var state in state_list)
+			{
+				var count = 0
+				var pilot_array = explore Pilot where [x => return x.Get_state() === state]
+				each (var temp in pilot_array)
+				{
+					count = count + 1
+				}
+				println state + ": " + count
+			}
+			
+			println "-----End of information-----"
+		}
+	}
+}
 
 // -----Agent Pilot flying the aircraft-----
 agent Pilot on AgentLayer{
@@ -173,6 +213,10 @@ agent Pilot on AgentLayer{
 			TakeOff_action()
 		}
 		
+		else if (state === "LeavingAirspaceRequest"){
+			LeavingAirpsaceRequest_action()
+		}
+		
 		
 		update_general_values()
 	}
@@ -217,7 +261,14 @@ agent Pilot on AgentLayer{
 	
 	def remove_me_and_my_aircraft(info : string)
 	{
-		event_info = "Abort flight mission due to " + info
+		event_info = "End flight mission due to " + info
+		myAircraft.Remove()
+		kill me
+	}
+	
+	passive Removed_with_my_aircraft(info : string) //
+	{
+		event_info = "End flight mission due to " + info
 		myAircraft.Remove()
 		kill me
 	}
@@ -229,7 +280,7 @@ agent Pilot on AgentLayer{
 		Latitude = ycor
 		current_activity = next_action
 	}
-	
+	passive Get_state() => return state  // for observer agent
 	
 	//-----General Pilot Values and functions-----
 	observe var age: integer // years
@@ -941,13 +992,79 @@ agent Pilot on AgentLayer{
 					}
 				}
 				Apply_Aircraft__pitch(temp_pitch_value)
+				
+				if (Check_Instrument_Aircraft__height() > 300)
+				{
+					next_action = "End_of_Actions"
+				}
 			}
 		}
+		
+		if (next_action === "End_of_Actions")
+		{
+			go_to_next_state("LeavingAirspaceRequest")
+		}	
+		
+		
 		// TODO: Think about better handling and protocol
 		if (myAircraft.Get_Engine__failure() === true)
 		{
 			remove_me_and_my_aircraft("Engine__Failure during TakeOff")
-		}		
+		}
+	}
+	
+	
+	
+	//-----State LeavingAirpsaceRequest-----
+	def LeavingAirpsaceRequest_action()
+	{
+		if (first_action_set === false)
+		{
+			next_action = "Communicate_on_frequency"
+			first_action_set = true
+		}
+		
+		if (next_action === "Communicate_on_frequency")
+		{
+			timehandler.create_action_duration(2, 2, "pilot_age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				agentlayer.Communicate_request_on_frequency(myAircraft_callsign, "Tower", "RequestLeavingAirpsace")
+				next_action = "Listen_receiver_on_frequency"
+			}
+		}
+		
+		else if (next_action === "Listen_receiver_on_frequency")
+		{
+			var temp_receiver = agentlayer.Listen_receiver_on_frequency()
+			if (temp_receiver === myAircraft_callsign)
+			{
+				var temp_bool = agentlayer.Listen_message_information_bool()
+				//TODO add waiting mechanism, if answer returns false
+				if (temp_bool === true)
+				{
+					next_action = "Clear_frequency"
+				}
+			}
+			
+			//retry contacting tower after a specific period of time
+			timehandler.create_action_duration(10, 5, "pilot_age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				next_action = "Communicate_on_frequency"
+			}
+		}
+		
+		// to make sure that message is not instantly deleted and simulate processing time of incoming message and blockage
+		else if (next_action === "Clear_frequency")
+		{
+			timehandler.create_action_duration(2, 2, "pilot_age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				agentlayer.Clear_frequency()
+				remove_me_and_my_aircraft("Leaving Airspace")
+			}
+		}
 	}
 	
 	
@@ -1328,6 +1445,7 @@ agent AirTrafficController on AgentLayer
 			var x_spawn = 9.501334
 			var y_spawn = 53.559712
 			pos at #(x_spawn, y_spawn)
+			request_approval = false
 		}
 		
 		tick
@@ -1356,17 +1474,22 @@ agent AirTrafficController on AgentLayer
 					if (message_type_received === "RequestTakeOffPreparationPoint")
 					{
 						taxipath = airportstade.Get_taxipath_to_TakeOffPreparationPoint(runway_heading_calculated)
-						agentlayer.Communicate_answer_on_frequency(identifier, callsign_received, "AnswerTakeOffPreparationPoint", taxipath, runway_heading_calculated)
+						agentlayer.Communicate_answer_on_frequency(identifier, callsign_received, "AnswerTakeOffPreparationPoint", taxipath, runway_heading_calculated, request_approval)
 					}
 					else if(message_type_received === "RequestTakeOffHoldShortPoint")
 					{
 						taxipath = airportstade.Get_taxipath_to_RunwayHoldShortPoint(runway_heading_calculated)
-						agentlayer.Communicate_answer_on_frequency(identifier, callsign_received, "AnswerTakeOffHoldShortPoint", taxipath, runway_heading_calculated)
+						agentlayer.Communicate_answer_on_frequency(identifier, callsign_received, "AnswerTakeOffHoldShortPoint", taxipath, runway_heading_calculated, request_approval)
 					}
 					else if(message_type_received === "RequestTakeOff")
 					{
 						taxipath = airportstade.Get_taxipath_to_RunwayLineUpPoint(runway_heading_calculated)
-						agentlayer.Communicate_answer_on_frequency(identifier, callsign_received, "AnswerTakeOff", taxipath, runway_heading_calculated)
+						agentlayer.Communicate_answer_on_frequency(identifier, callsign_received, "AnswerTakeOff", taxipath, runway_heading_calculated, request_approval)
+					}
+					else if(message_type_received === "RequestLeavingAirpsace")
+					{
+						request_approval = true // always true so far
+						agentlayer.Communicate_answer_on_frequency(identifier, callsign_received, "AnswerRequestAirspace", taxipath, runway_heading_calculated, request_approval)
 					}
 					else
 					{
@@ -1386,6 +1509,7 @@ agent AirTrafficController on AgentLayer
 		var timehandler = new TimeHandler()
 		var airportstade = new AirportStade() // for airport information retrieval
 		var taxipath : List<Tuple<real, real>>
+		var request_approval : bool // either true or false for answering
 		
 		def initialize_general_values()
 		{
@@ -1408,7 +1532,7 @@ agent AirTrafficController on AgentLayer
 
 
 // TODO: Make a more convenient way for information retrieval of airport
-// TODO: Adapt heading, so aircraft wont fall off the runway :D
+// TODO: Adapt heading, so aircraft wont fall off the runway :D (needs to be like 107.5)
 class AirportStade
 {
 	var taxipath: List<Tuple<real, real>>

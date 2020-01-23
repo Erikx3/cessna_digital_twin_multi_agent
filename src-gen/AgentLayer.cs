@@ -38,10 +38,12 @@ namespace cessna_digital_twin {
 		
 		public Mars.Components.Environments.GeoHashEnvironment<AirTrafficController> _AirTrafficControllerEnvironment { get; set; }
 		public Mars.Components.Environments.GeoHashEnvironment<Aircraft> _AircraftEnvironment { get; set; }
+		public Mars.Components.Environments.GeoHashEnvironment<Observer> _ObserverEnvironment { get; set; }
 		public Mars.Components.Environments.GeoHashEnvironment<Pilot> _PilotEnvironment { get; set; }
 		public AirportStadeLayer _AirportStadeLayer { get; set; }
 		public System.Collections.Generic.IDictionary<System.Guid, AirTrafficController> _AirTrafficControllerAgents { get; set; }
 		public System.Collections.Generic.IDictionary<System.Guid, Aircraft> _AircraftAgents { get; set; }
+		public System.Collections.Generic.IDictionary<System.Guid, Observer> _ObserverAgents { get; set; }
 		public System.Collections.Generic.IDictionary<System.Guid, Pilot> _PilotAgents { get; set; }
 		
 		public AgentLayer _AgentLayer => this;
@@ -166,8 +168,16 @@ namespace cessna_digital_twin {
 				if(__message_information_heading != value) __message_information_heading = value;
 			}
 		}
+		private bool __message_information_bool
+			 = default(bool);
+		internal bool message_information_bool { 
+			get { return __message_information_bool; }
+			set{
+				if(__message_information_bool != value) __message_information_bool = value;
+			}
+		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public double Get_Weather__wind_bearing() 
+		public virtual double Get_Weather__wind_bearing() 
 		{
 			{
 			return Weather__wind_bearing
@@ -176,7 +186,7 @@ namespace cessna_digital_twin {
 			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public double Get_Weather__wind_speed() 
+		public virtual double Get_Weather__wind_speed() 
 		{
 			{
 			return Weather__wind_speed
@@ -185,7 +195,7 @@ namespace cessna_digital_twin {
 			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public double Get_Weather__density(double height) 
+		public virtual double Get_Weather__density(double height) 
 		{
 			{
 			double Weather__density = default(double);;
@@ -195,7 +205,7 @@ namespace cessna_digital_twin {
 			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public double Get_gravity() 
+		public virtual double Get_gravity() 
 		{
 			{
 			return gravity
@@ -204,7 +214,7 @@ namespace cessna_digital_twin {
 			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public int Get_callsign_number() 
+		public virtual int Get_callsign_number() 
 		{
 			{
 			callsign_number = callsign_number + 1;
@@ -213,7 +223,7 @@ namespace cessna_digital_twin {
 			return default(int);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Update_spawn_coord() 
+		public virtual void Update_spawn_coord() 
 		{
 			{
 			spawn_xcor = spawn_xcor + _Random.Next(5)
@@ -224,7 +234,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public double Get_spawn_x_coord() 
+		public virtual double Get_spawn_x_coord() 
 		{
 			{
 			return spawn_xcor
@@ -232,7 +242,7 @@ namespace cessna_digital_twin {
 			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public double Get_spawn_y_coord() 
+		public virtual double Get_spawn_y_coord() 
 		{
 			{
 			return spawn_ycor
@@ -240,7 +250,7 @@ namespace cessna_digital_twin {
 			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public string Listen_receiver_on_frequency() 
+		public virtual string Listen_receiver_on_frequency() 
 		{
 			{
 			return receiver
@@ -249,7 +259,7 @@ namespace cessna_digital_twin {
 			return default(string);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public string Listen_sender_identifier_on_frequency() 
+		public virtual string Listen_sender_identifier_on_frequency() 
 		{
 			{
 			return sender_identifier
@@ -258,7 +268,7 @@ namespace cessna_digital_twin {
 			return default(string);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public string Listen_message_type_on_frequency() 
+		public virtual string Listen_message_type_on_frequency() 
 		{
 			{
 			return message_type
@@ -267,7 +277,7 @@ namespace cessna_digital_twin {
 			return default(string);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public Mars.Components.Common.MarsList<System.Tuple<double,double>> Listen_message_information_path_on_frequency() 
+		public virtual Mars.Components.Common.MarsList<System.Tuple<double,double>> Listen_message_information_path_on_frequency() 
 		{
 			{
 			return message_information_path
@@ -276,7 +286,7 @@ namespace cessna_digital_twin {
 			return default(Mars.Components.Common.MarsList<System.Tuple<double,double>>);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public int Listen_message_information_heading() 
+		public virtual int Listen_message_information_heading() 
 		{
 			{
 			return message_information_heading
@@ -285,7 +295,16 @@ namespace cessna_digital_twin {
 			return default(int);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Communicate_answer_on_frequency(string _sender_identifier, string _receiver, string _message_type, Mars.Components.Common.MarsList<System.Tuple<double,double>> _message_information_path, int _message_information_heading) 
+		public virtual bool Listen_message_information_bool() 
+		{
+			{
+			return message_information_bool
+					;
+			}
+			return default(bool);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public virtual void Communicate_answer_on_frequency(string _sender_identifier, string _receiver, string _message_type, Mars.Components.Common.MarsList<System.Tuple<double,double>> _message_information_path, int _message_information_heading, bool _message_information_bool) 
 		{
 			{
 			if(Equals(frequency_blocked, false) || Equals(_sender_identifier, "Tower")) {
@@ -295,6 +314,7 @@ namespace cessna_digital_twin {
 							message_type = _message_type;
 							message_information_path = _message_information_path;
 							message_information_heading = _message_information_heading;
+							message_information_bool = _message_information_bool;
 							frequency_blocked = true
 							;}
 					;} 
@@ -302,7 +322,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Communicate_request_on_frequency(string _sender_identifier, string _receiver, string _message_type) 
+		public virtual void Communicate_request_on_frequency(string _sender_identifier, string _receiver, string _message_type) 
 		{
 			{
 			if(Equals(frequency_blocked, false)) {
@@ -317,7 +337,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Clear_frequency() 
+		public virtual void Clear_frequency() 
 		{
 			{
 			frequency_blocked = false;
@@ -361,6 +381,7 @@ namespace cessna_digital_twin {
 			if (!_isDefault && _lowerLeft != null && _upperRight != null) {
 				this._AirTrafficControllerEnvironment = Mars.Components.Environments.GeoHashEnvironment<AirTrafficController>.BuildByBBox(_lowerLeft.Longitude, _lowerLeft.Latitude, _upperRight.Longitude, _upperRight.Latitude);
 				this._AircraftEnvironment = Mars.Components.Environments.GeoHashEnvironment<Aircraft>.BuildByBBox(_lowerLeft.Longitude, _lowerLeft.Latitude, _upperRight.Longitude, _upperRight.Latitude);
+				this._ObserverEnvironment = Mars.Components.Environments.GeoHashEnvironment<Observer>.BuildByBBox(_lowerLeft.Longitude, _lowerLeft.Latitude, _upperRight.Longitude, _upperRight.Latitude);
 				this._PilotEnvironment = Mars.Components.Environments.GeoHashEnvironment<Pilot>.BuildByBBox(_lowerLeft.Longitude, _lowerLeft.Latitude, _upperRight.Longitude, _upperRight.Latitude);
 			} else if (_gisLayerExist)
 			{
@@ -377,12 +398,15 @@ namespace cessna_digital_twin {
 					.BuildByBBox(_feature.MinX, _feature.MinY, _feature.MaxX, _feature.MaxY);
 				this._AircraftEnvironment = Mars.Components.Environments.GeoHashEnvironment<Aircraft>
 					.BuildByBBox(_feature.MinX, _feature.MinY, _feature.MaxX, _feature.MaxY);
+				this._ObserverEnvironment = Mars.Components.Environments.GeoHashEnvironment<Observer>
+					.BuildByBBox(_feature.MinX, _feature.MinY, _feature.MaxX, _feature.MaxY);
 				this._PilotEnvironment = Mars.Components.Environments.GeoHashEnvironment<Pilot>
 					.BuildByBBox(_feature.MinX, _feature.MinY, _feature.MaxX, _feature.MaxY);
 			} 
 			else if (_lowerLeft != null && _upperRight != null) {
 				this._AirTrafficControllerEnvironment = Mars.Components.Environments.GeoHashEnvironment<AirTrafficController>.BuildByBBox(_lowerLeft.Longitude, _lowerLeft.Latitude, _upperRight.Longitude, _upperRight.Latitude);
 				this._AircraftEnvironment = Mars.Components.Environments.GeoHashEnvironment<Aircraft>.BuildByBBox(_lowerLeft.Longitude, _lowerLeft.Latitude, _upperRight.Longitude, _upperRight.Latitude);
+				this._ObserverEnvironment = Mars.Components.Environments.GeoHashEnvironment<Observer>.BuildByBBox(_lowerLeft.Longitude, _lowerLeft.Latitude, _upperRight.Longitude, _upperRight.Latitude);
 				this._PilotEnvironment = Mars.Components.Environments.GeoHashEnvironment<Pilot>.BuildByBBox(_lowerLeft.Longitude, _lowerLeft.Latitude, _upperRight.Longitude, _upperRight.Latitude);
 			} else {
 				throw new ArgumentException("No environment boundary was used for agent layer 'TestLayer'");
@@ -394,6 +418,10 @@ namespace cessna_digital_twin {
 			new System.Collections.Generic.List<Mars.Interfaces.Layer.ILayer> { this, this._AirportStadeLayer });
 			_AircraftAgents = Mars.Components.Services.AgentManager.SpawnAgents<Aircraft>(
 			initData.AgentInitConfigs.First(config => config.Type == typeof(Aircraft)),
+			regHandle, unregHandle, 
+			new System.Collections.Generic.List<Mars.Interfaces.Layer.ILayer> { this, this._AirportStadeLayer });
+			_ObserverAgents = Mars.Components.Services.AgentManager.SpawnAgents<Observer>(
+			initData.AgentInitConfigs.First(config => config.Type == typeof(Observer)),
 			regHandle, unregHandle, 
 			new System.Collections.Generic.List<Mars.Interfaces.Layer.ILayer> { this, this._AirportStadeLayer });
 			_PilotAgents = Mars.Components.Services.AgentManager.SpawnAgents<Pilot>(
@@ -425,6 +453,16 @@ namespace cessna_digital_twin {
 			return agent;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public cessna_digital_twin.Observer _SpawnObserver(double xcor = 0, double ycor = 0, int freq = 1) {
+			var id = System.Guid.NewGuid();
+			var agent = new cessna_digital_twin.Observer(id, this, _Register, _Unregister,
+			_ObserverEnvironment,
+			_AirportStadeLayer
+		, 	xcor, ycor, freq);
+			_ObserverAgents.Add(id, agent);
+			return agent;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public cessna_digital_twin.Pilot _SpawnPilot(double xcor = 0, double ycor = 0, int freq = 1) {
 			var id = System.Guid.NewGuid();
 			var agent = new cessna_digital_twin.Pilot(id, this, _Register, _Unregister,
@@ -450,6 +488,14 @@ namespace cessna_digital_twin {
 			_AircraftEnvironment.Remove(target);
 			_Unregister(this, target, target._executionFrequency);
 			_AircraftAgents.Remove(target.ID);
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void _KillObserver(cessna_digital_twin.Observer target, int executionFrequency = 1)
+		{
+			target._isAlive = false;
+			_ObserverEnvironment.Remove(target);
+			_Unregister(this, target, target._executionFrequency);
+			_ObserverAgents.Remove(target.ID);
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public void _KillPilot(cessna_digital_twin.Pilot target, int executionFrequency = 1)

@@ -19,7 +19,7 @@ namespace cessna_digital_twin {
 					Mars.Common.Logging.LoggerFactory.GetLogger(typeof(UtilityClass));
 		private readonly System.Random _Random = new System.Random();
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public bool probability_check(double probability) 
+		public virtual bool probability_check(double probability) 
 		{
 			{
 			double random_value = Mars.Mathematics.Statistics.RandomHelper.NextDouble(_Random, 0, Mars.Components.Common.Math.Pow(10, 6))

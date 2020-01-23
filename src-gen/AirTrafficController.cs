@@ -82,8 +82,16 @@ namespace cessna_digital_twin {
 				if(__taxipath != value) __taxipath = value;
 			}
 		}
+		private bool __request_approval
+			 = default(bool);
+		internal bool request_approval { 
+			get { return __request_approval; }
+			set{
+				if(__request_approval != value) __request_approval = value;
+			}
+		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void initialize_general_values() 
+		public virtual void initialize_general_values() 
 		{
 			{
 			identifier = "Tower";
@@ -94,7 +102,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void reset_general_values() 
+		public virtual void reset_general_values() 
 		{
 			{
 			state = "Listen_on_frequency";
@@ -137,15 +145,16 @@ namespace cessna_digital_twin {
 			double y_spawn = 53.559712;
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget1330_36928 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget1447_40260 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object1330_36928 = this;
+				var _object1447_40260 = this;
 				
-				_AgentLayer._AirTrafficControllerEnvironment.PosAt(_object1330_36928, 
-					_taget1330_36928.Item1, _taget1330_36928.Item2
+				_AgentLayer._AirTrafficControllerEnvironment.PosAt(_object1447_40260, 
+					_taget1447_40260.Item1, _taget1447_40260.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
-			}).Invoke()
+			}).Invoke();
+			request_approval = false
 			;}
 		}
 		
@@ -181,24 +190,31 @@ namespace cessna_digital_twin {
 															if(Equals(message_type_received, "RequestTakeOffPreparationPoint")) {
 																			{
 																			taxipath = airportstade.Get_taxipath_to_TakeOffPreparationPoint(runway_heading_calculated);
-																			agentlayer.Communicate_answer_on_frequency(identifier,callsign_received,"AnswerTakeOffPreparationPoint",taxipath,runway_heading_calculated)
+																			agentlayer.Communicate_answer_on_frequency(identifier,callsign_received,"AnswerTakeOffPreparationPoint",taxipath,runway_heading_calculated,request_approval)
 																			;}
 																	;} else {
 																			if(Equals(message_type_received, "RequestTakeOffHoldShortPoint")) {
 																							{
 																							taxipath = airportstade.Get_taxipath_to_RunwayHoldShortPoint(runway_heading_calculated);
-																							agentlayer.Communicate_answer_on_frequency(identifier,callsign_received,"AnswerTakeOffHoldShortPoint",taxipath,runway_heading_calculated)
+																							agentlayer.Communicate_answer_on_frequency(identifier,callsign_received,"AnswerTakeOffHoldShortPoint",taxipath,runway_heading_calculated,request_approval)
 																							;}
 																					;} else {
 																							if(Equals(message_type_received, "RequestTakeOff")) {
 																											{
 																											taxipath = airportstade.Get_taxipath_to_RunwayLineUpPoint(runway_heading_calculated);
-																											agentlayer.Communicate_answer_on_frequency(identifier,callsign_received,"AnswerTakeOff",taxipath,runway_heading_calculated)
+																											agentlayer.Communicate_answer_on_frequency(identifier,callsign_received,"AnswerTakeOff",taxipath,runway_heading_calculated,request_approval)
 																											;}
 																									;} else {
-																											{
-																											agentlayer.Clear_frequency()
-																											;}
+																											if(Equals(message_type_received, "RequestLeavingAirpsace")) {
+																															{
+																															request_approval = true;
+																															agentlayer.Communicate_answer_on_frequency(identifier,callsign_received,"AnswerRequestAirspace",taxipath,runway_heading_calculated,request_approval)
+																															;}
+																													;} else {
+																															{
+																															agentlayer.Clear_frequency()
+																															;}
+																														;}
 																										;}
 																						;}
 																		;};

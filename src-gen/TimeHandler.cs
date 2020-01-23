@@ -75,7 +75,7 @@ namespace cessna_digital_twin {
 			}
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void initialize_variables(int p_age, int p_exp, int p_age_max, int p_age_min) 
+		public virtual void initialize_variables(int p_age, int p_exp, int p_age_max, int p_age_min) 
 		{
 			{
 			pilot_age = p_age;
@@ -86,7 +86,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public bool hold_action_time(int time_needed) 
+		public virtual bool hold_action_time(int time_needed) 
 		{
 			{
 			action_run_time = action_run_time + 1;
@@ -105,7 +105,7 @@ namespace cessna_digital_twin {
 			return default(bool);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void reset_action_timer() 
+		public virtual void reset_action_timer() 
 		{
 			{
 			action_run_time = 0
@@ -113,7 +113,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void create_action_duration(int action_duration_base, int action_duration_extra, string mode) 
+		public virtual void create_action_duration(int action_duration_base, int action_duration_extra, string mode) 
 		{
 			{
 			if(Equals(action_duration_time_set, false)) {

@@ -10,6 +10,7 @@ public static class Program {
 		description.AddLayer<cessna_digital_twin.AirportStadeLayer>();
 		description.AddAgent<cessna_digital_twin.AirTrafficController, cessna_digital_twin.AgentLayer>();
 		description.AddAgent<cessna_digital_twin.Aircraft, cessna_digital_twin.AgentLayer>();
+		description.AddAgent<cessna_digital_twin.Observer, cessna_digital_twin.AgentLayer>();
 		description.AddAgent<cessna_digital_twin.Pilot, cessna_digital_twin.AgentLayer>();
 		var task = Mars.Core.SimulationStarter.SimulationStarter.Start(description, args);
 		var loopResults = task.Run();

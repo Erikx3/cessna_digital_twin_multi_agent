@@ -27,7 +27,7 @@ namespace cessna_digital_twin {
 			}
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public Mars.Components.Common.MarsList<System.Tuple<double,double>> Get_taxipath_to_TakeOffPreparationPoint(int heading) 
+		public virtual Mars.Components.Common.MarsList<System.Tuple<double,double>> Get_taxipath_to_TakeOffPreparationPoint(int heading) 
 		{
 			{
 			if(Equals(heading, 107)) {
@@ -47,7 +47,7 @@ namespace cessna_digital_twin {
 			return default(Mars.Components.Common.MarsList<System.Tuple<double,double>>);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public Mars.Components.Common.MarsList<System.Tuple<double,double>> Get_taxipath_to_RunwayHoldShortPoint(int heading) 
+		public virtual Mars.Components.Common.MarsList<System.Tuple<double,double>> Get_taxipath_to_RunwayHoldShortPoint(int heading) 
 		{
 			{
 			if(Equals(heading, 107)) {
@@ -67,7 +67,7 @@ namespace cessna_digital_twin {
 			return default(Mars.Components.Common.MarsList<System.Tuple<double,double>>);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public Mars.Components.Common.MarsList<System.Tuple<double,double>> Get_taxipath_to_RunwayLineUpPoint(int heading) 
+		public virtual Mars.Components.Common.MarsList<System.Tuple<double,double>> Get_taxipath_to_RunwayLineUpPoint(int heading) 
 		{
 			{
 			if(Equals(heading, 107)) {

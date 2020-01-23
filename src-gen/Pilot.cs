@@ -219,7 +219,7 @@ namespace cessna_digital_twin {
 			}
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void go_to_next_state(string _state) 
+		public virtual void go_to_next_state(string _state) 
 		{
 			{
 			state = _state;
@@ -233,33 +233,33 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void remove_me_and_my_aircraft(string info) 
+		public virtual void remove_me_and_my_aircraft(string info) 
 		{
 			{
-			event_info = "Abort flight mission due to " + info;
+			event_info = "End flight mission due to " + info;
 			myAircraft.Remove();
 			new System.Action(() => {
-				var _target222_6236 = this;
-				if (_target222_6236 != null) {
-					_AgentLayer._KillPilot(_target222_6236, _target222_6236._executionFrequency);
+				var _target266_7467 = this;
+				if (_target266_7467 != null) {
+					_AgentLayer._KillPilot(_target266_7467, _target266_7467._executionFrequency);
 				}
 			}).Invoke()
 			;}
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void update_general_values() 
+		public virtual void update_general_values() 
 		{
 			{
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget227_6288 = (myAircraft.Get_position()
+				var _taget278_7669 = (myAircraft.Get_position()
 				);
 				
-				var _object227_6288 = this;
+				var _object278_7669 = this;
 				
-				_AgentLayer._PilotEnvironment.PosAt(_object227_6288, 
-					_taget227_6288.Item1, _taget227_6288.Item2
+				_AgentLayer._PilotEnvironment.PosAt(_object278_7669, 
+					_taget278_7669.Item1, _taget278_7669.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
@@ -270,7 +270,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public bool skip_action(double base_probability, string action_name) 
+		public virtual bool skip_action(double base_probability, string action_name) 
 		{
 			{
 			double random_value = Mars.Mathematics.Statistics.RandomHelper.NextDouble(_Random, 0, Mars.Components.Common.Math.Pow(10, 6))
@@ -290,7 +290,7 @@ namespace cessna_digital_twin {
 			return default(bool);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void PreflightInspection_action() 
+		public virtual void PreflightInspection_action() 
 		{
 			{
 			if(Equals(first_action_set, false)) {
@@ -498,7 +498,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void StartingEngine_action() 
+		public virtual void StartingEngine_action() 
 		{
 			{
 			if(Equals(first_action_set, false)) {
@@ -687,7 +687,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void TakeOffPreparationRequest_action() 
+		public virtual void TakeOffPreparationRequest_action() 
 		{
 			{
 			if(Equals(first_action_set, false)) {
@@ -750,7 +750,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void TakeOffPreparation_action() 
+		public virtual void TakeOffPreparation_action() 
 		{
 			{
 			if(Equals(first_action_set, false)) {
@@ -884,7 +884,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void TakeOffHoldShortRequest_action() 
+		public virtual void TakeOffHoldShortRequest_action() 
 		{
 			{
 			if(Equals(first_action_set, false)) {
@@ -947,7 +947,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void TakeOffRequest_action() 
+		public virtual void TakeOffRequest_action() 
 		{
 			{
 			if(Equals(first_action_set, false)) {
@@ -1011,7 +1011,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void TakeOff_action() 
+		public virtual void TakeOff_action() 
 		{
 			{
 			if(Equals(first_action_set, false)) {
@@ -1109,7 +1109,12 @@ namespace cessna_digital_twin {
 																																	;} 
 																														;}
 																										;};
-																							Apply_Aircraft__pitch(temp_pitch_value)
+																							Apply_Aircraft__pitch(temp_pitch_value);
+																							if(Check_Instrument_Aircraft__height() > 300) {
+																											{
+																											next_action = "End_of_Actions"
+																											;}
+																									;} 
 																							;}
 																					;} 
 																			;}
@@ -1117,6 +1122,11 @@ namespace cessna_digital_twin {
 														;}
 										;}
 						;};
+			if(Equals(next_action, "End_of_Actions")) {
+							{
+							go_to_next_state("LeavingAirspaceRequest")
+							;}
+					;} ;
 			if(Equals(myAircraft.Get_Engine__failure()
 			, true)) {
 							{
@@ -1127,7 +1137,68 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Taxiing_to_final_point() 
+		public virtual void LeavingAirpsaceRequest_action() 
+		{
+			{
+			if(Equals(first_action_set, false)) {
+							{
+							next_action = "Communicate_on_frequency";
+							first_action_set = true
+							;}
+					;} ;
+			if(Equals(next_action, "Communicate_on_frequency")) {
+							{
+							timehandler.create_action_duration(2,2,"pilot_age_and_experience");
+							if(timehandler.hold_action_time(timehandler.action_duration)
+							) {
+											{
+											agentlayer.Communicate_request_on_frequency(myAircraft_callsign,"Tower","RequestLeavingAirpsace");
+											next_action = "Listen_receiver_on_frequency"
+											;}
+									;} 
+							;}
+					;} else {
+							if(Equals(next_action, "Listen_receiver_on_frequency")) {
+											{
+											string temp_receiver = agentlayer.Listen_receiver_on_frequency();
+											if(Equals(temp_receiver, myAircraft_callsign)) {
+															{
+															bool temp_bool = agentlayer.Listen_message_information_bool();
+															if(Equals(temp_bool, true)) {
+																			{
+																			next_action = "Clear_frequency"
+																			;}
+																	;} 
+															;}
+													;} ;
+											timehandler.create_action_duration(10,5,"pilot_age_and_experience");
+											if(timehandler.hold_action_time(timehandler.action_duration)
+											) {
+															{
+															next_action = "Communicate_on_frequency"
+															;}
+													;} 
+											;}
+									;} else {
+											if(Equals(next_action, "Clear_frequency")) {
+															{
+															timehandler.create_action_duration(2,2,"pilot_age_and_experience");
+															if(timehandler.hold_action_time(timehandler.action_duration)
+															) {
+																			{
+																			agentlayer.Clear_frequency();
+																			remove_me_and_my_aircraft("Leaving Airspace")
+																			;}
+																	;} 
+															;}
+													;} 
+										;}
+						;}
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public virtual void Taxiing_to_final_point() 
 		{
 			{
 			if(distance_to_next_point < 5) {
@@ -1155,7 +1226,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Taxiing_normal() 
+		public virtual void Taxiing_normal() 
 		{
 			{
 			if(Check_Visual_Aircraft__ground_speed_x() > 8) {
@@ -1192,7 +1263,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Taxiing_action() 
+		public virtual void Taxiing_action() 
 		{
 			{
 			int taxi_path_points = taxi_path.Size();
@@ -1260,7 +1331,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public double Check_Instrument_Engine__RPM() 
+		public virtual double Check_Instrument_Engine__RPM() 
 		{
 			{
 			return myAircraft.IP_Get_Engine__RPM()
@@ -1268,7 +1339,7 @@ namespace cessna_digital_twin {
 			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public double Check_Instrument_Engine__oil_pressure() 
+		public virtual double Check_Instrument_Engine__oil_pressure() 
 		{
 			{
 			return myAircraft.IP_Get_Engine__oil_pressure()
@@ -1276,7 +1347,7 @@ namespace cessna_digital_twin {
 			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public double Check_Instrument_Engine__oil_temperature() 
+		public virtual double Check_Instrument_Engine__oil_temperature() 
 		{
 			{
 			return myAircraft.IP_Get_Engine__oil_temperature()
@@ -1284,7 +1355,7 @@ namespace cessna_digital_twin {
 			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public double Check_Instrument_Aircraft__true_air_speed() 
+		public virtual double Check_Instrument_Aircraft__true_air_speed() 
 		{
 			{
 			return myAircraft.IP_Get_Aircraft__true_air_speed()
@@ -1292,7 +1363,7 @@ namespace cessna_digital_twin {
 			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public double Check_Instrument_Aircraft__pitch() 
+		public virtual double Check_Instrument_Aircraft__pitch() 
 		{
 			{
 			return myAircraft.IP_Get_Aircraft__pitch()
@@ -1300,7 +1371,7 @@ namespace cessna_digital_twin {
 			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public double Check_Instrument_Aircraft__rate_of_climb() 
+		public virtual double Check_Instrument_Aircraft__rate_of_climb() 
 		{
 			{
 			return myAircraft.IP_Get_Aircraft__rate_of_climb()
@@ -1308,7 +1379,7 @@ namespace cessna_digital_twin {
 			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public double Check_Instrument_Aircraft__height() 
+		public virtual double Check_Instrument_Aircraft__height() 
 		{
 			{
 			return myAircraft.IP_Get_Aircraft__height()
@@ -1316,7 +1387,7 @@ namespace cessna_digital_twin {
 			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public double Check_Instrument_RWT__fuel_quantitity() 
+		public virtual double Check_Instrument_RWT__fuel_quantitity() 
 		{
 			{
 			return myAircraft.IP_Get_RWT__fuel_quantity()
@@ -1324,7 +1395,7 @@ namespace cessna_digital_twin {
 			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public double Check_Instrument_LWT__fuel_quantitity() 
+		public virtual double Check_Instrument_LWT__fuel_quantitity() 
 		{
 			{
 			return myAircraft.IP_Get_LWT__fuel_quantity()
@@ -1332,7 +1403,7 @@ namespace cessna_digital_twin {
 			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public double Check_Visual_Aircraft__ground_speed_x() 
+		public virtual double Check_Visual_Aircraft__ground_speed_x() 
 		{
 			{
 			return myAircraft.Get_Aircraft__ground_speed_x()
@@ -1340,7 +1411,7 @@ namespace cessna_digital_twin {
 			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public bool Feel_Aircraft__acceleration_x() 
+		public virtual bool Feel_Aircraft__acceleration_x() 
 		{
 			{
 			if(myAircraft.Get_Aircraft__acceleration_x()
@@ -1357,7 +1428,7 @@ namespace cessna_digital_twin {
 			return default(bool);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public bool Feel_Aircraft__deceleration_x() 
+		public virtual bool Feel_Aircraft__deceleration_x() 
 		{
 			{
 			if(myAircraft.Get_Aircraft__acceleration_x()
@@ -1374,7 +1445,7 @@ namespace cessna_digital_twin {
 			return default(bool);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public bool Feel_Aircraft__acceleration_z() 
+		public virtual bool Feel_Aircraft__acceleration_z() 
 		{
 			{
 			if(myAircraft.Get_Aircraft__acceleration_z()
@@ -1391,7 +1462,7 @@ namespace cessna_digital_twin {
 			return default(bool);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public bool Feel_Aircraft__deceleration_z() 
+		public virtual bool Feel_Aircraft__deceleration_z() 
 		{
 			{
 			if(myAircraft.Get_Aircraft__acceleration_z()
@@ -1408,7 +1479,7 @@ namespace cessna_digital_twin {
 			return default(bool);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public bool Hear_Aircraft__stall_sound() 
+		public virtual bool Hear_Aircraft__stall_sound() 
 		{
 			{
 			return myAircraft.Get_Aircraft__stall_sound()
@@ -1416,7 +1487,7 @@ namespace cessna_digital_twin {
 			return default(bool);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Set_Aircraft__heading_bearing(double input) 
+		public virtual void Set_Aircraft__heading_bearing(double input) 
 		{
 			{
 			myAircraft.CIP_Set_Aircraft__heading_bearing(input)
@@ -1424,7 +1495,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Apply_Engine__throttle(double input) 
+		public virtual void Apply_Engine__throttle(double input) 
 		{
 			{
 			myAircraft.CIP_Apply_Engine__throttle(input)
@@ -1432,7 +1503,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Apply_Aircraft__pitch(double input) 
+		public virtual void Apply_Aircraft__pitch(double input) 
 		{
 			{
 			myAircraft.CIP_Apply_Aircraft__pitch(input)
@@ -1440,7 +1511,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Set_Engine__ignition_switch(string input) 
+		public virtual void Set_Engine__ignition_switch(string input) 
 		{
 			{
 			myAircraft.CIP_Set_Engine__ignition_switch(input)
@@ -1448,7 +1519,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Apply_Brake__deceleration(double input) 
+		public virtual void Apply_Brake__deceleration(double input) 
 		{
 			{
 			myAircraft.CIP_Apply_Brake__deceleration(input)
@@ -1456,7 +1527,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Set_Brake__parking_brake(string input) 
+		public virtual void Set_Brake__parking_brake(string input) 
 		{
 			{
 			myAircraft.CIP_Set_Brake__parking_brake(input)
@@ -1464,7 +1535,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Set_Engine__mixture_control(string input) 
+		public virtual void Set_Engine__mixture_control(string input) 
 		{
 			{
 			myAircraft.CIP_Set_Engine__mixture_control(input)
@@ -1472,7 +1543,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Set_CIP__master_switch(string input) 
+		public virtual void Set_CIP__master_switch(string input) 
 		{
 			{
 			myAircraft.CIP_Set__master_switch(input)
@@ -1480,7 +1551,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public int Check_Visual_TireRightMainWheel__inflation() 
+		public virtual int Check_Visual_TireRightMainWheel__inflation() 
 		{
 			{
 			return myAircraft.Get_TireRightMainWheel__inflation()
@@ -1488,7 +1559,7 @@ namespace cessna_digital_twin {
 			return default(int);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public int Check_Visual_TireLeftMainWheel__inflation() 
+		public virtual int Check_Visual_TireLeftMainWheel__inflation() 
 		{
 			{
 			return myAircraft.Get_TireLeftMainWheel__inflation()
@@ -1496,7 +1567,7 @@ namespace cessna_digital_twin {
 			return default(int);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public int Check_Visual_TireNoseWheel__inflation() 
+		public virtual int Check_Visual_TireNoseWheel__inflation() 
 		{
 			{
 			return myAircraft.Get_TireNoseWheel__inflation()
@@ -1504,7 +1575,7 @@ namespace cessna_digital_twin {
 			return default(int);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public double Check_Visual_RWT__fuel_quantity() 
+		public virtual double Check_Visual_RWT__fuel_quantity() 
 		{
 			{
 			return myAircraft.Get_RWT__fuel_quantity()
@@ -1512,7 +1583,7 @@ namespace cessna_digital_twin {
 			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public double Check_Visual_LWT__fuel_quantity() 
+		public virtual double Check_Visual_LWT__fuel_quantity() 
 		{
 			{
 			return myAircraft.Get_RWT__fuel_quantity()
@@ -1520,7 +1591,7 @@ namespace cessna_digital_twin {
 			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public bool Check_Visual_RWT__water_sediments() 
+		public virtual bool Check_Visual_RWT__water_sediments() 
 		{
 			{
 			return myAircraft.Get_RWT__water_sediments()
@@ -1528,7 +1599,7 @@ namespace cessna_digital_twin {
 			return default(bool);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Repair_Visual_RWT__water_sediments() 
+		public virtual void Repair_Visual_RWT__water_sediments() 
 		{
 			{
 			myAircraft.Repair_RWT__water_sediments()
@@ -1536,7 +1607,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public bool Check_Visual_LWT__water_sediments() 
+		public virtual bool Check_Visual_LWT__water_sediments() 
 		{
 			{
 			return myAircraft.Get_LWT__water_sediments()
@@ -1544,7 +1615,7 @@ namespace cessna_digital_twin {
 			return default(bool);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Repair_Visual_LWT__water_sediments() 
+		public virtual void Repair_Visual_LWT__water_sediments() 
 		{
 			{
 			myAircraft.Repair_LWT__water_sediments()
@@ -1552,7 +1623,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public bool Check_Visual_Engine__running() 
+		public virtual bool Check_Visual_Engine__running() 
 		{
 			{
 			return myAircraft.Get_Engine__running()
@@ -1560,7 +1631,7 @@ namespace cessna_digital_twin {
 			return default(bool);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public double Check_Visual_Engine__oil() 
+		public virtual double Check_Visual_Engine__oil() 
 		{
 			{
 			return myAircraft.Get_Engine__oil()
@@ -1568,12 +1639,37 @@ namespace cessna_digital_twin {
 			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Refill_Visual_Engine__oil() 
+		public virtual void Refill_Visual_Engine__oil() 
 		{
 			{
 			myAircraft.Refill_Engine__oil()
 			;}
 			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void Removed_with_my_aircraft(
+		string info) {
+			{
+			event_info = "End flight mission due to " + info;
+			myAircraft.Remove();
+			new System.Action(() => {
+				var _target273_7617 = this;
+				if (_target273_7617 != null) {
+					_AgentLayer._KillPilot(_target273_7617, _target273_7617._executionFrequency);
+				}
+			}).Invoke()
+			;}
+			
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public string Get_state() {
+			{
+			return state
+					;
+			}
+			
+			return default(string);;
 		}
 		internal bool _isAlive;
 		internal int _executionFrequency;
@@ -1609,17 +1705,17 @@ namespace cessna_digital_twin {
 			double y_spawn = agentlayer.Get_spawn_y_coord();
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget125_3468 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget165_4607 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object125_3468 = this;
+				var _object165_4607 = this;
 				
-				_AgentLayer._PilotEnvironment.PosAt(_object125_3468, 
-					_taget125_3468.Item1, _taget125_3468.Item2
+				_AgentLayer._PilotEnvironment.PosAt(_object165_4607, 
+					_taget165_4607.Item1, _taget165_4607.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
 			myAircraft = new Func<cessna_digital_twin.Aircraft>(() => {
-				Func<cessna_digital_twin.Aircraft, bool> _predicate128_3543 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft it) => 
+				Func<cessna_digital_twin.Aircraft, bool> _predicate168_4682 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft it) => 
 				 {
 						{
 						return Equals(it.Get_occupy_bool()
@@ -1628,21 +1724,21 @@ namespace cessna_digital_twin {
 						;
 						return default(bool);;
 				});
-				Func<cessna_digital_twin.Aircraft, bool> _predicateMod128_3543 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
+				Func<cessna_digital_twin.Aircraft, bool> _predicateMod168_4682 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
 				{
 					if (_it?.ID == this.ID)
 					{
 						return false;
-					} else if (_predicate128_3543 != null)
+					} else if (_predicate168_4682 != null)
 					{
-						return _predicate128_3543.Invoke(_it);
+						return _predicate168_4682.Invoke(_it);
 					} else return true;
 				});
 				
-				const int _range128_3543 = -1;
-				var _source128_3543 = this.Position;
+				const int _range168_4682 = -1;
+				var _source168_4682 = this.Position;
 				
-				return _AgentLayer._AircraftEnvironment.Explore(_source128_3543, _range128_3543, 1, _predicateMod128_3543)?.FirstOrDefault();
+				return _AgentLayer._AircraftEnvironment.Explore(_source168_4682, _range168_4682, 1, _predicateMod168_4682)?.FirstOrDefault();
 			}).Invoke();
 			myAircraft.Set_occupied();
 			myAircraft_callsign = myAircraft.Get_callsign();
@@ -1700,7 +1796,13 @@ namespace cessna_digital_twin {
 																																			{
 																																			TakeOff_action()
 																																			;}
-																																	;} 
+																																	;} else {
+																																			if(Equals(state, "LeavingAirspaceRequest")) {
+																																							{
+																																							LeavingAirpsaceRequest_action()
+																																							;}
+																																					;} 
+																																		;}
 																														;}
 																										;}
 																						;}

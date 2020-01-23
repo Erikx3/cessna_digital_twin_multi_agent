@@ -38,6 +38,12 @@
             //"outputFrequency": -1
         },
         {
+            "name":"Observer",
+            "count":1,
+            // Deactivate the output for an agent
+            "outputFrequency": -1
+        },
+        {
             "name":"AirTrafficController",
             "count":1,
         }
