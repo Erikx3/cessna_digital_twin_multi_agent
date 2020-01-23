@@ -108,8 +108,8 @@ agent Observer on AgentLayer{
 	
 	var number_of_spawning_points : integer = 5
 	
-	var spawn_xcor_list : List<real>
-	var spawn_ycor_list : List<real>
+	var spawn_xcor_list = new List<real>()
+	var spawn_ycor_list = new List<real>()
 	
 	var spawn_location_number : integer
 	
@@ -119,8 +119,8 @@ def initialize_spawn_cor()
 		var temp_deltastep_ycor = (left_ycor - right_ycor) / (number_of_spawning_points-1)
 		for (var i = 0; i < number_of_spawning_points; i++)
 		{
-			spawn_xcor_list.Add(left_xcor + temp_deltastep_xcor * i)
-			spawn_ycor_list.Add(left_ycor + temp_deltastep_ycor * i)
+			spawn_xcor_list.Add(left_xcor - temp_deltastep_xcor * i)
+			spawn_ycor_list.Add(left_ycor - temp_deltastep_ycor * i)
 		}
 		spawn_location_number = 0
 	}
@@ -128,14 +128,13 @@ def initialize_spawn_cor()
 def spawn_pilot_and_aircraft()
 	{
 		// Order is important, since pilot needs to find an aircraft!
-		spawn Aircraft at #(spawn_xcor_list.Get(0), spawn_ycor_list.Get(0))
-		spawn Pilot at #(spawn_xcor_list.Get(0), spawn_ycor_list.Get(0))
+		spawn Aircraft at #(spawn_xcor_list.Get(spawn_location_number), spawn_ycor_list.Get(spawn_location_number))
+		spawn Pilot at #(spawn_xcor_list.Get(spawn_location_number), spawn_ycor_list.Get(spawn_location_number))
 		spawn_location_number = spawn_location_number + 1
 		if (spawn_location_number >= number_of_spawning_points)
 		{
 			spawn_location_number = 0
 		}
-		println "SPAWN U CUNTS"
 	}
 
 	initialize{

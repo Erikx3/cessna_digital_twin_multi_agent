@@ -67,7 +67,7 @@ namespace cessna_digital_twin {
 			}
 		}
 		private Mars.Components.Common.MarsList<double> __spawn_xcor_list
-			 = default(Mars.Components.Common.MarsList<double>);
+			 = new Mars.Components.Common.MarsList<double>();
 		internal Mars.Components.Common.MarsList<double> spawn_xcor_list { 
 			get { return __spawn_xcor_list; }
 			set{
@@ -75,7 +75,7 @@ namespace cessna_digital_twin {
 			}
 		}
 		private Mars.Components.Common.MarsList<double> __spawn_ycor_list
-			 = default(Mars.Components.Common.MarsList<double>);
+			 = new Mars.Components.Common.MarsList<double>();
 		internal Mars.Components.Common.MarsList<double> spawn_ycor_list { 
 			get { return __spawn_ycor_list; }
 			set{
@@ -100,8 +100,8 @@ namespace cessna_digital_twin {
 					 i < number_of_spawning_points;
 					 i++){
 					 	{
-					 	spawn_xcor_list.Add(left_xcor + temp_deltastep_xcor * i);
-					 	spawn_ycor_list.Add(left_ycor + temp_deltastep_ycor * i)
+					 	spawn_xcor_list.Add(left_xcor - temp_deltastep_xcor * i);
+					 	spawn_ycor_list.Add(left_ycor - temp_deltastep_ycor * i)
 					 	;}
 					 };
 			spawn_location_number = 0
@@ -113,22 +113,21 @@ namespace cessna_digital_twin {
 		{
 			{
 			new System.Func<cessna_digital_twin.Aircraft>(() => {
-			var _target131_4135 = new System.Tuple<double,double>(spawn_xcor_list.Get(0),
-			spawn_ycor_list.Get(0)
+			var _target131_4147 = new System.Tuple<double,double>(spawn_xcor_list.Get(spawn_location_number),
+			spawn_ycor_list.Get(spawn_location_number)
 			);
-			return _AgentLayer._SpawnAircraft(_target131_4135.Item1, _target131_4135.Item2);}).Invoke();
+			return _AgentLayer._SpawnAircraft(_target131_4147.Item1, _target131_4147.Item2);}).Invoke();
 			new System.Func<cessna_digital_twin.Pilot>(() => {
-			var _target132_4206 = new System.Tuple<double,double>(spawn_xcor_list.Get(0),
-			spawn_ycor_list.Get(0)
+			var _target132_4258 = new System.Tuple<double,double>(spawn_xcor_list.Get(spawn_location_number),
+			spawn_ycor_list.Get(spawn_location_number)
 			);
-			return _AgentLayer._SpawnPilot(_target132_4206.Item1, _target132_4206.Item2);}).Invoke();
+			return _AgentLayer._SpawnPilot(_target132_4258.Item1, _target132_4258.Item2);}).Invoke();
 			spawn_location_number = spawn_location_number + 1;
 			if(spawn_location_number >= number_of_spawning_points) {
 							{
 							spawn_location_number = 0
 							;}
-					;} ;
-			System.Console.WriteLine("SPAWN U CUNTS");
+					;} 
 			;}
 			return;
 		}
@@ -180,11 +179,11 @@ namespace cessna_digital_twin {
 										int count = 0;
 										cessna_digital_twin.Pilot[] pilot_array = new System.Func<cessna_digital_twin.Pilot[]>(() => {
 											
-											var _sourceMapped155_4921 = this.Position;
-											var _source155_4921 = _sourceMapped155_4921;
-											var _range155_4921 = -1;
+											var _sourceMapped154_4986 = this.Position;
+											var _source154_4986 = _sourceMapped154_4986;
+											var _range154_4986 = -1;
 														
-											Func<cessna_digital_twin.Pilot, bool> _predicate155_4921 = new Func<cessna_digital_twin.Pilot,bool>((cessna_digital_twin.Pilot x) => 
+											Func<cessna_digital_twin.Pilot, bool> _predicate154_4986 = new Func<cessna_digital_twin.Pilot,bool>((cessna_digital_twin.Pilot x) => 
 											 {
 													{
 													return Equals(x.Get_state()
@@ -193,18 +192,18 @@ namespace cessna_digital_twin {
 													;
 													return default(bool);;
 											});
-											Func<cessna_digital_twin.Pilot, bool> _predicateMod155_4921 = new Func<cessna_digital_twin.Pilot, bool>(_it => 
+											Func<cessna_digital_twin.Pilot, bool> _predicateMod154_4986 = new Func<cessna_digital_twin.Pilot, bool>(_it => 
 											{
 												if (_it?.ID == this.ID)
 												{
 													return false;
-												} else if (_predicate155_4921 != null)
+												} else if (_predicate154_4986 != null)
 												{
-													return _predicate155_4921.Invoke(_it);
+													return _predicate154_4986.Invoke(_it);
 												} else return true;
 											});
 											
-											return _AgentLayer._PilotEnvironment.Explore(_source155_4921 , _range155_4921, -1, _predicate155_4921).ToArray();
+											return _AgentLayer._PilotEnvironment.Explore(_source154_4986 , _range154_4986, -1, _predicate154_4986).ToArray();
 										}).Invoke();
 										foreach ( var temp in pilot_array ) {
 													{
