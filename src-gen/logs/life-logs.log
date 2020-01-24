@@ -191,3 +191,15 @@
 [ERROR] 2020-01-23 18:42:07,181 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
 [ERROR] 2020-01-23 18:42:07,181 | Mars.Core.SimulationStarter.SimulationStarter - One or more errors occurred. (Object reference not set to an instance of an object.) 
 [ERROR] 2020-01-23 18:42:07,181 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2020-01-24 14:17:58,408 | Mars.Core.SimulationStepExecutor.Implementation.StepExecutionUseCase - Index was outside the bounds of the array. 
+[ERROR] 2020-01-24 14:17:58,419 | Mars.Core.SimulationStarter.SimulationStarter - MARS simulation execution crashed by AggregateException 
+[ERROR] 2020-01-24 14:17:58,419 | Mars.Core.SimulationStarter.SimulationStarter - Exception message: 
+[ERROR] 2020-01-24 14:17:58,419 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2020-01-24 14:17:58,419 | Mars.Core.SimulationStarter.SimulationStarter - One or more errors occurred. (Index was outside the bounds of the array.) 
+[ERROR] 2020-01-24 14:17:58,419 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2020-01-24 14:19:26,569 | Mars.Core.SimulationStepExecutor.Implementation.StepExecutionUseCase - Index was outside the bounds of the array. 
+[ERROR] 2020-01-24 14:19:26,582 | Mars.Core.SimulationStarter.SimulationStarter - MARS simulation execution crashed by AggregateException 
+[ERROR] 2020-01-24 14:19:26,582 | Mars.Core.SimulationStarter.SimulationStarter - Exception message: 
+[ERROR] 2020-01-24 14:19:26,582 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2020-01-24 14:19:26,582 | Mars.Core.SimulationStarter.SimulationStarter - One or more errors occurred. (Index was outside the bounds of the array.) 
+[ERROR] 2020-01-24 14:19:26,582 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 

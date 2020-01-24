@@ -27,7 +27,7 @@ namespace cessna_digital_twin {
 			}
 		}
 		private Mars.Components.Common.MarsList<double> __available_runway_heading_list
-			 = (new Mars.Components.Common.MarsList<double>() { 107.0,287.0 });
+			 = (new Mars.Components.Common.MarsList<double>() { 109.0,289.0 });
 		internal Mars.Components.Common.MarsList<double> available_runway_heading_list { 
 			get { return __available_runway_heading_list; }
 			set{
