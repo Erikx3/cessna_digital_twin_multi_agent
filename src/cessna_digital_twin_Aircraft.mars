@@ -60,8 +60,7 @@ agent Aircraft on AgentLayer{
 	}
 	
 	passive Get_position() => return #(xcor, ycor) // for returning the position of the aircraft
-	
-	
+
 	//-----Aircraft Characteristics-----
 	observe var Aircraft__callsign : string // IDENTIFIER!
 	var Aircraft__mass : real = 725.0 // kg

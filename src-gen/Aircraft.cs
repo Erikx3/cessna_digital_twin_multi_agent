@@ -874,14 +874,14 @@ namespace cessna_digital_twin {
 							{
 							new System.Func<Tuple<double,double>>(() => {
 								
-								var _speed246_8836 = Aircraft__movement_x
+								var _speed245_8832 = Aircraft__movement_x
 							;
 								
-								var _entity246_8836 = this;
+								var _entity245_8832 = this;
 								
-								Func<double[], bool> _predicate246_8836 = null;
+								Func<double[], bool> _predicate245_8832 = null;
 								
-								_AgentLayer._AircraftEnvironment.MoveTowards(_entity246_8836, Aircraft__heading_bearing, _speed246_8836);	
+								_AgentLayer._AircraftEnvironment.MoveTowards(_entity245_8832, Aircraft__heading_bearing, _speed245_8832);	
 								
 								return new Tuple<double, double>(Position.X, Position.Y);
 							}).Invoke()

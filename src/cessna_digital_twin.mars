@@ -173,7 +173,7 @@ def spawn_pilot_and_aircraft()
 			println "-----End of information-----"
 		}
 		
-		if (simtime === 1 or simtime === 5 or simtime % 50 === 0) // add for multiple spawns: or simtime % 100 === 0
+		if (simtime === 1 or simtime === 5) // add for multiple spawns: or simtime % 100 === 0
 		{
 			spawn_pilot_and_aircraft()
 		}
@@ -268,6 +268,8 @@ agent Pilot on AgentLayer{
 	var distance_to_next_point : real
 	var first_fixing_attempt : bool = true
 	var V_rotate : real = 30
+	var spacing_to_next_aircraft : real = 50.0 //TODO change this
+	var angle_of_vision : real = 60.0
 	
 	def go_to_next_state(_state : string)
 	{
@@ -1091,7 +1093,7 @@ agent Pilot on AgentLayer{
 	
 	//-----State Taxiing in general-----
 	
-	// defining help functions
+	// defining help functions for taxiing
 	def Taxiing_to_final_point()  // rolling to the end	
 	{
 		if (distance_to_next_point < 5)
@@ -1166,9 +1168,33 @@ agent Pilot on AgentLayer{
 			// Get active Taxi point
 			var active_taxi_point = taxi_path.Get(active_taxi_point_number)
 			// Set Aircraft Heading
-			Set_Aircraft__heading_bearing(formula.bearing(myAircraft.Get_position(), active_taxi_point))
+			var myAircraft__heading = formula.bearing(myAircraft.Get_position(), active_taxi_point)
+			Set_Aircraft__heading_bearing(myAircraft__heading)
 			//Distance and throttle handling
-			distance_to_next_point = formula.haversine(myAircraft.Get_position(), active_taxi_point)			
+			distance_to_next_point = formula.haversine(myAircraft.Get_position(), active_taxi_point)
+			
+			
+			//Check for collision
+			var aircraft_array = explore Aircraft where [x => return formula.haversine(myAircraft.Get_position(), x.Get_position()) < spacing_to_next_aircraft]
+			if (length(aircraft_array) > 1) // since list contains ALWAYS the pilot controlling airplane
+			{
+				// check if aircraft is on path and angle of vision
+				for (var i = 1; i < length(aircraft_array); i++)
+				{
+					//calculate bearing to aircraft nearby
+					var bearing_to_next_aircraft = formula.bearing(myAircraft.Get_position(), aircraft_array[i].Get_position())
+					//check if bearing to next aircraft lies in between own visual sight cone
+					if (formula.bearing_between_thresholds(myAircraft__heading, angle_of_vision, bearing_to_next_aircraft) === true)
+					{
+						//do some braking or set brake flags
+					}
+				}
+				
+				
+			}
+			
+			
+			
 			if (distance_to_next_point < 12)
 			{
 				//When reaching end point
@@ -1686,9 +1712,23 @@ class Formula
 		return bearing
 	}
 	
+	def bearing_between_thresholds(cone_bearing : real, cone_angle : real, check_bearing : real)
+	{
+		// returns true, if a checked heading lies in between a cone
+		var delta = smallest_absolute_delta(cone_bearing, check_bearing)
+		if (delta <= cone_angle/2)
+		{
+			return true
+		}
+		else
+		{
+			return false
+		}
+	}
+	
 	def smallest_absolute_delta(a1 : real, a2: real)
 	{
-		//returns the smallest delta between 0..180 from two point in range from 0..360°
+		//returns the smallest delta between 0..180 from two points in range from 0..360°
 		var delta = 180 - Math.Abs(Math.Abs(a1 - a2)- 180)
 		return delta
 	}

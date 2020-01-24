@@ -77,6 +77,23 @@ namespace cessna_digital_twin {
 			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public virtual bool bearing_between_thresholds(double cone_bearing, double cone_angle, double check_bearing) 
+		{
+			{
+			double delta = smallest_absolute_delta(cone_bearing,check_bearing);
+			if(delta <= cone_angle / 2) {
+							{
+							return true
+							;}
+					;} else {
+							{
+							return false
+							;}
+						;}
+			;}
+			return default(bool);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public virtual double smallest_absolute_delta(double a1, double a2) 
 		{
 			{
