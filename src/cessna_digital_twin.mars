@@ -191,6 +191,7 @@ agent Pilot on AgentLayer{
 		state = "PreflightInspection" // always first state so far
 		current_activity = "Initialization:)"
 		event_info = "None"
+		takeoff_distance = 0
 		
 		// Pilot attributes and share them with classes
 		age = age_min + random((age_max - age_min) + 1)
@@ -248,6 +249,7 @@ agent Pilot on AgentLayer{
 	observe var state : string
 	observe var current_activity : string
 	observe var event_info : string
+	observe var takeoff_distance : real
 	
 	//Classes and Agents
 	var myAircraft : Aircraft // for accessing the real aircraft
@@ -286,14 +288,7 @@ agent Pilot on AgentLayer{
 		myAircraft.Remove()
 		kill me
 	}
-	
-	passive Removed_with_my_aircraft(info : string) //
-	{
-		event_info = "End flight mission due to " + info
-		myAircraft.Remove()
-		kill me
-	}
-	
+
 	def update_general_values()
 	{
 		pos at(myAircraft.Get_position())
@@ -936,6 +931,12 @@ agent Pilot on AgentLayer{
 		{
 			next_action = "Set_Throttle_and_Heading"
 			first_action_set = true
+		}
+		
+		// to evaluate the take off distance
+		if (myAircraft.Get_Aircraft__flight_phase() === "on-ground")
+		{
+			takeoff_distance = takeoff_distance + myAircraft.Get_Aircraft__ground_speed_x() * 1 //since ticksize is one
 		}
 		
 		if (next_action === "Set_Throttle_and_Heading")

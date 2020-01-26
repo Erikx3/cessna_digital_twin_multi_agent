@@ -113,6 +113,8 @@ agent Aircraft on AgentLayer{
 		}
 	}
 	
+	passive Get_Aircraft__flight_phase() => return Aircraft__flight_phase
+	
 	//lift coefficient calculation (See Excel "Calculation_Table")
 	observe var Aircraft__lift_coefficient : real
 	var Aircraft__lift_coefficient_slope : real = 4.9

@@ -874,14 +874,14 @@ namespace cessna_digital_twin {
 							{
 							new System.Func<Tuple<double,double>>(() => {
 								
-								var _speed245_8832 = Aircraft__movement_x
+								var _speed247_8907 = Aircraft__movement_x
 							;
 								
-								var _entity245_8832 = this;
+								var _entity247_8907 = this;
 								
-								Func<double[], bool> _predicate245_8832 = null;
+								Func<double[], bool> _predicate247_8907 = null;
 								
-								_AgentLayer._AircraftEnvironment.MoveTowards(_entity245_8832, Aircraft__heading_bearing, _speed245_8832);	
+								_AgentLayer._AircraftEnvironment.MoveTowards(_entity247_8907, Aircraft__heading_bearing, _speed247_8907);	
 								
 								return new Tuple<double, double>(Position.X, Position.Y);
 							}).Invoke()
@@ -1337,6 +1337,15 @@ namespace cessna_digital_twin {
 			;}
 			
 			return default(bool);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public string Get_Aircraft__flight_phase() {
+			{
+			return Aircraft__flight_phase
+					;
+			}
+			
+			return default(string);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public int Get_Engine__oil_min() {
