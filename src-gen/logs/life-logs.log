@@ -203,3 +203,16 @@
 [ERROR] 2020-01-24 14:19:26,582 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
 [ERROR] 2020-01-24 14:19:26,582 | Mars.Core.SimulationStarter.SimulationStarter - One or more errors occurred. (Index was outside the bounds of the array.) 
 [ERROR] 2020-01-24 14:19:26,582 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2020-01-26 12:48:32,669 | Mars.Core.SimulationStarter.SimulationStarter - MARS simulation execution crashed by IOException 
+[ERROR] 2020-01-26 12:48:32,681 | Mars.Core.SimulationStarter.SimulationStarter - Exception message: 
+[ERROR] 2020-01-26 12:48:32,681 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2020-01-26 12:48:32,681 | Mars.Core.SimulationStarter.SimulationStarter - The process cannot access the file 'C:\Users\eriks\Google Drive\Bachelorarbeit\02_Eclipse_Workspace\cessna_digital_twin\src-gen\Pilot.csv' because it is being used by another process. 
+[ERROR] 2020-01-26 12:48:32,681 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2020-01-26 13:25:04,648 | Mars.Core.SimulationStepExecutor.Implementation.StepExecutionUseCase - Index was out of range. Must be non-negative and less than the size of the collection.
+Parameter name: index 
+[ERROR] 2020-01-26 13:25:04,659 | Mars.Core.SimulationStarter.SimulationStarter - MARS simulation execution crashed by AggregateException 
+[ERROR] 2020-01-26 13:25:04,659 | Mars.Core.SimulationStarter.SimulationStarter - Exception message: 
+[ERROR] 2020-01-26 13:25:04,659 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 
+[ERROR] 2020-01-26 13:25:04,659 | Mars.Core.SimulationStarter.SimulationStarter - One or more errors occurred. (Index was out of range. Must be non-negative and less than the size of the collection.
+Parameter name: index) 
+[ERROR] 2020-01-26 13:25:04,659 | Mars.Core.SimulationStarter.SimulationStarter - ######################################################## 

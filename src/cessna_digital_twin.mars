@@ -128,8 +128,6 @@ def initialize_spawn_cor()
 	
 def spawn_pilot_and_aircraft()
 	{
-		
-		
 		// only spawn, when no aircraft is nearby, else go to next spawn location and try again until tried at all location
 		var spawn_successful = false
 		var i = 0
@@ -173,7 +171,7 @@ def spawn_pilot_and_aircraft()
 			println "-----End of information-----"
 		}
 		
-		if (simtime === 1 or simtime === 5) // add for multiple spawns: or simtime % 100 === 0
+		if (simtime === 1 or simtime === 5 or simtime % 50 === 0) // add for multiple spawns: or simtime % 100 === 0
 		{
 			spawn_pilot_and_aircraft()
 		}
@@ -268,7 +266,7 @@ agent Pilot on AgentLayer{
 	var distance_to_next_point : real
 	var first_fixing_attempt : bool = true
 	var V_rotate : real = 30
-	var spacing_to_next_aircraft : real = 50.0 //TODO change this
+	var spacing_to_next_aircraft : real = 25.0
 	var angle_of_vision : real = 60.0
 	
 	def go_to_next_state(_state : string)
@@ -1094,31 +1092,50 @@ agent Pilot on AgentLayer{
 	//-----State Taxiing in general-----
 	
 	// defining help functions for taxiing
+	def Taxiing_brake(throttle : real, brake : real)
+	{
+		temp_throttle_value = throttle
+		Apply_Brake__deceleration(brake)
+		Apply_Engine__throttle(temp_throttle_value)
+	}
+	
 	def Taxiing_to_final_point()  // rolling to the end	
 	{
-		if (distance_to_next_point < 5)
+		if (distance_to_next_point < 20)
 		{
-			temp_throttle_value = 0.1
-			Apply_Brake__deceleration(0.5)
-			next_action = "End_of_Actions"
-		}
-		else
-		{
-			if (Check_Visual_Aircraft__ground_speed_x() > 5)
+			if (distance_to_next_point < 10)
 			{
-				temp_throttle_value = 0.1
-				Apply_Brake__deceleration(0.2)
+				Taxiing_brake(0.1, 0.5)
+				next_action = "End_of_Actions"
 			}
 			else
 			{
-				Taxiing_normal()
+				if (Check_Visual_Aircraft__ground_speed_x() > 5)
+				{
+					Taxiing_brake(0.1, 0.3)
+				}
+				else if(Check_Visual_Aircraft__ground_speed_x() < 1)
+				{
+					Apply_Brake__deceleration(0.0)
+					if (Feel_Aircraft__acceleration_x() === false)
+					{
+						temp_throttle_value = temp_throttle_value + 0.10
+						Apply_Engine__throttle(temp_throttle_value)
+					}
+				}
 			}
 		}
-		Apply_Engine__throttle(temp_throttle_value)
+		else
+		{
+			Taxiing_normal()
+		}
 	}
 	
 	def Taxiing_normal()  // Throttle handling in normal case	
 	{
+		Apply_Brake__deceleration(0.0)
+		
+		// taxi throttle control
 		if (Check_Visual_Aircraft__ground_speed_x() > 6)
 		{	
 			if (Feel_Aircraft__deceleration_x() === false)
@@ -1165,6 +1182,8 @@ agent Pilot on AgentLayer{
 		
 		else if (next_action === "Taxiing")
 		{
+			//help variable
+			var avoid_collision = false
 			// Get active Taxi point
 			var active_taxi_point = taxi_path.Get(active_taxi_point_number)
 			// Set Aircraft Heading
@@ -1176,7 +1195,7 @@ agent Pilot on AgentLayer{
 			
 			//Check for collision
 			var aircraft_array = explore Aircraft where [x => return formula.haversine(myAircraft.Get_position(), x.Get_position()) < spacing_to_next_aircraft]
-			if (length(aircraft_array) > 1) // since list contains ALWAYS the pilot controlling airplane
+			if (length(aircraft_array) > 1) // since list contains ALWAYS the airplane controlled by the pilot!
 			{
 				// check if aircraft is on path and angle of vision
 				for (var i = 1; i < length(aircraft_array); i++)
@@ -1187,33 +1206,33 @@ agent Pilot on AgentLayer{
 					if (formula.bearing_between_thresholds(myAircraft__heading, angle_of_vision, bearing_to_next_aircraft) === true)
 					{
 						//do some braking or set brake flags
+						avoid_collision = true
 					}
-				}
-				
-				
+				}	
 			}
-			
-			
-			
-			if (distance_to_next_point < 12)
+			if (avoid_collision === true)
 			{
-				//When reaching end point
+				Taxiing_brake(0.1, 0.8)
+			}
+			else
+			{
 				if (taxi_path_points === (active_taxi_point_number + 1))
 				{
 					Taxiing_to_final_point()							
 				}
 				else
 				{
-					active_taxi_point_number = active_taxi_point_number + 1
 					Taxiing_normal()
+					// drive to next point after reaching another point
+					if (distance_to_next_point < 8)
+					{
+						active_taxi_point_number = active_taxi_point_number + 1
+					}
 				}
-			}
-			else
-			{
-				Taxiing_normal()			
-				
-			}		
+			}	
 		}
+		
+		
 		
 		if (next_action === "End_of_Actions")
 		{
@@ -1287,7 +1306,7 @@ agent Pilot on AgentLayer{
 	
 	// -----Other visual, feel and acoustic function-----
 	
-	//TODO: Remove this function and think about another solution, since the pilot CANT see the actual speed
+	//TODO: Remove this function and think about another solution, since the pilot CANT see the actual ground speed
 	def Check_Visual_Aircraft__ground_speed_x()
 	{
 		//returns actual ground speed x
@@ -1625,13 +1644,13 @@ class AirportStade
 	{
 		if (heading === available_runway_heading_list.Get(0))
 		{
-			taxipath = #[#(9.4930632,53.5618664),#(9.4930261,53.5619488),#(9.4930324,53.562018),#(9.4930903,53.5620665),#(9.4931671,53.5621049),#(9.4932789,53.5621333),#(9.493448,53.5621513),#(9.4936651,53.5621639),#(9.4939417,53.562171)]
+			taxipath = #[#(9.4930261,53.5619488),#(9.4930903,53.5620665),#(9.4932789,53.5621333), #(9.4939417,53.562171)]
 			return taxipath
 		}
 		
 		else if (heading === available_runway_heading_list.Get(1))
 		{
-			taxipath = #[#(9.5043157,53.5594584), #(9.5044877,53.5595613), #(9.5046714,53.5597239)]
+			taxipath = #[#(9.5044877,53.5595613), #(9.5046714,53.5597239)]
 			return taxipath
 		}
 	}
@@ -1640,13 +1659,13 @@ class AirportStade
 	{
 		if (heading === available_runway_heading_list.Get(0))
 		{
-			taxipath = #[#(9.4939417,53.562171), #(9.494201,53.5621611), #(9.494446,53.5621252)]
+			taxipath = #[#(9.494201,53.5621611), #(9.494446,53.5621252)]
 			return taxipath
 		}
 		
 		else if (heading === available_runway_heading_list.Get(1))
 		{
-			taxipath = #[#(9.5046714,53.5597239), #(9.5048527,53.5598626), #(9.5028175,53.5603097)]
+			taxipath = #[#(9.5048527,53.5598626), #(9.5028175,53.5603097)]
 			return taxipath
 		}
 	}
