@@ -259,7 +259,7 @@ namespace cessna_digital_twin {
 							System.Console.WriteLine("-----End of information-----");
 							;}
 					;} ;
-			if(Equals((int) Mars.Core.SimulationManager.Entities.SimulationClock.CurrentStep, 1) || Equals((int) Mars.Core.SimulationManager.Entities.SimulationClock.CurrentStep, 5) || Equals((int) Mars.Core.SimulationManager.Entities.SimulationClock.CurrentStep % 50, 0)) {
+			if(Equals((int) Mars.Core.SimulationManager.Entities.SimulationClock.CurrentStep, 1) || Equals((int) Mars.Core.SimulationManager.Entities.SimulationClock.CurrentStep, 5)) {
 							{
 							spawn_pilot_and_aircraft()
 							;}

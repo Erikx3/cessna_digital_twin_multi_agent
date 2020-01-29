@@ -171,7 +171,7 @@ def spawn_pilot_and_aircraft()
 			println "-----End of information-----"
 		}
 		
-		if (simtime === 1 or simtime === 5 or simtime % 50 === 0) // add for multiple spawns: or simtime % 100 === 0
+		if (simtime === 1 or simtime === 5) // add for multiple spawns: or simtime % 100 === 0
 		{
 			spawn_pilot_and_aircraft()
 		}
@@ -183,15 +183,16 @@ agent Pilot on AgentLayer{
 		
 	initialize
 	{	
-		//General Initialization
+		//General Initialization for Pilot starting from the ground
 		myAircraft = nearest Aircraft where [it => return it.Get_occupy_bool() === false]
 		myAircraft.Set_occupied()		
 		myAircraft_callsign = myAircraft.Get_callsign() // save aircraft callsign --> IDENTIFIER!
 		update_general_values() // so first row of csv is not empty
-		state = "PreflightInspection" // always first state so far
+		state = "PreflightInspection" // first state for starting on ground
 		current_activity = "Initialization:)"
 		event_info = "None"
-		takeoff_distance = 0
+		
+		takeoff_distance = 0 // for measuring takeoff distance later
 		
 		// Pilot attributes and share them with classes
 		age = age_min + random((age_max - age_min) + 1)
@@ -263,11 +264,13 @@ agent Pilot on AgentLayer{
 	var first_action_set : bool = false // temporary auxiliary variable for first action in each state
 	var taxi_path : List<Tuple<real, real>> // for saving taxi instructions
 	var active_taxi_point_number : integer = 0 // for indicating actual taxi point
-	var heading_information : real // for saving heading value
-	var state_after_taxiing : string
-	var distance_to_next_point : real
-	var first_fixing_attempt : bool = true
-	var V_rotate : real = 30
+	var heading_information : real // for saving heading value from atc
+	var state_after_taxiing : string  // since taxi state has multiple use
+	var distance_to_next_point : real // calculated distance to a point in [m]
+	var first_fixing_attempt : bool = true // checker if first repair attempt has been done
+	
+	// settings for aircraft handling
+	var V_rotate : real = 30 // Speed on where to rotate (for cessna152 its 
 	var spacing_to_next_aircraft : real = 25.0
 	var angle_of_vision : real = 60.0
 	
