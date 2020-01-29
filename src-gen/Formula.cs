@@ -103,5 +103,25 @@ namespace cessna_digital_twin {
 			;}
 			return default(double);;
 		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public virtual double calculate_runway_heading(Mars.Components.Common.MarsList<double> available_runway_heading, double wind_bearing) 
+		{
+			{
+			double temp_delta = 999.9;
+			double saved_heading = default(double);;
+			foreach ( var temp_runway_heading in available_runway_heading ) {
+						{
+						if(smallest_absolute_delta(temp_runway_heading,wind_bearing) < temp_delta) {
+										{
+										saved_heading = temp_runway_heading;
+										temp_delta = smallest_absolute_delta(temp_runway_heading,wind_bearing)
+										;}
+								;} 
+						;}
+					};
+			return saved_heading
+			;}
+			return default(double);;
+		}
 	}
 }

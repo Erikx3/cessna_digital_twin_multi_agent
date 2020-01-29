@@ -861,7 +861,7 @@ namespace cessna_digital_twin {
 					 					Aircraft__true_air_speed_x = 0
 					 					;}
 					 			;} ;
-					 	if(Aircraft__ground_speed_x < 0 || Equals(Brake__parking_brake, "SET")) {
+					 	if(Aircraft__ground_speed_x < 0) {
 					 					{
 					 					Aircraft__ground_speed_x = 0
 					 					;}
@@ -874,14 +874,14 @@ namespace cessna_digital_twin {
 							{
 							new System.Func<Tuple<double,double>>(() => {
 								
-								var _speed247_8907 = Aircraft__movement_x
+								var _speed288_10278 = Aircraft__movement_x
 							;
 								
-								var _entity247_8907 = this;
+								var _entity288_10278 = this;
 								
-								Func<double[], bool> _predicate247_8907 = null;
+								Func<double[], bool> _predicate288_10278 = null;
 								
-								_AgentLayer._AircraftEnvironment.MoveTowards(_entity247_8907, Aircraft__heading_bearing, _speed247_8907);	
+								_AgentLayer._AircraftEnvironment.MoveTowards(_entity288_10278, Aircraft__heading_bearing, _speed288_10278);	
 								
 								return new Tuple<double, double>(Position.X, Position.Y);
 							}).Invoke()
@@ -906,7 +906,12 @@ namespace cessna_digital_twin {
 			{
 			if(Equals(Aircraft__flight_phase, "on-ground")) {
 							{
-							Brake__deceleration_force = Brake__deceleration_application * Brake__deceleration_force_max
+							Brake__deceleration_force = Brake__deceleration_application * Brake__deceleration_force_max;
+							if(Equals(Brake__parking_brake, "SET")) {
+											{
+											Brake__deceleration_force = Brake__deceleration_force_max
+											;}
+									;} 
 							;}
 					;} else {
 							{
@@ -999,7 +1004,7 @@ namespace cessna_digital_twin {
 			Engine__running = false;
 			Engine__oil_pressure = 101325;
 			Engine__oil_temperature = 15;
-			Engine__failure_probability = Mars.Components.Common.Math.Pow(10, (-6));
+			Engine__failure_probability = 0.0;
 			Engine__failure = false;
 			Engine__fuel_consumption = 0.0;
 			Engine__power_coefficient_slope = -0.0009
@@ -1032,7 +1037,7 @@ namespace cessna_digital_twin {
 		public virtual void Calculate_Engine__failure_probability() 
 		{
 			{
-			Engine__failure_probability = Mars.Components.Common.Math.Pow(10, (-6));
+			Engine__failure_probability = 0.0;
 			if(Equals(RWT__water_sediments, true)) {
 							{
 							Add_Engine__failure_probability(Mars.Components.Common.Math.Pow(10, (-4)))
@@ -1116,7 +1121,7 @@ namespace cessna_digital_twin {
 											Engine__failure = true
 											;}
 									;} ;
-							if(Equals(Engine__ignition_switch, "OFF")) {
+							if(Equals(Engine__ignition_switch, "OFF") || Equals(CIP__master_switch, "OFF")) {
 											{
 											Engine__running = false
 											;}
@@ -1246,6 +1251,45 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void Initialize_landing(
+		double heading) {
+			{
+			RWT__fuel_quantity = RWT__total_capacity / 2;
+			RWT__water_sediments = false;
+			LWT__fuel_quantity = LWT__total_capacity / 2;
+			LWT__water_sediments = false;
+			TireRightMainWheel__inflation = TireRightMainWheel__inflation_max;
+			TireLeftMainWheel__inflation = TireLeftMainWheel__inflation_max;
+			TireNoseWheel__inflation = TireNoseWheel__inflation_max;
+			Brake__parking_brake = "OFF";
+			Engine__oil_pump_condition = true;
+			Engine__oil_leakage = 0.0;
+			Engine__oil = Engine__oil_max;
+			Engine__mixture_control = "RICH";
+			Engine__throttle = 0.3;
+			Engine__ignition_switch = "BOTH";
+			Engine__running = true;
+			Engine__failure_probability = 0.0;
+			CIP__master_switch = "ON";
+			Aircraft__true_air_speed_x = 32.0;
+			Aircraft__ground_speed_x = 30.0;
+			Aircraft__true_air_speed = 32.04;
+			Aircraft__height = 100;
+			Aircraft__flight_phase = "in-air";
+			Aircraft__rate_of_climb = -1.5;
+			Aircraft__pitch = 4;
+			Aircraft__heading_bearing = heading;
+			update_general_values();
+			update_Engine();
+			update_LeftWingTank();
+			update_RightWingTank();
+			update_Brake();
+			update_AircraftPhysics()
+			;}
+			
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public bool Get_occupy_bool() {
 			{
 			return occupied
@@ -1267,9 +1311,9 @@ namespace cessna_digital_twin {
 		public void Remove() {
 			{
 			new System.Action(() => {
-				var _target44_969 = this;
-				if (_target44_969 != null) {
-					_AgentLayer._KillAircraft(_target44_969, _target44_969._executionFrequency);
+				var _target85_2374 = this;
+				if (_target85_2374 != null) {
+					_AgentLayer._KillAircraft(_target85_2374, _target85_2374._executionFrequency);
 				}
 			}).Invoke()
 					;

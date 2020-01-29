@@ -263,9 +263,9 @@ namespace cessna_digital_twin {
 			event_info = "End flight mission due to " + info;
 			myAircraft.Remove();
 			new System.Action(() => {
-				var _target297_9453 = this;
-				if (_target297_9453 != null) {
-					_AgentLayer._KillPilot(_target297_9453, _target297_9453._executionFrequency);
+				var _target332_10568 = this;
+				if (_target332_10568 != null) {
+					_AgentLayer._KillPilot(_target332_10568, _target332_10568._executionFrequency);
 				}
 			}).Invoke()
 			;}
@@ -277,13 +277,13 @@ namespace cessna_digital_twin {
 			{
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget302_9504 = (myAircraft.Get_position()
+				var _taget337_10619 = (myAircraft.Get_position()
 				);
 				
-				var _object302_9504 = this;
+				var _object337_10619 = this;
 				
-				_AgentLayer._PilotEnvironment.PosAt(_object302_9504, 
-					_taget302_9504.Item1, _taget302_9504.Item2
+				_AgentLayer._PilotEnvironment.PosAt(_object337_10619, 
+					_taget337_10619.Item1, _taget337_10619.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
@@ -1229,6 +1229,79 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public virtual void Landing_action() 
+		{
+			{
+			if(Equals(first_action_set, false)) {
+							{
+							next_action = "DescentAircraft";
+							first_action_set = true;
+							temp_throttle_value = 0.30;
+							temp_pitch_value = 4
+							;}
+					;} else {
+							if(Equals(next_action, "DescentAircraft")) {
+											{
+											timehandler.create_action_duration(3,1,"pilot_age_and_experience");
+											if(timehandler.hold_action_time(timehandler.action_duration)
+											) {
+															{
+															Set_Aircraft__heading_bearing(heading_information);
+															if(Equals(Hear_Aircraft__stall_sound(), true)) {
+																			{
+																			temp_pitch_value = temp_pitch_value - 1
+																			;}
+																	;} else {
+																			if(Check_Instrument_Aircraft__rate_of_climb() > -0.5) {
+																							{
+																							if(Equals(Feel_Aircraft__deceleration_z(), false)) {
+																											{
+																											temp_pitch_value = temp_pitch_value - 0.5
+																											;}
+																									;} 
+																							;}
+																					;} else {
+																							if(Check_Instrument_Aircraft__rate_of_climb() < -2) {
+																											{
+																											if(Equals(Feel_Aircraft__acceleration_z(), false)) {
+																															{
+																															temp_pitch_value = temp_pitch_value + 0.5
+																															;}
+																													;} 
+																											;}
+																									;} 
+																						;}
+																		;};
+															Apply_Aircraft__pitch(temp_pitch_value);
+															if(Check_Instrument_Aircraft__true_air_speed() > 35) {
+																			{
+																			if(Equals(Feel_Aircraft__deceleration_x(), false)) {
+																							{
+																							temp_throttle_value = temp_throttle_value - 0.05
+																							;}
+																					;} 
+																			;}
+																	;} else {
+																			if(Check_Instrument_Aircraft__true_air_speed() < 25) {
+																							{
+																							if(Equals(Feel_Aircraft__acceleration_x(), false)) {
+																											{
+																											temp_throttle_value = temp_throttle_value + 0.05
+																											;}
+																									;} 
+																							;}
+																					;} 
+																		;};
+															Apply_Engine__throttle(temp_throttle_value)
+															;}
+													;} 
+											;}
+									;} 
+						;}
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public virtual void Taxiing_brake(double throttle, double brake) 
 		{
 			{
@@ -1352,11 +1425,11 @@ namespace cessna_digital_twin {
 											active_taxi_point);
 											cessna_digital_twin.Aircraft[] aircraft_array = new System.Func<cessna_digital_twin.Aircraft[]>(() => {
 												
-												var _sourceMapped1206_35960 = this.Position;
-												var _source1206_35960 = _sourceMapped1206_35960;
-												var _range1206_35960 = -1;
+												var _sourceMapped1306_39073 = this.Position;
+												var _source1306_39073 = _sourceMapped1306_39073;
+												var _range1306_39073 = -1;
 															
-												Func<cessna_digital_twin.Aircraft, bool> _predicate1206_35960 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft x) => 
+												Func<cessna_digital_twin.Aircraft, bool> _predicate1306_39073 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft x) => 
 												 {
 														{
 														return formula.haversine(myAircraft.Get_position(),
@@ -1367,18 +1440,18 @@ namespace cessna_digital_twin {
 														;
 														return default(bool);;
 												});
-												Func<cessna_digital_twin.Aircraft, bool> _predicateMod1206_35960 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
+												Func<cessna_digital_twin.Aircraft, bool> _predicateMod1306_39073 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
 												{
 													if (_it?.ID == this.ID)
 													{
 														return false;
-													} else if (_predicate1206_35960 != null)
+													} else if (_predicate1306_39073 != null)
 													{
-														return _predicate1206_35960.Invoke(_it);
+														return _predicate1306_39073.Invoke(_it);
 													} else return true;
 												});
 												
-												return _AgentLayer._AircraftEnvironment.Explore(_source1206_35960 , _range1206_35960, -1, _predicate1206_35960).ToArray();
+												return _AgentLayer._AircraftEnvironment.Explore(_source1306_39073 , _range1306_39073, -1, _predicate1306_39073).ToArray();
 											}).Invoke();
 											if(aircraft_array.Length > 1) {
 															{
@@ -1756,6 +1829,16 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void Initialize_landing(
+		double heading) {
+			{
+			state = "Landing";
+			heading_information = heading
+			;}
+			
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public string Get_state() {
 			{
 			return state
@@ -1795,7 +1878,7 @@ namespace cessna_digital_twin {
 			_executionFrequency = freq;
 			{
 			myAircraft = new Func<cessna_digital_twin.Aircraft>(() => {
-				Func<cessna_digital_twin.Aircraft, bool> _predicate192_6148 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft it) => 
+				Func<cessna_digital_twin.Aircraft, bool> _predicate217_7089 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft it) => 
 				 {
 						{
 						return Equals(it.Get_occupy_bool()
@@ -1804,21 +1887,21 @@ namespace cessna_digital_twin {
 						;
 						return default(bool);;
 				});
-				Func<cessna_digital_twin.Aircraft, bool> _predicateMod192_6148 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
+				Func<cessna_digital_twin.Aircraft, bool> _predicateMod217_7089 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
 				{
 					if (_it?.ID == this.ID)
 					{
 						return false;
-					} else if (_predicate192_6148 != null)
+					} else if (_predicate217_7089 != null)
 					{
-						return _predicate192_6148.Invoke(_it);
+						return _predicate217_7089.Invoke(_it);
 					} else return true;
 				});
 				
-				const int _range192_6148 = -1;
-				var _source192_6148 = this.Position;
+				const int _range217_7089 = -1;
+				var _source217_7089 = this.Position;
 				
-				return _AgentLayer._AircraftEnvironment.Explore(_source192_6148, _range192_6148, 1, _predicateMod192_6148)?.FirstOrDefault();
+				return _AgentLayer._AircraftEnvironment.Explore(_source217_7089, _range217_7089, 1, _predicateMod217_7089)?.FirstOrDefault();
 			}).Invoke();
 			myAircraft.Set_occupied();
 			myAircraft_callsign = myAircraft.Get_callsign();
@@ -1882,7 +1965,13 @@ namespace cessna_digital_twin {
 																																							{
 																																							LeavingAirpsaceRequest_action()
 																																							;}
-																																					;} 
+																																					;} else {
+																																							if(Equals(state, "Landing")) {
+																																											{
+																																											Landing_action()
+																																											;}
+																																									;} 
+																																						;}
 																																		;}
 																														;}
 																										;}

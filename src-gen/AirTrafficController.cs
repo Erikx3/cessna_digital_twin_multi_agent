@@ -161,12 +161,12 @@ namespace cessna_digital_twin {
 			double y_spawn = 53.559712;
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget1522_43868 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget1622_46993 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object1522_43868 = this;
+				var _object1622_46993 = this;
 				
-				_AgentLayer._AirTrafficControllerEnvironment.PosAt(_object1522_43868, 
-					_taget1522_43868.Item1, _taget1522_43868.Item2
+				_AgentLayer._AirTrafficControllerEnvironment.PosAt(_object1622_46993, 
+					_taget1622_46993.Item1, _taget1622_46993.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
@@ -204,20 +204,7 @@ namespace cessna_digital_twin {
 											) {
 															{
 															double wind_bearing = agentlayer.Get_Weather__wind_bearing();
-															double temp_delta = 180.1;
-															double saved_heading = default(double);;
-															foreach ( var temp_runway_heading in available_runway_heading ) {
-																		{
-																		if(formula.smallest_absolute_delta(temp_runway_heading,wind_bearing)
-																		 < temp_delta) {
-																						{
-																						saved_heading = temp_runway_heading;
-																						temp_delta = formula.smallest_absolute_delta(temp_runway_heading,wind_bearing)
-																						;}
-																				;} 
-																		;}
-																	};
-															runway_heading_calculated = saved_heading;
+															runway_heading_calculated = formula.calculate_runway_heading(available_runway_heading,wind_bearing);
 															if(Equals(message_type_received, "RequestTakeOffPreparationPoint")) {
 																			{
 																			taxipath = airportstade.Get_taxipath_to_TakeOffPreparationPoint(runway_heading_calculated);

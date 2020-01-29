@@ -101,21 +101,24 @@ agent Observer on AgentLayer{
 	var formula = new Formula()
 	var airportstade = new AirportStade()
 	
+	
+	
 	//-----Spawn Handling-----
-	// Apron spawn coordinates
+	// Apron spawn coordinates and handling
 	var left_xcor : real
 	var left_ycor : real 
 	var right_xcor : real 
-	var right_ycor : real 
-	
+	var right_ycor : real
 	var number_of_spawning_points : integer = 8
-	
 	var spawn_xcor_list = new List<real>()
 	var spawn_ycor_list = new List<real>()
-	
 	var spawn_location_number : integer
 	
-def initialize_spawn_cor()
+	// for landing spawn management
+	var available_runway_heading : List<real>
+	var runway_heading_calculated : real
+	
+	def initialize_spawn_cor()
 	{
 		left_xcor = airportstade.Get_left_apron_coordinates().Item1
 		left_ycor = airportstade.Get_left_apron_coordinates().Item2
@@ -130,8 +133,8 @@ def initialize_spawn_cor()
 		}
 		spawn_location_number = 0
 	}
-	
-def spawn_pilot_and_aircraft()
+		
+	def spawn_pilot_and_aircraft_on_ground()
 	{
 		// only spawn, when no aircraft is nearby, else go to next spawn location and try again until tried at all location
 		var spawn_successful = false
@@ -156,9 +159,23 @@ def spawn_pilot_and_aircraft()
 			}
 		}
 	}
+		
+	def spawn_pilot_and_aircraft_landing()
+	{
+		var wind_bearing = agentlayer.Get_Weather__wind_bearing()
+		runway_heading_calculated = formula.calculate_runway_heading(available_runway_heading, wind_bearing)
+		var landing_spawn_cor = airportstade.Get_landing_spawning_point(runway_heading_calculated)
+		
+		var spawn_aircraft = spawn Aircraft at landing_spawn_cor
+		spawn_aircraft.Initialize_landing(runway_heading_calculated)
+		var spawn_pilot = spawn Pilot at landing_spawn_cor
+		spawn_pilot.Initialize_landing(runway_heading_calculated)
+		
+	}
 
 	initialize{
-		state_list = #["PreflightInspection", "StartingEngine", "TakeOffPreparationRequest", "Taxiing", "TakeOffPreparation", "TakeOffHoldShortRequest", "TakeOffRequest", "TakeOff", "LeavingAirspaceRequest"]
+		state_list = #["PreflightInspection", "StartingEngine", "TakeOffPreparationRequest", "Taxiing", "TakeOffPreparation", "TakeOffHoldShortRequest", "TakeOffRequest", "TakeOff", "LeavingAirspaceRequest", "Landing"]
+		available_runway_heading = airportstade.Get_available_runway_heading_list()
 		initialize_spawn_cor()
 	}
 	
@@ -176,10 +193,18 @@ def spawn_pilot_and_aircraft()
 			println "-----End of information-----"
 		}
 		
-		if (simtime === 1 or simtime === 5) // add for multiple spawns: or simtime % 100 === 0
+		if (simtime === 1) // add for multiple spawns: or simtime % 100 === 0
 		{
-			spawn_pilot_and_aircraft()
+			spawn_pilot_and_aircraft_on_ground()
 		}
+		
+		if (simtime === 30 or simtime === 60) // add for multiple spawns: or simtime % 100 === 0
+		{
+			spawn_pilot_and_aircraft_landing()
+		}
+		
+		
+		
 	}
 }
 
@@ -203,6 +228,12 @@ agent Pilot on AgentLayer{
 		age = age_min + random((age_max - age_min) + 1)
 		flight_experience = random(age - age_min) +1
 		timehandler.initialize_variables(age, flight_experience, age_max, age_min)
+	}
+	
+	passive Initialize_landing(heading : real)
+	{
+		state = "Landing"
+		heading_information = heading
 	}
 		
 	tick
@@ -241,6 +272,10 @@ agent Pilot on AgentLayer{
 		
 		else if (state === "LeavingAirspaceRequest"){
 			LeavingAirpsaceRequest_action()
+		}
+		
+		else if (state === "Landing"){
+			Landing_action()
 		}
 		
 		
@@ -941,11 +976,12 @@ agent Pilot on AgentLayer{
 			first_action_set = true
 		}
 		
-		// to evaluate the take off distance
+		// -----ONLY to evaluate the take off distance-----
 		if (myAircraft.Get_Aircraft__flight_phase() === "on-ground")
 		{
 			takeoff_distance = takeoff_distance + myAircraft.Get_Aircraft__ground_speed_x() * 1 //since ticksize is one
 		}
+		
 		
 		if (next_action === "Set_Throttle_and_Heading")
 		{
@@ -1097,8 +1133,72 @@ agent Pilot on AgentLayer{
 		}
 	}
 	
+	//-----State Landing-----
+	def Landing_action()
+	{
+		if (first_action_set === false)
+		{
+			next_action = "DescentAircraft"
+			first_action_set = true
+			temp_throttle_value = 0.30
+			temp_pitch_value = 4
+		}
+		
+		// controlling the airplane for descent is difficult, as it affords simultanous throttle and pitch control -> simple solution
+		else if (next_action === "DescentAircraft")
+		{
+			timehandler.create_action_duration(3, 1, "pilot_age_and_experience")  // simulating check of instrument every few sec
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				Set_Aircraft__heading_bearing(heading_information)
+				//TODO: Control behaviour, since pitch, throttle, ROC and TAS are all interdependent
+				// pitch control
+				if (Hear_Aircraft__stall_sound() === true)
+				{
+					temp_pitch_value = temp_pitch_value - 1
+				}
+				else if (Check_Instrument_Aircraft__rate_of_climb() > -0.5)
+				{
+					if (Feel_Aircraft__deceleration_z === false)
+					{
+						temp_pitch_value = temp_pitch_value - 0.5
+					}
+				}
+				else if (Check_Instrument_Aircraft__rate_of_climb() < -2)
+				{
+					if (Feel_Aircraft__acceleration_z === false)
+					{
+						temp_pitch_value = temp_pitch_value + 0.5
+					}
+				}
+				Apply_Aircraft__pitch(temp_pitch_value)
+				
+				//speed control
+				if (Check_Instrument_Aircraft__true_air_speed() > 35)
+				{	
+					if (Feel_Aircraft__deceleration_x() === false)
+					{
+						temp_throttle_value = temp_throttle_value - 0.05
+					}
+				}
+				else if (Check_Instrument_Aircraft__true_air_speed() < 25)
+				{
+					if (Feel_Aircraft__acceleration_x() === false)
+					{
+						temp_throttle_value = temp_throttle_value + 0.05
+					}
+				}
+				Apply_Engine__throttle(temp_throttle_value)
+			}
+		}
+
+	}
+	
+	
 	
 	//-----State Taxiing in general-----
+	//TODO: During taxi the pilot receives the actual ground speed, since in cockpit he would see the true airspeed
+	//but with strong headwind the pilot would not move!
 	
 	// defining help functions for taxiing
 	def Taxiing_brake(throttle : real, brake : real)
@@ -1315,7 +1415,7 @@ agent Pilot on AgentLayer{
 	
 	// -----Other visual, feel and acoustic function-----
 	
-	//TODO: Remove this function and think about another solution, since the pilot CANT see the actual ground speed
+	//TODO: Remove this function and think about another solution for taxiing, since the pilot CANT see the actual ground speed
 	def Check_Visual_Aircraft__ground_speed_x()
 	{
 		//returns actual ground speed x
@@ -1549,19 +1649,7 @@ agent AirTrafficController on AgentLayer
 					//Calculation of runway heading
 					//Initialization of calculation
 					var wind_bearing = agentlayer.Get_Weather__wind_bearing()
-					var temp_delta = 180.1
-					var saved_heading : real
-					//Looping through all available headings
-					each (var temp_runway_heading in available_runway_heading)
-					{
-						if (formula.smallest_absolute_delta(temp_runway_heading, wind_bearing)< temp_delta)
-						{
-							saved_heading = temp_runway_heading
-							temp_delta = formula.smallest_absolute_delta(temp_runway_heading, wind_bearing)
-						}
-					}
-					runway_heading_calculated = saved_heading // TODO: Add information retrieval/calculation for heading
-					
+					runway_heading_calculated = formula.calculate_runway_heading(available_runway_heading, wind_bearing)
 					
 					if (message_type_received === "RequestTakeOffPreparationPoint")
 					{
@@ -1678,6 +1766,19 @@ class AirportStade
 		}
 	}
 	
+	def Get_landing_spawning_point(heading: real)
+	{
+		if (heading === available_runway_heading_list.Get(0))
+		{
+			return #(9.494446,53.5621252)
+		}
+		
+		else if (heading === available_runway_heading_list.Get(1))
+		{
+			return #(9.5028175,53.5603097)
+		}
+	}
+	
 	def Get_left_apron_coordinates()
 	{
 		return #(9.4987928, 53.560392)
@@ -1686,6 +1787,8 @@ class AirportStade
 	{
 		return #(9.5009108, 53.5599218)
 	}
+	
+	
 }
 
 // -----Class with helper functions-----
@@ -1769,6 +1872,21 @@ class Formula
 		return delta
 	}
 	
+	def calculate_runway_heading(available_runway_heading : List<real>, wind_bearing : real)
+	{
+		var temp_delta = 999.9 // this will be always overwritten
+		var saved_heading : real
+		//Looping through all available headings
+		each (var temp_runway_heading in available_runway_heading)
+		{
+			if (smallest_absolute_delta(temp_runway_heading, wind_bearing)< temp_delta)
+			{
+				saved_heading = temp_runway_heading
+				temp_delta = smallest_absolute_delta(temp_runway_heading, wind_bearing)
+			}
+		}
+		return saved_heading
+	}
 }
 
 // -----Class for handling all time issues-----

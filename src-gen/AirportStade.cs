@@ -110,6 +110,26 @@ namespace cessna_digital_twin {
 			return default(Mars.Components.Common.MarsList<System.Tuple<double,double>>);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public virtual System.Tuple<double,double> Get_landing_spawning_point(double heading) 
+		{
+			{
+			if(Equals(heading, available_runway_heading_list.Get(0)
+			)) {
+							{
+							return new System.Tuple<double,double>(9.494446,53.5621252)
+							;}
+					;} else {
+							if(Equals(heading, available_runway_heading_list.Get(1)
+							)) {
+											{
+											return new System.Tuple<double,double>(9.5028175,53.5603097)
+											;}
+									;} 
+						;}
+			;}
+			return default(System.Tuple<double,double>);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public virtual System.Tuple<double,double> Get_left_apron_coordinates() 
 		{
 			{

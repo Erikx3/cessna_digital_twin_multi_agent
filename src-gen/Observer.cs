@@ -106,6 +106,22 @@ namespace cessna_digital_twin {
 				if(__spawn_location_number != value) __spawn_location_number = value;
 			}
 		}
+		private Mars.Components.Common.MarsList<double> __available_runway_heading
+			 = default(Mars.Components.Common.MarsList<double>);
+		internal Mars.Components.Common.MarsList<double> available_runway_heading { 
+			get { return __available_runway_heading; }
+			set{
+				if(__available_runway_heading != value) __available_runway_heading = value;
+			}
+		}
+		private double __runway_heading_calculated
+			 = default(double);
+		internal double runway_heading_calculated { 
+			get { return __runway_heading_calculated; }
+			set{
+				if(System.Math.Abs(__runway_heading_calculated - value) > 0.0000001) __runway_heading_calculated = value;
+			}
+		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public virtual void initialize_spawn_cor() 
 		{
@@ -133,7 +149,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public virtual void spawn_pilot_and_aircraft() 
+		public virtual void spawn_pilot_and_aircraft_on_ground() 
 		{
 			{
 			bool spawn_successful = false;
@@ -146,11 +162,11 @@ namespace cessna_digital_twin {
 							);
 							cessna_digital_twin.Aircraft[] aircraft_array = new System.Func<cessna_digital_twin.Aircraft[]>(() => {
 								
-								var _sourceMapped143_4745 = this.Position;
-								var _source143_4745 = _sourceMapped143_4745;
-								var _range143_4745 = -1;
+								var _sourceMapped146_4887 = this.Position;
+								var _source146_4887 = _sourceMapped146_4887;
+								var _range146_4887 = -1;
 											
-								Func<cessna_digital_twin.Aircraft, bool> _predicate143_4745 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft x) => 
+								Func<cessna_digital_twin.Aircraft, bool> _predicate146_4887 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft x) => 
 								 {
 										{
 										return formula.haversine(x.Get_position(),
@@ -160,27 +176,27 @@ namespace cessna_digital_twin {
 										;
 										return default(bool);;
 								});
-								Func<cessna_digital_twin.Aircraft, bool> _predicateMod143_4745 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
+								Func<cessna_digital_twin.Aircraft, bool> _predicateMod146_4887 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
 								{
 									if (_it?.ID == this.ID)
 									{
 										return false;
-									} else if (_predicate143_4745 != null)
+									} else if (_predicate146_4887 != null)
 									{
-										return _predicate143_4745.Invoke(_it);
+										return _predicate146_4887.Invoke(_it);
 									} else return true;
 								});
 								
-								return _AgentLayer._AircraftEnvironment.Explore(_source143_4745 , _range143_4745, -1, _predicate143_4745).ToArray();
+								return _AgentLayer._AircraftEnvironment.Explore(_source146_4887 , _range146_4887, -1, _predicate146_4887).ToArray();
 							}).Invoke();
 							if(Equals(aircraft_array.Length, 0)) {
 											{
 											new System.Func<cessna_digital_twin.Aircraft>(() => {
-											var _target147_4957 = spawn_cor;
-											return _AgentLayer._SpawnAircraft(_target147_4957.Item1, _target147_4957.Item2);}).Invoke();
+											var _target150_5099 = spawn_cor;
+											return _AgentLayer._SpawnAircraft(_target150_5099.Item1, _target150_5099.Item2);}).Invoke();
 											new System.Func<cessna_digital_twin.Pilot>(() => {
-											var _target148_4990 = spawn_cor;
-											return _AgentLayer._SpawnPilot(_target148_4990.Item1, _target148_4990.Item2);}).Invoke();
+											var _target151_5132 = spawn_cor;
+											return _AgentLayer._SpawnPilot(_target151_5132.Item1, _target151_5132.Item2);}).Invoke();
 											spawn_successful = true
 											;}
 									;} ;
@@ -192,6 +208,24 @@ namespace cessna_digital_twin {
 									;} 
 							;}
 						}
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public virtual void spawn_pilot_and_aircraft_landing() 
+		{
+			{
+			double wind_bearing = agentlayer.Get_Weather__wind_bearing();
+			runway_heading_calculated = formula.calculate_runway_heading(available_runway_heading,wind_bearing);
+			System.Tuple<double,double> landing_spawn_cor = airportstade.Get_landing_spawning_point(runway_heading_calculated);
+			cessna_digital_twin.Aircraft spawn_aircraft = new System.Func<cessna_digital_twin.Aircraft>(() => {
+			var _target169_5699 = landing_spawn_cor;
+			return _AgentLayer._SpawnAircraft(_target169_5699.Item1, _target169_5699.Item2);}).Invoke();
+			spawn_aircraft.Initialize_landing(runway_heading_calculated);
+			cessna_digital_twin.Pilot spawn_pilot = new System.Func<cessna_digital_twin.Pilot>(() => {
+			var _target171_5820 = landing_spawn_cor;
+			return _AgentLayer._SpawnPilot(_target171_5820.Item1, _target171_5820.Item2);}).Invoke();
+			spawn_pilot.Initialize_landing(runway_heading_calculated)
 			;}
 			return;
 		}
@@ -226,7 +260,8 @@ namespace cessna_digital_twin {
 			_isAlive = true;
 			_executionFrequency = freq;
 			{
-			state_list = (new Mars.Components.Common.MarsList<string>() { "PreflightInspection","StartingEngine","TakeOffPreparationRequest","Taxiing","TakeOffPreparation","TakeOffHoldShortRequest","TakeOffRequest","TakeOff","LeavingAirspaceRequest" });
+			state_list = (new Mars.Components.Common.MarsList<string>() { "PreflightInspection","StartingEngine","TakeOffPreparationRequest","Taxiing","TakeOffPreparation","TakeOffHoldShortRequest","TakeOffRequest","TakeOff","LeavingAirspaceRequest","Landing" });
+			available_runway_heading = airportstade.Get_available_runway_heading_list();
 			initialize_spawn_cor()
 			;}
 		}
@@ -243,11 +278,11 @@ namespace cessna_digital_twin {
 										{
 										cessna_digital_twin.Pilot[] pilot_array = new System.Func<cessna_digital_twin.Pilot[]>(() => {
 											
-											var _sourceMapped173_5669 = this.Position;
-											var _source173_5669 = _sourceMapped173_5669;
-											var _range173_5669 = -1;
+											var _sourceMapped190_6460 = this.Position;
+											var _source190_6460 = _sourceMapped190_6460;
+											var _range190_6460 = -1;
 														
-											Func<cessna_digital_twin.Pilot, bool> _predicate173_5669 = new Func<cessna_digital_twin.Pilot,bool>((cessna_digital_twin.Pilot x) => 
+											Func<cessna_digital_twin.Pilot, bool> _predicate190_6460 = new Func<cessna_digital_twin.Pilot,bool>((cessna_digital_twin.Pilot x) => 
 											 {
 													{
 													return Equals(x.Get_state()
@@ -256,18 +291,18 @@ namespace cessna_digital_twin {
 													;
 													return default(bool);;
 											});
-											Func<cessna_digital_twin.Pilot, bool> _predicateMod173_5669 = new Func<cessna_digital_twin.Pilot, bool>(_it => 
+											Func<cessna_digital_twin.Pilot, bool> _predicateMod190_6460 = new Func<cessna_digital_twin.Pilot, bool>(_it => 
 											{
 												if (_it?.ID == this.ID)
 												{
 													return false;
-												} else if (_predicate173_5669 != null)
+												} else if (_predicate190_6460 != null)
 												{
-													return _predicate173_5669.Invoke(_it);
+													return _predicate190_6460.Invoke(_it);
 												} else return true;
 											});
 											
-											return _AgentLayer._PilotEnvironment.Explore(_source173_5669 , _range173_5669, -1, _predicate173_5669).ToArray();
+											return _AgentLayer._PilotEnvironment.Explore(_source190_6460 , _range190_6460, -1, _predicate190_6460).ToArray();
 										}).Invoke();
 										System.Console.WriteLine(state + ": " + pilot_array.Length);
 										;}
@@ -275,9 +310,14 @@ namespace cessna_digital_twin {
 							System.Console.WriteLine("-----End of information-----");
 							;}
 					;} ;
-			if(Equals((int) Mars.Core.SimulationManager.Entities.SimulationClock.CurrentStep, 1) || Equals((int) Mars.Core.SimulationManager.Entities.SimulationClock.CurrentStep, 5)) {
+			if(Equals((int) Mars.Core.SimulationManager.Entities.SimulationClock.CurrentStep, 1)) {
 							{
-							spawn_pilot_and_aircraft()
+							spawn_pilot_and_aircraft_on_ground()
+							;}
+					;} ;
+			if(Equals((int) Mars.Core.SimulationManager.Entities.SimulationClock.CurrentStep, 30) || Equals((int) Mars.Core.SimulationManager.Entities.SimulationClock.CurrentStep, 60)) {
+							{
+							spawn_pilot_and_aircraft_landing()
 							;}
 					;} 
 			;}

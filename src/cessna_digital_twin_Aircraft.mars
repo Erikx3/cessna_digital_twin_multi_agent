@@ -27,6 +27,47 @@ agent Aircraft on AgentLayer{
 		update_AircraftPhysics() // includes engine_rpm, propeller thrust, friction force
 	}
 	
+	passive Initialize_landing(heading : real)
+	{
+		// quick and dirty initialization, all functions healthy and only variables that needs to differ from normal initialization
+		RWT__fuel_quantity = RWT__total_capacity / 2
+		RWT__water_sediments = false
+		LWT__fuel_quantity = LWT__total_capacity/2
+		LWT__water_sediments = false
+		
+		TireRightMainWheel__inflation = TireRightMainWheel__inflation_max
+		TireLeftMainWheel__inflation = TireLeftMainWheel__inflation_max
+		TireNoseWheel__inflation = TireNoseWheel__inflation_max
+		
+		Brake__parking_brake = "OFF" 
+		
+		Engine__oil_pump_condition = true
+		Engine__oil_leakage = 0.0
+		Engine__oil = Engine__oil_max
+		Engine__mixture_control = "RICH"
+		Engine__throttle = 0.3
+		Engine__ignition_switch = "BOTH"
+		Engine__running = true
+		Engine__failure_probability = 0.0
+		CIP__master_switch = "ON"
+		
+		Aircraft__true_air_speed_x = 32.0
+		Aircraft__ground_speed_x = 30.0
+		Aircraft__true_air_speed = 32.04
+		Aircraft__height = 100
+		Aircraft__flight_phase = "in-air"
+		Aircraft__rate_of_climb = -1.5 // almost standard descent glide scope of 3°
+		Aircraft__pitch = 4
+		Aircraft__heading_bearing = heading
+		
+		// updating all values once due to calculations of several variables
+		update_general_values()
+		update_Engine()
+		update_LeftWingTank()
+		update_RightWingTank()
+		update_Brake()
+		update_AircraftPhysics()			
+	}
 	
 	
 	// -----General Values and Functions (Settings and Doc)-----
@@ -231,7 +272,7 @@ agent Aircraft on AgentLayer{
 			{
 				Aircraft__true_air_speed_x = 0
 			}
-			if (Aircraft__ground_speed_x < 0 or Brake__parking_brake === "SET")
+			if (Aircraft__ground_speed_x < 0)
 			{
 				Aircraft__ground_speed_x = 0
 			}
@@ -269,7 +310,12 @@ agent Aircraft on AgentLayer{
 		if (Aircraft__flight_phase === "on-ground")
 		{
 			Brake__deceleration_force = Brake__deceleration_application * Brake__deceleration_force_max
+			if (Brake__parking_brake === "SET")
+			{
+				Brake__deceleration_force = Brake__deceleration_force_max
+			}
 		}
+		
 		else
 		{
 			Brake__deceleration_force = 0
@@ -391,7 +437,7 @@ agent Aircraft on AgentLayer{
 		Engine__running = false
 		Engine__oil_pressure = 101325 //TODO: Set equal to ambient pressure
 		Engine__oil_temperature = 15
-		Engine__failure_probability = 10**(-6)
+		Engine__failure_probability = 0.0
 		Engine__failure = false
 		Engine__fuel_consumption = 0.0
 		
@@ -412,7 +458,7 @@ agent Aircraft on AgentLayer{
 	def Add_Engine__failure_probability(add : real) => Engine__failure_probability = Engine__failure_probability + add
 	def Calculate_Engine__failure_probability()
 	{
-		Engine__failure_probability = 10**(-6)
+		Engine__failure_probability = 0.0
 		if (RWT__water_sediments === true)
 		{
 			Add_Engine__failure_probability(10**(-4))
@@ -484,7 +530,7 @@ agent Aircraft on AgentLayer{
 			}
 			
 			// Engine turned off
-			if (Engine__ignition_switch === "OFF")
+			if (Engine__ignition_switch === "OFF" or CIP__master_switch === "OFF")
 			{
 				Engine__running = false
 			}
