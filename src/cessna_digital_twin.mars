@@ -99,13 +99,14 @@ vector-layer AirportStadeLayer as airportstadelayer
 agent Observer on AgentLayer{
 	var state_list = new List<string>
 	var formula = new Formula()
+	var airportstade = new AirportStade()
 	
 	//-----Spawn Handling-----
-	// Bottom Left of appron field
-	var left_xcor : real = 9.4987928
-	var left_ycor : real = 53.560392
-	var right_xcor : real = 9.5009108
-	var right_ycor : real = 53.5599218
+	// Apron spawn coordinates
+	var left_xcor : real
+	var left_ycor : real 
+	var right_xcor : real 
+	var right_ycor : real 
 	
 	var number_of_spawning_points : integer = 8
 	
@@ -116,6 +117,10 @@ agent Observer on AgentLayer{
 	
 def initialize_spawn_cor()
 	{
+		left_xcor = airportstade.Get_left_apron_coordinates().Item1
+		left_ycor = airportstade.Get_left_apron_coordinates().Item2
+		right_xcor = airportstade.Get_right_apron_coordinates().Item1
+		right_ycor = airportstade.Get_right_apron_coordinates().Item2
 		var temp_deltastep_xcor = (left_xcor - right_xcor) / (number_of_spawning_points-1)
 		var temp_deltastep_ycor = (left_ycor - right_ycor) / (number_of_spawning_points-1)
 		for (var i = 0; i < number_of_spawning_points; i++)
@@ -270,9 +275,9 @@ agent Pilot on AgentLayer{
 	var first_fixing_attempt : bool = true // checker if first repair attempt has been done
 	
 	// settings for aircraft handling
-	var V_rotate : real = 30 // Speed on where to rotate (for cessna152 its 
-	var spacing_to_next_aircraft : real = 25.0
-	var angle_of_vision : real = 60.0
+	var V_rotate : real = 30  // Speed on where to rotate (for cessna152 its 
+	var spacing_to_next_aircraft : real = 25.0 // distance kept to the next aircraft
+	var angle_of_vision : real = 60.0 // angle of vision when looking with current heading
 	
 	def go_to_next_state(_state : string)
 	{
@@ -1621,7 +1626,6 @@ agent AirTrafficController on AgentLayer
 
 
 // TODO: Make a more convenient way for information retrieval of airport
-// TODO: Adapt heading, so aircraft wont fall off the runway :D (needs to be like 107.5)
 class AirportStade
 {
 	var taxipath: List<Tuple<real, real>>
@@ -1672,6 +1676,15 @@ class AirportStade
 			taxipath = #[#(9.5048527,53.5598626), #(9.5028175,53.5603097)]
 			return taxipath
 		}
+	}
+	
+	def Get_left_apron_coordinates()
+	{
+		return #(9.4987928, 53.560392)
+	}
+	def Get_right_apron_coordinates()
+	{
+		return #(9.5009108, 53.5599218)
 	}
 }
 
