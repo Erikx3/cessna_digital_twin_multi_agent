@@ -178,6 +178,14 @@ namespace cessna_digital_twin {
 				if(__first_fixing_attempt != value) __first_fixing_attempt = value;
 			}
 		}
+		private bool __first_request
+			 = default(bool);
+		internal bool first_request { 
+			get { return __first_request; }
+			set{
+				if(__first_request != value) __first_request = value;
+			}
+		}
 		private string __killme_info
 			 = default(string);
 		internal string killme_info { 
@@ -271,9 +279,9 @@ namespace cessna_digital_twin {
 			event_info = "End flight mission due to " + info;
 			myAircraft.Remove();
 			new System.Action(() => {
-				var _target336_10704 = this;
-				if (_target336_10704 != null) {
-					_AgentLayer._KillPilot(_target336_10704, _target336_10704._executionFrequency);
+				var _target343_10946 = this;
+				if (_target343_10946 != null) {
+					_AgentLayer._KillPilot(_target343_10946, _target343_10946._executionFrequency);
 				}
 			}).Invoke()
 			;}
@@ -285,13 +293,13 @@ namespace cessna_digital_twin {
 			{
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget341_10755 = (myAircraft.Get_position()
+				var _taget348_10997 = (myAircraft.Get_position()
 				);
 				
-				var _object341_10755 = this;
+				var _object348_10997 = this;
 				
-				_AgentLayer._PilotEnvironment.PosAt(_object341_10755, 
-					_taget341_10755.Item1, _taget341_10755.Item2
+				_AgentLayer._PilotEnvironment.PosAt(_object348_10997, 
+					_taget348_10997.Item1, _taget348_10997.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
@@ -1005,12 +1013,22 @@ namespace cessna_digital_twin {
 											string temp_receiver = agentlayer.Listen_receiver_on_frequency();
 											if(Equals(temp_receiver, myAircraft_callsign)) {
 															{
-															taxi_path = agentlayer.Listen_message_information_path_on_frequency();
-															heading_information = agentlayer.Listen_message_information_heading();
-															next_action = "Clear_frequency"
+															bool temp_bool = agentlayer.Listen_message_information_bool();
+															if(Equals(temp_bool, true)) {
+																			{
+																			taxi_path = agentlayer.Listen_message_information_path_on_frequency();
+																			heading_information = agentlayer.Listen_message_information_heading();
+																			next_action = "Clear_frequency"
+																			;}
+																	;} else {
+																			{
+																			agentlayer.Clear_frequency();
+																			next_action = "Wait_to_communicate_on_frequency"
+																			;}
+																		;}
 															;}
 													;} ;
-											timehandler.create_action_duration(10,5,"pilot_age_and_experience");
+											timehandler.create_action_duration(15,5,"pilot_age_and_experience");
 											if(timehandler.hold_action_time(timehandler.action_duration)
 											) {
 															{
@@ -1019,18 +1037,30 @@ namespace cessna_digital_twin {
 													;} 
 											;}
 									;} else {
-											if(Equals(next_action, "Clear_frequency")) {
+											if(Equals(next_action, "Wait_to_communicate_on_frequency")) {
 															{
-															timehandler.create_action_duration(2,2,"pilot_age_and_experience");
+															timehandler.create_action_duration(20,5,"pilot_age_and_experience");
 															if(timehandler.hold_action_time(timehandler.action_duration)
 															) {
 																			{
-																			agentlayer.Clear_frequency();
-																			next_action = "End_of_Actions"
+																			next_action = "Communicate_on_frequency"
 																			;}
 																	;} 
 															;}
-													;} 
+													;} else {
+															if(Equals(next_action, "Clear_frequency")) {
+																			{
+																			timehandler.create_action_duration(2,2,"pilot_age_and_experience");
+																			if(timehandler.hold_action_time(timehandler.action_duration)
+																			) {
+																							{
+																							agentlayer.Clear_frequency();
+																							next_action = "End_of_Actions"
+																							;}
+																					;} 
+																			;}
+																	;} 
+														;}
 										;}
 						;};
 			if(Equals(next_action, "End_of_Actions")) {
@@ -1061,7 +1091,7 @@ namespace cessna_digital_twin {
 					;} ;
 			if(Equals(next_action, "Set_Throttle_and_Heading")) {
 							{
-							timehandler.create_action_duration(4,2,"pilot_age_and_experience");
+							timehandler.create_action_duration(10,2,"pilot_age_and_experience");
 							if(timehandler.hold_action_time(timehandler.action_duration)
 							) {
 											{
@@ -1103,7 +1133,7 @@ namespace cessna_digital_twin {
 																			{
 																			if(Check_Instrument_Aircraft__height() > 0) {
 																							{
-																							next_action = "ControlAircraft"
+																							next_action = "End_of_Actions"
 																							;}
 																					;} else {
 																							{
@@ -1163,13 +1193,71 @@ namespace cessna_digital_twin {
 						;};
 			if(Equals(next_action, "End_of_Actions")) {
 							{
-							go_to_next_state("LeavingFrequencyRequest")
+							go_to_next_state("Climb")
 							;}
 					;} ;
 			if(Equals(myAircraft.Get_Engine__failure()
 			, true)) {
 							{
 							remove_me_and_my_aircraft("Engine__Failure during TakeOff")
+							;}
+					;} 
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public virtual void Climb_action() 
+		{
+			{
+			if(Equals(first_action_set, false)) {
+							{
+							next_action = "ControlAircraft"
+							;}
+					;} ;
+			if(Equals(next_action, "ControlAircraft")) {
+							{
+							timehandler.create_action_duration(3,1,"pilot_age_and_experience");
+							if(timehandler.hold_action_time(timehandler.action_duration)
+							) {
+											{
+											if(Equals(Hear_Aircraft__stall_sound(), true)) {
+															{
+															temp_pitch_value = temp_pitch_value - 1
+															;}
+													;} else {
+															if(Check_Instrument_Aircraft__rate_of_climb() > 3) {
+																			{
+																			if(Equals(Feel_Aircraft__deceleration_z(), false)) {
+																							{
+																							temp_pitch_value = temp_pitch_value - 0.5
+																							;}
+																					;} 
+																			;}
+																	;} else {
+																			if(Check_Instrument_Aircraft__rate_of_climb() < 1) {
+																							{
+																							if(Equals(Feel_Aircraft__acceleration_z(), false)) {
+																											{
+																											temp_pitch_value = temp_pitch_value + 0.5
+																											;}
+																									;} 
+																							;}
+																					;} 
+																		;}
+														;};
+											Apply_Aircraft__pitch(temp_pitch_value);
+											if(Check_Instrument_Aircraft__height() > 250) {
+															{
+															next_action = "End_of_Actions"
+															;}
+													;} 
+											;}
+									;} 
+							;}
+					;} ;
+			if(Equals(next_action, "End_of_Actions")) {
+							{
+							go_to_next_state("LeavingFrequencyRequest")
 							;}
 					;} 
 			;}
@@ -1243,6 +1331,142 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public virtual void LandingRequest_action() 
+		{
+			{
+			if(Equals(first_action_set, false)) {
+							{
+							next_action = "Communicate_on_frequency";
+							first_action_set = true;
+							first_request = true
+							;}
+					;} ;
+			if(Equals(next_action, "Communicate_on_frequency")) {
+							{
+							timehandler.create_action_duration(3,0,"pilot_age_and_experience");
+							if(timehandler.hold_action_time(timehandler.action_duration)
+							) {
+											{
+											agentlayer.Communicate_request_on_frequency(myAircraft_callsign,"Tower","RequestLanding");
+											next_action = "Listen_receiver_on_frequency"
+											;}
+									;} 
+							;}
+					;} else {
+							if(Equals(next_action, "Listen_receiver_on_frequency")) {
+											{
+											string temp_receiver = agentlayer.Listen_receiver_on_frequency();
+											if(Equals(temp_receiver, myAircraft_callsign)) {
+															{
+															taxi_path = agentlayer.Listen_message_information_path_on_frequency();
+															bool temp_bool = agentlayer.Listen_message_information_bool();
+															if(Equals(temp_bool, true)) {
+																			{
+																			next_action = "Clear_frequency"
+																			;}
+																	;} 
+															;}
+													;} ;
+											timehandler.create_action_duration(10,0,"pilot_age_and_experience");
+											if(timehandler.hold_action_time(timehandler.action_duration)
+											) {
+															{
+															if(Equals(first_request, false)) {
+																			{
+																			go_to_next_state("GoAround")
+																			;}
+																	;} else {
+																			{
+																			first_request = false;
+																			next_action = "Communicate_on_frequency"
+																			;}
+																		;}
+															;}
+													;} 
+											;}
+									;} else {
+											if(Equals(next_action, "Clear_frequency")) {
+															{
+															timehandler.create_action_duration(3,0,"pilot_age_and_experience");
+															if(timehandler.hold_action_time(timehandler.action_duration)
+															) {
+																			{
+																			agentlayer.Clear_frequency();
+																			next_action = "End_of_Actions"
+																			;}
+																	;} 
+															;}
+													;} 
+										;}
+						;};
+			if(Equals(next_action, "End_of_Actions")) {
+							{
+							go_to_next_state("Landing")
+							;}
+					;} 
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public virtual void GoAround_action() 
+		{
+			{
+			if(Equals(first_action_set, false)) {
+							{
+							next_action = "GoAround";
+							first_action_set = true;
+							temp_pitch_value = 3.5
+							;}
+					;} else {
+							if(Equals(next_action, "GoAround")) {
+											{
+											if(Equals(Hear_Aircraft__stall_sound(), true)) {
+															{
+															temp_pitch_value = temp_pitch_value - 1
+															;}
+													;} else {
+															if(Check_Instrument_Aircraft__rate_of_climb() > 3) {
+																			{
+																			if(Equals(Feel_Aircraft__deceleration_z(), false)) {
+																							{
+																							temp_pitch_value = temp_pitch_value - 0.5
+																							;}
+																					;} 
+																			;}
+																	;} else {
+																			if(Check_Instrument_Aircraft__rate_of_climb() < 2) {
+																							{
+																							if(Equals(Feel_Aircraft__acceleration_z(), false)) {
+																											{
+																											temp_pitch_value = temp_pitch_value + 0.5
+																											;}
+																									;} 
+																							;}
+																					;} 
+																		;}
+														;};
+											Set_Aircraft__heading_bearing(myAircraft.Get_Aircraft_heading_bearing()
+											 + 5.0);
+											Apply_Aircraft__pitch(temp_pitch_value);
+											Apply_Engine__throttle(1.0);
+											if(Check_Instrument_Aircraft__height() > 100) {
+															{
+															next_action = "End_of_Actions"
+															;}
+													;} 
+											;}
+									;} 
+						;};
+			if(Equals(next_action, "End_of_Actions")) {
+							{
+							go_to_next_state("LeavingFrequency");
+							killme_info = "Go around, no Landing Clearance"
+							;}
+					;} 
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public virtual void Landing_action() 
 		{
 			{
@@ -1250,8 +1474,8 @@ namespace cessna_digital_twin {
 							{
 							next_action = "DescentAircraft";
 							first_action_set = true;
-							temp_throttle_value = 0.30;
-							temp_pitch_value = 4
+							temp_throttle_value = 0.1;
+							temp_pitch_value = 3.5
 							;}
 					;} else {
 							if(Equals(next_action, "DescentAircraft")) {
@@ -1306,6 +1530,11 @@ namespace cessna_digital_twin {
 																							;}
 																					;} 
 																		;};
+															if(temp_throttle_value < 0.05) {
+																			{
+																			temp_throttle_value = 0.05
+																			;}
+																	;} ;
 															Apply_Engine__throttle(temp_throttle_value);
 															if(Check_Instrument_Aircraft__height() <= 0) {
 																			{
@@ -1319,25 +1548,43 @@ namespace cessna_digital_twin {
 											if(Equals(next_action, "ApplyBrake")) {
 															{
 															Apply_Engine__throttle(0.1);
+															Apply_Aircraft__pitch(0.0);
 															Apply_Brake__deceleration(0.7);
-															timehandler.create_action_duration(3,1,"pilot_age_and_experience");
+															timehandler.create_action_duration(2,1,"pilot_age_and_experience");
 															if(timehandler.hold_action_time(timehandler.action_duration)
 															) {
 																			{
-																			if(Check_Visual_Aircraft__ground_speed_x() < 5) {
+																			if(Check_Visual_Aircraft__ground_speed_x() < 9) {
+																							{
+																							next_action = "Taxiing_off_runway"
+																							;}
+																					;} 
+																			;}
+																	;} 
+															;}
+													;} else {
+															if(Equals(next_action, "Taxiing_off_runway")) {
+																			{
+																			System.Tuple<double,double> active_taxi_point = taxi_path.Get(active_taxi_point_number);
+																			double myAircraft__heading = formula.bearing(myAircraft.Get_position(),
+																			active_taxi_point);
+																			Set_Aircraft__heading_bearing(myAircraft__heading);
+																			distance_to_next_point = formula.haversine(myAircraft.Get_position(),
+																			active_taxi_point);
+																			Taxiing_normal();
+																			if(distance_to_next_point < 15) {
 																							{
 																							next_action = "End_of_Actions"
 																							;}
 																					;} 
 																			;}
 																	;} 
-															;}
-													;} 
+														;}
 										;}
 						;};
 			if(Equals(next_action, "End_of_Actions")) {
 							{
-							go_to_next_state("TaxiingNOOOOOOPE");
+							go_to_next_state("Taxiing");
 							state_after_taxiing = "LeavingFrequency";
 							killme_info = "LandingComplete"
 							;}
@@ -1438,6 +1685,11 @@ namespace cessna_digital_twin {
 													;} 
 										;}
 						;};
+			if(temp_throttle_value < 0.05) {
+							{
+							temp_throttle_value = 0.05
+							;}
+					;} ;
 			Apply_Engine__throttle(temp_throttle_value)
 			;}
 			return;
@@ -1477,11 +1729,11 @@ namespace cessna_digital_twin {
 											active_taxi_point);
 											cessna_digital_twin.Aircraft[] aircraft_array = new System.Func<cessna_digital_twin.Aircraft[]>(() => {
 												
-												var _sourceMapped1347_40222 = this.Position;
-												var _source1347_40222 = _sourceMapped1347_40222;
-												var _range1347_40222 = -1;
+												var _sourceMapped1566_46226 = this.Position;
+												var _source1566_46226 = _sourceMapped1566_46226;
+												var _range1566_46226 = -1;
 															
-												Func<cessna_digital_twin.Aircraft, bool> _predicate1347_40222 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft x) => 
+												Func<cessna_digital_twin.Aircraft, bool> _predicate1566_46226 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft x) => 
 												 {
 														{
 														return formula.haversine(myAircraft.Get_position(),
@@ -1492,18 +1744,18 @@ namespace cessna_digital_twin {
 														;
 														return default(bool);;
 												});
-												Func<cessna_digital_twin.Aircraft, bool> _predicateMod1347_40222 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
+												Func<cessna_digital_twin.Aircraft, bool> _predicateMod1566_46226 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
 												{
 													if (_it?.ID == this.ID)
 													{
 														return false;
-													} else if (_predicate1347_40222 != null)
+													} else if (_predicate1566_46226 != null)
 													{
-														return _predicate1347_40222.Invoke(_it);
+														return _predicate1566_46226.Invoke(_it);
 													} else return true;
 												});
 												
-												return _AgentLayer._AircraftEnvironment.Explore(_source1347_40222 , _range1347_40222, -1, _predicate1347_40222).ToArray();
+												return _AgentLayer._AircraftEnvironment.Explore(_source1566_46226 , _range1566_46226, -1, _predicate1566_46226).ToArray();
 											}).Invoke();
 											if(aircraft_array.Length > 1) {
 															{
@@ -1881,16 +2133,6 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Initialize_landing(
-		double heading) {
-			{
-			state = "Landing";
-			heading_information = heading
-			;}
-			
-			return;
-		}
-		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public string Get_state() {
 			{
 			return state
@@ -1898,6 +2140,16 @@ namespace cessna_digital_twin {
 			}
 			
 			return default(string);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void Initialize_landing(
+		double heading) {
+			{
+			state = "LandingRequest";
+			heading_information = heading
+			;}
+			
+			return;
 		}
 		internal bool _isAlive;
 		internal int _executionFrequency;
@@ -1930,7 +2182,7 @@ namespace cessna_digital_twin {
 			_executionFrequency = freq;
 			{
 			myAircraft = new Func<cessna_digital_twin.Aircraft>(() => {
-				Func<cessna_digital_twin.Aircraft, bool> _predicate217_7089 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft it) => 
+				Func<cessna_digital_twin.Aircraft, bool> _predicate217_7173 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft it) => 
 				 {
 						{
 						return Equals(it.Get_occupy_bool()
@@ -1939,21 +2191,21 @@ namespace cessna_digital_twin {
 						;
 						return default(bool);;
 				});
-				Func<cessna_digital_twin.Aircraft, bool> _predicateMod217_7089 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
+				Func<cessna_digital_twin.Aircraft, bool> _predicateMod217_7173 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
 				{
 					if (_it?.ID == this.ID)
 					{
 						return false;
-					} else if (_predicate217_7089 != null)
+					} else if (_predicate217_7173 != null)
 					{
-						return _predicate217_7089.Invoke(_it);
+						return _predicate217_7173.Invoke(_it);
 					} else return true;
 				});
 				
-				const int _range217_7089 = -1;
-				var _source217_7089 = this.Position;
+				const int _range217_7173 = -1;
+				var _source217_7173 = this.Position;
 				
-				return _AgentLayer._AircraftEnvironment.Explore(_source217_7089, _range217_7089, 1, _predicateMod217_7089)?.FirstOrDefault();
+				return _AgentLayer._AircraftEnvironment.Explore(_source217_7173, _range217_7173, 1, _predicateMod217_7173)?.FirstOrDefault();
 			}).Invoke();
 			myAircraft.Set_occupied();
 			myAircraft_callsign = myAircraft.Get_callsign();
@@ -2013,21 +2265,39 @@ namespace cessna_digital_twin {
 																																			TakeOff_action()
 																																			;}
 																																	;} else {
-																																			if(Equals(state, "LeavingFrequencyRequest")) {
+																																			if(Equals(state, "Climb")) {
 																																							{
-																																							LeavingFrequencyRequest_action()
+																																							Climb_action()
 																																							;}
 																																					;} else {
-																																							if(Equals(state, "Landing")) {
+																																							if(Equals(state, "LeavingFrequencyRequest")) {
 																																											{
-																																											Landing_action()
+																																											LeavingFrequencyRequest_action()
 																																											;}
 																																									;} else {
-																																											if(Equals(state, "LeavingFrequency")) {
+																																											if(Equals(state, "LandingRequest")) {
 																																															{
-																																															LeavingFrequency_action()
+																																															LandingRequest_action()
 																																															;}
-																																													;} 
+																																													;} else {
+																																															if(Equals(state, "GoAround")) {
+																																																			{
+																																																			GoAround_action()
+																																																			;}
+																																																	;} else {
+																																																			if(Equals(state, "Landing")) {
+																																																							{
+																																																							Landing_action()
+																																																							;}
+																																																					;} else {
+																																																							if(Equals(state, "LeavingFrequency")) {
+																																																											{
+																																																											LeavingFrequency_action()
+																																																											;}
+																																																									;} 
+																																																						;}
+																																																		;}
+																																														;}
 																																										;}
 																																						;}
 																																		;}

@@ -260,7 +260,7 @@ namespace cessna_digital_twin {
 			_isAlive = true;
 			_executionFrequency = freq;
 			{
-			state_list = (new Mars.Components.Common.MarsList<string>() { "PreflightInspection","StartingEngine","TakeOffPreparationRequest","Taxiing","TakeOffPreparation","TakeOffHoldShortRequest","TakeOffRequest","TakeOff","LeavingAirspaceRequest","Landing" });
+			state_list = (new Mars.Components.Common.MarsList<string>() { "PreflightInspection","StartingEngine","TakeOffPreparationRequest","Taxiing","TakeOffPreparation","TakeOffHoldShortRequest","TakeOffRequest","TakeOff","Climb","LeavingFrequencyRequest","LandingRequest","GoAround","Landing","LeavingFrequency" });
 			available_runway_heading = airportstade.Get_available_runway_heading_list();
 			initialize_spawn_cor()
 			;}
@@ -278,11 +278,11 @@ namespace cessna_digital_twin {
 										{
 										cessna_digital_twin.Pilot[] pilot_array = new System.Func<cessna_digital_twin.Pilot[]>(() => {
 											
-											var _sourceMapped190_6460 = this.Position;
-											var _source190_6460 = _sourceMapped190_6460;
-											var _range190_6460 = -1;
+											var _sourceMapped190_6518 = this.Position;
+											var _source190_6518 = _sourceMapped190_6518;
+											var _range190_6518 = -1;
 														
-											Func<cessna_digital_twin.Pilot, bool> _predicate190_6460 = new Func<cessna_digital_twin.Pilot,bool>((cessna_digital_twin.Pilot x) => 
+											Func<cessna_digital_twin.Pilot, bool> _predicate190_6518 = new Func<cessna_digital_twin.Pilot,bool>((cessna_digital_twin.Pilot x) => 
 											 {
 													{
 													return Equals(x.Get_state()
@@ -291,18 +291,18 @@ namespace cessna_digital_twin {
 													;
 													return default(bool);;
 											});
-											Func<cessna_digital_twin.Pilot, bool> _predicateMod190_6460 = new Func<cessna_digital_twin.Pilot, bool>(_it => 
+											Func<cessna_digital_twin.Pilot, bool> _predicateMod190_6518 = new Func<cessna_digital_twin.Pilot, bool>(_it => 
 											{
 												if (_it?.ID == this.ID)
 												{
 													return false;
-												} else if (_predicate190_6460 != null)
+												} else if (_predicate190_6518 != null)
 												{
-													return _predicate190_6460.Invoke(_it);
+													return _predicate190_6518.Invoke(_it);
 												} else return true;
 											});
 											
-											return _AgentLayer._PilotEnvironment.Explore(_source190_6460 , _range190_6460, -1, _predicate190_6460).ToArray();
+											return _AgentLayer._PilotEnvironment.Explore(_source190_6518 , _range190_6518, -1, _predicate190_6518).ToArray();
 										}).Invoke();
 										System.Console.WriteLine(state + ": " + pilot_array.Length);
 										;}
@@ -310,12 +310,12 @@ namespace cessna_digital_twin {
 							System.Console.WriteLine("-----End of information-----");
 							;}
 					;} ;
-			if(Equals((int) Mars.Core.SimulationManager.Entities.SimulationClock.CurrentStep, 1)) {
+			if(Equals((int) Mars.Core.SimulationManager.Entities.SimulationClock.CurrentStep, 1) || Equals((int) Mars.Core.SimulationManager.Entities.SimulationClock.CurrentStep % 75, 0)) {
 							{
 							spawn_pilot_and_aircraft_on_ground()
 							;}
 					;} ;
-			if(Equals((int) Mars.Core.SimulationManager.Entities.SimulationClock.CurrentStep, 30) || Equals((int) Mars.Core.SimulationManager.Entities.SimulationClock.CurrentStep, 60)) {
+			if(Equals((int) Mars.Core.SimulationManager.Entities.SimulationClock.CurrentStep, 1) || Equals((int) Mars.Core.SimulationManager.Entities.SimulationClock.CurrentStep % 120, 0)) {
 							{
 							spawn_pilot_and_aircraft_landing()
 							;}

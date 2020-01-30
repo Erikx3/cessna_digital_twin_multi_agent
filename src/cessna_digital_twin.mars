@@ -174,7 +174,7 @@ agent Observer on AgentLayer{
 	}
 
 	initialize{
-		state_list = #["PreflightInspection", "StartingEngine", "TakeOffPreparationRequest", "Taxiing", "TakeOffPreparation", "TakeOffHoldShortRequest", "TakeOffRequest", "TakeOff", "LeavingAirspaceRequest", "Landing"]
+		state_list = #["PreflightInspection", "StartingEngine", "TakeOffPreparationRequest", "Taxiing", "TakeOffPreparation", "TakeOffHoldShortRequest", "TakeOffRequest", "TakeOff", "Climb", "LeavingFrequencyRequest", "LandingRequest","GoAround","Landing", "LeavingFrequency"]
 		available_runway_heading = airportstade.Get_available_runway_heading_list()
 		initialize_spawn_cor()
 	}
@@ -193,12 +193,12 @@ agent Observer on AgentLayer{
 			println "-----End of information-----"
 		}
 		
-		if (simtime === 1) // add for multiple spawns: or simtime % 100 === 0
+		if (simtime === 1 or simtime % 75 === 0) // add for multiple spawns: or simtime % 100 === 0
 		{
 			spawn_pilot_and_aircraft_on_ground()
 		}
 		
-		if (simtime === 30 or simtime === 60) // add for multiple spawns: or simtime % 100 === 0
+		if (simtime === 1 or simtime % 120 === 0) // add for multiple spawns: or simtime % 100 === 0
 		{
 			spawn_pilot_and_aircraft_landing()
 		}
@@ -228,12 +228,6 @@ agent Pilot on AgentLayer{
 		age = age_min + random((age_max - age_min) + 1)
 		flight_experience = random(age - age_min) +1
 		timehandler.initialize_variables(age, flight_experience, age_max, age_min)
-	}
-	
-	passive Initialize_landing(heading : real)
-	{
-		state = "Landing"
-		heading_information = heading
 	}
 		
 	tick
@@ -270,8 +264,20 @@ agent Pilot on AgentLayer{
 			TakeOff_action()
 		}
 		
+		else if (state === "Climb"){
+			Climb_action()
+		}
+		
 		else if (state === "LeavingFrequencyRequest"){
 			LeavingFrequencyRequest_action()
+		}
+		
+		else if (state === "LandingRequest"){
+			LandingRequest_action()
+		}
+		
+		else if (state === "GoAround"){
+			GoAround_action()
 		}
 		
 		else if (state === "Landing"){
@@ -311,6 +317,7 @@ agent Pilot on AgentLayer{
 	var state_after_taxiing : string  // since taxi state has multiple use
 	var distance_to_next_point : real // calculated distance to a point in [m]
 	var first_fixing_attempt : bool = true // checker if first repair attempt has been done
+	var first_request : bool // checker for communication attempt
 	var killme_info : string //info for "killme" sequence
 	
 	// settings for aircraft handling
@@ -343,7 +350,14 @@ agent Pilot on AgentLayer{
 		Latitude = ycor
 		current_activity = next_action
 	}
-	passive Get_state() => return state  // for observer agent
+	
+	// functions for observer agent
+	passive Get_state() => return state  
+	passive Initialize_landing(heading : real)
+	{
+		state = "LandingRequest"
+		heading_information = heading
+	}
 	
 	//-----General Pilot Values and functions-----
 	observe var age: integer // years
@@ -939,13 +953,30 @@ agent Pilot on AgentLayer{
 			var temp_receiver = agentlayer.Listen_receiver_on_frequency()
 			if (temp_receiver === myAircraft_callsign)
 			{
-				taxi_path = agentlayer.Listen_message_information_path_on_frequency()
-				heading_information = agentlayer.Listen_message_information_heading()
-				next_action = "Clear_frequency"
+				var temp_bool = agentlayer.Listen_message_information_bool()
+				if (temp_bool === true)
+				{
+					taxi_path = agentlayer.Listen_message_information_path_on_frequency()
+					heading_information = agentlayer.Listen_message_information_heading()
+					next_action = "Clear_frequency"
+				}
+				else
+				{
+					agentlayer.Clear_frequency()
+					next_action = "Wait_to_communicate_on_frequency"
+				}
 			}
-			
 			//retry contacting tower after a specific period of time
-			timehandler.create_action_duration(10, 5, "pilot_age_and_experience")
+			timehandler.create_action_duration(15, 5, "pilot_age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				next_action = "Communicate_on_frequency"
+			}
+		}
+		
+		else if (next_action === "Wait_to_communicate_on_frequency")
+		{
+			timehandler.create_action_duration(20, 5, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				next_action = "Communicate_on_frequency"
@@ -970,6 +1001,7 @@ agent Pilot on AgentLayer{
 		}
 	}
 	
+
 	//-----State TakeOff-----
 	//TODO: Add Instrument Screening and better mechanism for take off
 	def TakeOff_action()
@@ -986,7 +1018,7 @@ agent Pilot on AgentLayer{
 			takeoff_distance = takeoff_distance + myAircraft.Get_Aircraft__ground_speed_x() * 1 //since ticksize is one
 		}
 		
-		
+		//TODO: Add check if runway is still occupied, maybe at ATC
 		if (next_action === "Set_Throttle_and_Heading")
 		{
 			timehandler.create_action_duration(4, 2, "pilot_age_and_experience")
@@ -1006,7 +1038,7 @@ agent Pilot on AgentLayer{
 			timehandler.create_action_duration(1, 1, "pilot_age_and_experience")  // simulating check of instrument
 			if (timehandler.hold_action_time(timehandler.action_duration))  
 			{
-				if (Check_Instrument_Aircraft__true_air_speed() > V_rotate) // TODO: Add calculation of V_rotate
+				if (Check_Instrument_Aircraft__true_air_speed() > V_rotate)
 				{
 					temp_pitch_value = temp_pitch_value + 2
 					Apply_Aircraft__pitch(temp_pitch_value)
@@ -1026,7 +1058,7 @@ agent Pilot on AgentLayer{
 			{
 				if (Check_Instrument_Aircraft__height() > 0)
 				{
-					next_action = "ControlAircraft"
+					next_action = "End_of_Actions"
 				}
 				else
 				{
@@ -1072,7 +1104,7 @@ agent Pilot on AgentLayer{
 		
 		if (next_action === "End_of_Actions")
 		{
-			go_to_next_state("LeavingFrequencyRequest")
+			go_to_next_state("Climb")
 		}	
 		
 		
@@ -1083,6 +1115,52 @@ agent Pilot on AgentLayer{
 		}
 	}
 	
+	
+	//-----State Climb-----
+	def Climb_action()
+	{
+		if (first_action_set === false)
+		{
+			next_action = "ControlAircraft"
+		}
+		
+		if (next_action === "ControlAircraft")
+		{
+			timehandler.create_action_duration(3, 1, "pilot_age_and_experience")  // simulating check of instrument every 2 sec
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				if (Hear_Aircraft__stall_sound() === true)
+				{
+					temp_pitch_value = temp_pitch_value - 1
+				}
+				else if (Check_Instrument_Aircraft__rate_of_climb() > 3)
+				{
+					if (Feel_Aircraft__deceleration_z === false)
+					{
+						temp_pitch_value = temp_pitch_value - 0.5
+					}
+				}
+				else if (Check_Instrument_Aircraft__rate_of_climb() < 1)
+				{
+					if (Feel_Aircraft__acceleration_z === false)
+					{
+						temp_pitch_value = temp_pitch_value + 0.5
+					}
+				}
+				Apply_Aircraft__pitch(temp_pitch_value)
+				
+				if (Check_Instrument_Aircraft__height() > 250)
+				{
+					next_action = "End_of_Actions"
+				}
+			}
+		}
+		
+		if (next_action === "End_of_Actions")
+		{
+			go_to_next_state("LeavingFrequencyRequest")
+		}
+	}
 	
 	
 	//-----State LeavingFrequencyRequest-----
@@ -1143,15 +1221,130 @@ agent Pilot on AgentLayer{
 		}
 	}
 	
+	
+	//-----State LandingRequest-----
+	def LandingRequest_action()
+	{
+		if (first_action_set === false)
+		{
+			next_action = "Communicate_on_frequency"
+			first_action_set = true
+			first_request = true
+		}
+		
+		if (next_action === "Communicate_on_frequency")
+		{
+			timehandler.create_action_duration(3, 0, "pilot_age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				agentlayer.Communicate_request_on_frequency(myAircraft_callsign, "Tower", "RequestLanding")
+				next_action = "Listen_receiver_on_frequency"
+			}
+		}
+		
+		else if (next_action === "Listen_receiver_on_frequency")
+		{
+			var temp_receiver = agentlayer.Listen_receiver_on_frequency()
+			if (temp_receiver === myAircraft_callsign)
+			{
+				taxi_path = agentlayer.Listen_message_information_path_on_frequency()
+				var temp_bool = agentlayer.Listen_message_information_bool()
+				//TODO add go around mechanism, if answer returns false
+				if (temp_bool === true)
+				{
+					next_action = "Clear_frequency"
+				}
+			}
+			
+			//retry contacting tower after a specific period of time
+			timehandler.create_action_duration(10, 0, "pilot_age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				if (first_request === false)
+				{
+					go_to_next_state("GoAround")
+				}
+				else
+				{
+					first_request = false
+					next_action = "Communicate_on_frequency"
+				}				
+			}
+		}
+		
+		// to make sure that message is not instantly deleted and simulate processing time of incoming message and blockage
+		else if (next_action === "Clear_frequency")
+		{
+			timehandler.create_action_duration(3, 0, "pilot_age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				agentlayer.Clear_frequency()
+				next_action = "End_of_Actions"
+			}
+		}
+		
+		if (next_action === "End_of_Actions")
+		{
+			go_to_next_state("Landing")
+		}
+	}
+	
+	def GoAround_action()
+	{
+		if (first_action_set === false)
+		{
+			next_action = "GoAround"
+			first_action_set = true
+			temp_pitch_value = 3.5
+		}
+		
+		else if (next_action === "GoAround")
+		{
+			if (Hear_Aircraft__stall_sound() === true)
+				{
+					temp_pitch_value = temp_pitch_value - 1
+				}
+				else if (Check_Instrument_Aircraft__rate_of_climb() > 3)
+				{
+					if (Feel_Aircraft__deceleration_z === false)
+					{
+						temp_pitch_value = temp_pitch_value - 0.5
+					}
+				}
+				else if (Check_Instrument_Aircraft__rate_of_climb() < 2)
+				{
+					if (Feel_Aircraft__acceleration_z === false)
+					{
+						temp_pitch_value = temp_pitch_value + 0.5
+					}
+				}
+			Set_Aircraft__heading_bearing(myAircraft.Get_Aircraft_heading_bearing() + 5.0)
+			Apply_Aircraft__pitch(temp_pitch_value)
+			Apply_Engine__throttle(1.0)
+			if (Check_Instrument_Aircraft__height() > 100)
+			{
+				next_action = "End_of_Actions"
+			}			
+		}
+		
+		if (next_action === "End_of_Actions")
+		{
+			go_to_next_state("LeavingFrequency")
+			killme_info = "Go around, no Landing Clearance"
+		}
+		
+	}
+	
 	//-----State Landing-----
+	//TODO: Improve simultaneous landing and communication action feature (done next to one another)
 	def Landing_action()
 	{
 		if (first_action_set === false)
 		{
 			next_action = "DescentAircraft"
 			first_action_set = true
-			temp_throttle_value = 0.30
-			temp_pitch_value = 4
+			temp_throttle_value = 0.1
+			temp_pitch_value = 3.5
 		}
 		
 		// controlling the airplane for descent is difficult, as it affords simultanous throttle and pitch control -> simple solution
@@ -1198,6 +1391,10 @@ agent Pilot on AgentLayer{
 						temp_throttle_value = temp_throttle_value + 0.05
 					}
 				}
+				if (temp_throttle_value < 0.05)
+				{
+					temp_throttle_value = 0.05
+				}
 				Apply_Engine__throttle(temp_throttle_value)
 				
 				if (Check_Instrument_Aircraft__height() <= 0)
@@ -1210,24 +1407,42 @@ agent Pilot on AgentLayer{
 		else if (next_action === "ApplyBrake")
 		{
 			Apply_Engine__throttle(0.1)
+			Apply_Aircraft__pitch(0.0)
 			Apply_Brake__deceleration(0.7)
-			timehandler.create_action_duration(3, 1, "pilot_age_and_experience")  // simulating check of instrument every few sec
+			timehandler.create_action_duration(2, 1, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
-				if (Check_Visual_Aircraft__ground_speed_x() < 5)
+				if (Check_Visual_Aircraft__ground_speed_x() < 9)
 				{
-					next_action = "End_of_Actions"
+					next_action = "Taxiing_off_runway"
 				}
+			}
+		}
+		
+		else if (next_action === "Taxiing_off_runway")
+		{
+			// Get active Taxi point
+			var active_taxi_point = taxi_path.Get(active_taxi_point_number)
+			// Set Aircraft Heading
+			var myAircraft__heading = formula.bearing(myAircraft.Get_position(), active_taxi_point)
+			Set_Aircraft__heading_bearing(myAircraft__heading)
+			//Distance and throttle handling
+			distance_to_next_point = formula.haversine(myAircraft.Get_position(), active_taxi_point)
+			Taxiing_normal()
+			
+			if (distance_to_next_point < 15)
+			{
+				next_action = "End_of_Actions"
 			}
 		}
 		
 		if (next_action === "End_of_Actions")
 		{
-			go_to_next_state("TaxiingNOOOOOOPE") //TODO add path with landing communication before
+			go_to_next_state("Taxiing")
 			state_after_taxiing = "LeavingFrequency"
 			killme_info = "LandingComplete"
 		}	
-}
+	}
 	
 	
 	//-----State Leaving Frequency-----
@@ -1238,8 +1453,8 @@ agent Pilot on AgentLayer{
 	
 	
 	//-----State Taxiing in general-----
-	//TODO: During taxi the pilot receives the actual ground speed, since in cockpit he would see the true airspeed
-	//but with strong headwind the pilot would not move!
+	//TODO: During taxi the pilot receives the actual ground speed, since in cockpit he would see
+	//the true airspeed but with strong headwind the pilot would not move!
 	
 	// defining help functions for taxiing
 	def Taxiing_brake(throttle : real, brake : real)
@@ -1307,6 +1522,10 @@ agent Pilot on AgentLayer{
 				temp_throttle_value = temp_throttle_value + 0.05
 			}
 		}
+		if (temp_throttle_value < 0.05)
+		{
+			temp_throttle_value = 0.05
+		}
 		Apply_Engine__throttle(temp_throttle_value)
 	}
 	
@@ -1343,11 +1562,11 @@ agent Pilot on AgentLayer{
 			distance_to_next_point = formula.haversine(myAircraft.Get_position(), active_taxi_point)
 			
 			
-			//Check for collision
+			//Check for collision TODO: Add collision conflict handling (e.g. when two aircrafts won't move)
 			var aircraft_array = explore Aircraft where [x => return formula.haversine(myAircraft.Get_position(), x.Get_position()) < spacing_to_next_aircraft]
 			if (length(aircraft_array) > 1) // since list contains ALWAYS the airplane controlled by the pilot!
 			{
-				// check if aircraft is on path and angle of vision
+				// check if aircraft is on path and angle of vision, note at index 0 is own aircraft
 				for (var i = 1; i < length(aircraft_array); i++)
 				{
 					//calculate bearing to aircraft nearby
@@ -1705,7 +1924,22 @@ agent AirTrafficController on AgentLayer
 					else if(message_type_received === "RequestTakeOff")
 					{
 						taxipath = airportstade.Get_taxipath_to_RunwayLineUpPoint(runway_heading_calculated)
+						var pilot_array = explore Pilot where [x => return x.Get_state() === "Landing" or x.Get_state() === "TakeOff"]
+						if (length(pilot_array) >= 1) // active aircraft on runway
+						{
+							request_approval = false
+						}
+						else
+						{
+							request_approval = true
+						}
 						agentlayer.Communicate_answer_on_frequency(identifier, callsign_received, "AnswerTakeOff", taxipath, runway_heading_calculated, request_approval)
+					}
+					else if(message_type_received === "RequestLanding")
+					{
+						taxipath = airportstade.Get_taxipath_to_ApronPoint(runway_heading_calculated)
+						request_approval = true // TODO: always true so far for landing clearance
+						agentlayer.Communicate_answer_on_frequency(identifier, callsign_received, "AnswerLanding", taxipath, runway_heading_calculated, request_approval)
 					}
 					else if(message_type_received === "RequestLeavingAirpsace")
 					{
@@ -1717,6 +1951,7 @@ agent AirTrafficController on AgentLayer
 						agentlayer.Clear_frequency() // Tower always able to answer or Clear Frequency, when request insufficient		
 					}
 					reset_general_values()
+					
 				}
 			}
 		}
@@ -1758,7 +1993,7 @@ agent AirTrafficController on AgentLayer
 class AirportStade
 {
 	var taxipath: List<Tuple<real, real>>
-	var available_runway_heading_list = #[109.0, 289.0]
+	var available_runway_heading_list = #[110.0, 290.0]
 	
 	def Get_available_runway_heading_list() => return available_runway_heading_list
 	
@@ -1807,16 +2042,30 @@ class AirportStade
 		}
 	}
 	
+	def Get_taxipath_to_ApronPoint(heading: real)
+	{
+		if (heading === available_runway_heading_list.Get(0))
+		{
+			taxipath = #[#(9.5028175,53.5603097), #(9.5048527,53.5598626), #(9.5046714,53.5597239), #(9.5044877,53.5595613), #(9.5043157,53.5594584), #(9.5041687,53.5594248), #(9.5018283,53.559911)]
+			return taxipath
+		}
+		else if (heading === available_runway_heading_list.Get(1))
+		{
+			taxipath = #[#(9.494446,53.5621252), #(9.494201,53.5621611), #(9.4939417,53.562171),#(9.4932789,53.5621333),#(9.4930903,53.5620665),#(9.4930261,53.5619488), #(9.4930632,53.5618664), #(9.4931937,53.5618008), #(9.4934248,53.5617509), #(9.498464,53.560657)]
+			return taxipath
+		}
+	}	
+	
 	def Get_landing_spawning_point(heading: real)
 	{
 		if (heading === available_runway_heading_list.Get(0))
 		{
-			return #(9.481339,53.564700)
+			return #(9.474354,53.566459)
 		}
 		
 		else if (heading === available_runway_heading_list.Get(1))
 		{
-			return #(9.5028175,53.5603097)
+			return #(9.522902,53.555969)
 		}
 	}
 	

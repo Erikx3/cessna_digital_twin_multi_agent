@@ -874,14 +874,14 @@ namespace cessna_digital_twin {
 							{
 							new System.Func<Tuple<double,double>>(() => {
 								
-								var _speed288_10278 = Aircraft__movement_x
+								var _speed289_10356 = Aircraft__movement_x
 							;
 								
-								var _entity288_10278 = this;
+								var _entity289_10356 = this;
 								
-								Func<double[], bool> _predicate288_10278 = null;
+								Func<double[], bool> _predicate289_10356 = null;
 								
-								_AgentLayer._AircraftEnvironment.MoveTowards(_entity288_10278, Aircraft__heading_bearing, _speed288_10278);	
+								_AgentLayer._AircraftEnvironment.MoveTowards(_entity289_10356, Aircraft__heading_bearing, _speed289_10356);	
 								
 								return new Tuple<double, double>(Position.X, Position.Y);
 							}).Invoke()
@@ -1266,7 +1266,7 @@ namespace cessna_digital_twin {
 			Engine__oil_leakage = 0.0;
 			Engine__oil = Engine__oil_max;
 			Engine__mixture_control = "RICH";
-			Engine__throttle = 0.3;
+			Engine__throttle = 0.1;
 			Engine__ignition_switch = "BOTH";
 			Engine__running = true;
 			Engine__failure_probability = 0.0;
@@ -1274,10 +1274,10 @@ namespace cessna_digital_twin {
 			Aircraft__true_air_speed_x = 32.0;
 			Aircraft__ground_speed_x = 30.0;
 			Aircraft__true_air_speed = 32.04;
-			Aircraft__height = 100;
+			Aircraft__height = 90;
 			Aircraft__flight_phase = "in-air";
 			Aircraft__rate_of_climb = -1.5;
-			Aircraft__pitch = 4;
+			Aircraft__pitch = 3.5;
 			Aircraft__heading_bearing = heading;
 			update_general_values();
 			update_Engine();
@@ -1311,9 +1311,9 @@ namespace cessna_digital_twin {
 		public void Remove() {
 			{
 			new System.Action(() => {
-				var _target85_2374 = this;
-				if (_target85_2374 != null) {
-					_AgentLayer._KillAircraft(_target85_2374, _target85_2374._executionFrequency);
+				var _target85_2375 = this;
+				if (_target85_2375 != null) {
+					_AgentLayer._KillAircraft(_target85_2375, _target85_2375._executionFrequency);
 				}
 			}).Invoke()
 					;
@@ -1390,6 +1390,15 @@ namespace cessna_digital_twin {
 			}
 			
 			return default(string);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public double Get_Aircraft_heading_bearing() {
+			{
+			return Aircraft__heading_bearing
+					;
+			}
+			
+			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public int Get_Engine__oil_min() {

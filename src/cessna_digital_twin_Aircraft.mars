@@ -45,7 +45,7 @@ agent Aircraft on AgentLayer{
 		Engine__oil_leakage = 0.0
 		Engine__oil = Engine__oil_max
 		Engine__mixture_control = "RICH"
-		Engine__throttle = 0.3
+		Engine__throttle = 0.1
 		Engine__ignition_switch = "BOTH"
 		Engine__running = true
 		Engine__failure_probability = 0.0
@@ -54,10 +54,10 @@ agent Aircraft on AgentLayer{
 		Aircraft__true_air_speed_x = 32.0
 		Aircraft__ground_speed_x = 30.0
 		Aircraft__true_air_speed = 32.04
-		Aircraft__height = 100
+		Aircraft__height = 90
 		Aircraft__flight_phase = "in-air"
 		Aircraft__rate_of_climb = -1.5 // almost standard descent glide scope of 3°
-		Aircraft__pitch = 4
+		Aircraft__pitch = 3.5
 		Aircraft__heading_bearing = heading
 		
 		// updating all values once due to calculations of several variables
@@ -155,6 +155,7 @@ agent Aircraft on AgentLayer{
 	}
 	
 	passive Get_Aircraft__flight_phase() => return Aircraft__flight_phase
+	passive Get_Aircraft_heading_bearing() => return Aircraft__heading_bearing
 	
 	//lift coefficient calculation (See Excel "Calculation_Table")
 	observe var Aircraft__lift_coefficient : real
