@@ -270,14 +270,17 @@ agent Pilot on AgentLayer{
 			TakeOff_action()
 		}
 		
-		else if (state === "LeavingAirspaceRequest"){
-			LeavingAirpsaceRequest_action()
+		else if (state === "LeavingFrequencyRequest"){
+			LeavingFrequencyRequest_action()
 		}
 		
 		else if (state === "Landing"){
 			Landing_action()
 		}
 		
+		else if (state === "LeavingFrequency"){
+			LeavingFrequency_action()
+		}
 		
 		update_general_values()
 	}
@@ -308,6 +311,7 @@ agent Pilot on AgentLayer{
 	var state_after_taxiing : string  // since taxi state has multiple use
 	var distance_to_next_point : real // calculated distance to a point in [m]
 	var first_fixing_attempt : bool = true // checker if first repair attempt has been done
+	var killme_info : string //info for "killme" sequence
 	
 	// settings for aircraft handling
 	var V_rotate : real = 30  // Speed on where to rotate (for cessna152 its 
@@ -1068,7 +1072,7 @@ agent Pilot on AgentLayer{
 		
 		if (next_action === "End_of_Actions")
 		{
-			go_to_next_state("LeavingAirspaceRequest")
+			go_to_next_state("LeavingFrequencyRequest")
 		}	
 		
 		
@@ -1081,8 +1085,8 @@ agent Pilot on AgentLayer{
 	
 	
 	
-	//-----State LeavingAirpsaceRequest-----
-	def LeavingAirpsaceRequest_action()
+	//-----State LeavingFrequencyRequest-----
+	def LeavingFrequencyRequest_action()
 	{
 		if (first_action_set === false)
 		{
@@ -1128,8 +1132,14 @@ agent Pilot on AgentLayer{
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				agentlayer.Clear_frequency()
-				remove_me_and_my_aircraft("Leaving Airspace")
+				next_action = "End_of_Actions"
 			}
+		}
+		
+		if (next_action === "End_of_Actions")
+		{
+			go_to_next_state("LeavingFrequency")
+			killme_info = "TakeOffComplete"
 		}
 	}
 	
@@ -1151,7 +1161,7 @@ agent Pilot on AgentLayer{
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				Set_Aircraft__heading_bearing(heading_information)
-				//TODO: Control behaviour, since pitch, throttle, ROC and TAS are all interdependent
+				//TODO: Control behavior optimization, since pitch, throttle, ROC and TAS are all interdependent
 				// pitch control
 				if (Hear_Aircraft__stall_sound() === true)
 				{
@@ -1189,11 +1199,42 @@ agent Pilot on AgentLayer{
 					}
 				}
 				Apply_Engine__throttle(temp_throttle_value)
+				
+				if (Check_Instrument_Aircraft__height() <= 0)
+				{
+					next_action = "ApplyBrake"
+				}
 			}
 		}
-
-	}
+		
+		else if (next_action === "ApplyBrake")
+		{
+			Apply_Engine__throttle(0.1)
+			Apply_Brake__deceleration(0.7)
+			timehandler.create_action_duration(3, 1, "pilot_age_and_experience")  // simulating check of instrument every few sec
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				if (Check_Visual_Aircraft__ground_speed_x() < 5)
+				{
+					next_action = "End_of_Actions"
+				}
+			}
+		}
+		
+		if (next_action === "End_of_Actions")
+		{
+			go_to_next_state("TaxiingNOOOOOOPE") //TODO add path with landing communication before
+			state_after_taxiing = "LeavingFrequency"
+			killme_info = "LandingComplete"
+		}	
+}
 	
+	
+	//-----State Leaving Frequency-----
+	def LeavingFrequency_action()
+	{
+		remove_me_and_my_aircraft(killme_info)
+	}
 	
 	
 	//-----State Taxiing in general-----
@@ -1770,7 +1811,7 @@ class AirportStade
 	{
 		if (heading === available_runway_heading_list.Get(0))
 		{
-			return #(9.494446,53.5621252)
+			return #(9.481339,53.564700)
 		}
 		
 		else if (heading === available_runway_heading_list.Get(1))

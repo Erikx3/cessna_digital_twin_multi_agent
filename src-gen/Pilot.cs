@@ -178,6 +178,14 @@ namespace cessna_digital_twin {
 				if(__first_fixing_attempt != value) __first_fixing_attempt = value;
 			}
 		}
+		private string __killme_info
+			 = default(string);
+		internal string killme_info { 
+			get { return __killme_info; }
+			set{
+				if(__killme_info != value) __killme_info = value;
+			}
+		}
 		private double __V_rotate
 			 = 30;
 		internal double V_rotate { 
@@ -263,9 +271,9 @@ namespace cessna_digital_twin {
 			event_info = "End flight mission due to " + info;
 			myAircraft.Remove();
 			new System.Action(() => {
-				var _target332_10568 = this;
-				if (_target332_10568 != null) {
-					_AgentLayer._KillPilot(_target332_10568, _target332_10568._executionFrequency);
+				var _target336_10704 = this;
+				if (_target336_10704 != null) {
+					_AgentLayer._KillPilot(_target336_10704, _target336_10704._executionFrequency);
 				}
 			}).Invoke()
 			;}
@@ -277,13 +285,13 @@ namespace cessna_digital_twin {
 			{
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget337_10619 = (myAircraft.Get_position()
+				var _taget341_10755 = (myAircraft.Get_position()
 				);
 				
-				var _object337_10619 = this;
+				var _object341_10755 = this;
 				
-				_AgentLayer._PilotEnvironment.PosAt(_object337_10619, 
-					_taget337_10619.Item1, _taget337_10619.Item2
+				_AgentLayer._PilotEnvironment.PosAt(_object341_10755, 
+					_taget341_10755.Item1, _taget341_10755.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
@@ -1155,7 +1163,7 @@ namespace cessna_digital_twin {
 						;};
 			if(Equals(next_action, "End_of_Actions")) {
 							{
-							go_to_next_state("LeavingAirspaceRequest")
+							go_to_next_state("LeavingFrequencyRequest")
 							;}
 					;} ;
 			if(Equals(myAircraft.Get_Engine__failure()
@@ -1168,7 +1176,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public virtual void LeavingAirpsaceRequest_action() 
+		public virtual void LeavingFrequencyRequest_action() 
 		{
 			{
 			if(Equals(first_action_set, false)) {
@@ -1218,13 +1226,19 @@ namespace cessna_digital_twin {
 															) {
 																			{
 																			agentlayer.Clear_frequency();
-																			remove_me_and_my_aircraft("Leaving Airspace")
+																			next_action = "End_of_Actions"
 																			;}
 																	;} 
 															;}
 													;} 
 										;}
-						;}
+						;};
+			if(Equals(next_action, "End_of_Actions")) {
+							{
+							go_to_next_state("LeavingFrequency");
+							killme_info = "TakeOffComplete"
+							;}
+					;} 
 			;}
 			return;
 		}
@@ -1292,12 +1306,50 @@ namespace cessna_digital_twin {
 																							;}
 																					;} 
 																		;};
-															Apply_Engine__throttle(temp_throttle_value)
+															Apply_Engine__throttle(temp_throttle_value);
+															if(Check_Instrument_Aircraft__height() <= 0) {
+																			{
+																			next_action = "ApplyBrake"
+																			;}
+																	;} 
 															;}
 													;} 
 											;}
-									;} 
-						;}
+									;} else {
+											if(Equals(next_action, "ApplyBrake")) {
+															{
+															Apply_Engine__throttle(0.1);
+															Apply_Brake__deceleration(0.7);
+															timehandler.create_action_duration(3,1,"pilot_age_and_experience");
+															if(timehandler.hold_action_time(timehandler.action_duration)
+															) {
+																			{
+																			if(Check_Visual_Aircraft__ground_speed_x() < 5) {
+																							{
+																							next_action = "End_of_Actions"
+																							;}
+																					;} 
+																			;}
+																	;} 
+															;}
+													;} 
+										;}
+						;};
+			if(Equals(next_action, "End_of_Actions")) {
+							{
+							go_to_next_state("TaxiingNOOOOOOPE");
+							state_after_taxiing = "LeavingFrequency";
+							killme_info = "LandingComplete"
+							;}
+					;} 
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public virtual void LeavingFrequency_action() 
+		{
+			{
+			remove_me_and_my_aircraft(killme_info)
 			;}
 			return;
 		}
@@ -1425,11 +1477,11 @@ namespace cessna_digital_twin {
 											active_taxi_point);
 											cessna_digital_twin.Aircraft[] aircraft_array = new System.Func<cessna_digital_twin.Aircraft[]>(() => {
 												
-												var _sourceMapped1306_39073 = this.Position;
-												var _source1306_39073 = _sourceMapped1306_39073;
-												var _range1306_39073 = -1;
+												var _sourceMapped1347_40222 = this.Position;
+												var _source1347_40222 = _sourceMapped1347_40222;
+												var _range1347_40222 = -1;
 															
-												Func<cessna_digital_twin.Aircraft, bool> _predicate1306_39073 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft x) => 
+												Func<cessna_digital_twin.Aircraft, bool> _predicate1347_40222 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft x) => 
 												 {
 														{
 														return formula.haversine(myAircraft.Get_position(),
@@ -1440,18 +1492,18 @@ namespace cessna_digital_twin {
 														;
 														return default(bool);;
 												});
-												Func<cessna_digital_twin.Aircraft, bool> _predicateMod1306_39073 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
+												Func<cessna_digital_twin.Aircraft, bool> _predicateMod1347_40222 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
 												{
 													if (_it?.ID == this.ID)
 													{
 														return false;
-													} else if (_predicate1306_39073 != null)
+													} else if (_predicate1347_40222 != null)
 													{
-														return _predicate1306_39073.Invoke(_it);
+														return _predicate1347_40222.Invoke(_it);
 													} else return true;
 												});
 												
-												return _AgentLayer._AircraftEnvironment.Explore(_source1306_39073 , _range1306_39073, -1, _predicate1306_39073).ToArray();
+												return _AgentLayer._AircraftEnvironment.Explore(_source1347_40222 , _range1347_40222, -1, _predicate1347_40222).ToArray();
 											}).Invoke();
 											if(aircraft_array.Length > 1) {
 															{
@@ -1961,16 +2013,22 @@ namespace cessna_digital_twin {
 																																			TakeOff_action()
 																																			;}
 																																	;} else {
-																																			if(Equals(state, "LeavingAirspaceRequest")) {
+																																			if(Equals(state, "LeavingFrequencyRequest")) {
 																																							{
-																																							LeavingAirpsaceRequest_action()
+																																							LeavingFrequencyRequest_action()
 																																							;}
 																																					;} else {
 																																							if(Equals(state, "Landing")) {
 																																											{
 																																											Landing_action()
 																																											;}
-																																									;} 
+																																									;} else {
+																																											if(Equals(state, "LeavingFrequency")) {
+																																															{
+																																															LeavingFrequency_action()
+																																															;}
+																																													;} 
+																																										;}
 																																						;}
 																																		;}
 																														;}

@@ -116,7 +116,7 @@ namespace cessna_digital_twin {
 			if(Equals(heading, available_runway_heading_list.Get(0)
 			)) {
 							{
-							return new System.Tuple<double,double>(9.494446,53.5621252)
+							return new System.Tuple<double,double>(9.481339,53.564700)
 							;}
 					;} else {
 							if(Equals(heading, available_runway_heading_list.Get(1)
