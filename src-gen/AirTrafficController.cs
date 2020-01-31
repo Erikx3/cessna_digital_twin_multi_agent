@@ -162,12 +162,12 @@ namespace cessna_digital_twin {
 			double y_spawn = 53.559712;
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget1897_54725 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget1900_54755 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object1897_54725 = this;
+				var _object1900_54755 = this;
 				
-				_AgentLayer._AirTrafficControllerEnvironment.PosAt(_object1897_54725, 
-					_taget1897_54725.Item1, _taget1897_54725.Item2
+				_AgentLayer._AirTrafficControllerEnvironment.PosAt(_object1900_54755, 
+					_taget1900_54755.Item1, _taget1900_54755.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
@@ -223,11 +223,11 @@ namespace cessna_digital_twin {
 																											taxipath = airportstade.Get_taxipath_to_RunwayLineUpPoint(runway_heading_calculated);
 																											cessna_digital_twin.Pilot[] pilot_array = new System.Func<cessna_digital_twin.Pilot[]>(() => {
 																												
-																												var _sourceMapped1942_56724 = this.Position;
-																												var _source1942_56724 = _sourceMapped1942_56724;
-																												var _range1942_56724 = -1;
+																												var _sourceMapped1945_56754 = this.Position;
+																												var _source1945_56754 = _sourceMapped1945_56754;
+																												var _range1945_56754 = -1;
 																															
-																												Func<cessna_digital_twin.Pilot, bool> _predicate1942_56724 = new Func<cessna_digital_twin.Pilot,bool>((cessna_digital_twin.Pilot x) => 
+																												Func<cessna_digital_twin.Pilot, bool> _predicate1945_56754 = new Func<cessna_digital_twin.Pilot,bool>((cessna_digital_twin.Pilot x) => 
 																												 {
 																														{
 																														return Equals(x.Get_state()
@@ -237,18 +237,18 @@ namespace cessna_digital_twin {
 																														;
 																														return default(bool);;
 																												});
-																												Func<cessna_digital_twin.Pilot, bool> _predicateMod1942_56724 = new Func<cessna_digital_twin.Pilot, bool>(_it => 
+																												Func<cessna_digital_twin.Pilot, bool> _predicateMod1945_56754 = new Func<cessna_digital_twin.Pilot, bool>(_it => 
 																												{
 																													if (_it?.ID == this.ID)
 																													{
 																														return false;
-																													} else if (_predicate1942_56724 != null)
+																													} else if (_predicate1945_56754 != null)
 																													{
-																														return _predicate1942_56724.Invoke(_it);
+																														return _predicate1945_56754.Invoke(_it);
 																													} else return true;
 																												});
 																												
-																												return _AgentLayer._PilotEnvironment.Explore(_source1942_56724 , _range1942_56724, -1, _predicate1942_56724).ToArray();
+																												return _AgentLayer._PilotEnvironment.Explore(_source1945_56754 , _range1945_56754, -1, _predicate1945_56754).ToArray();
 																											}).Invoke();
 																											if(pilot_array.Length >= 1) {
 																															{
@@ -265,7 +265,43 @@ namespace cessna_digital_twin {
 																											if(Equals(message_type_received, "RequestLanding")) {
 																															{
 																															taxipath = airportstade.Get_taxipath_to_ApronPoint(runway_heading_calculated);
-																															request_approval = true;
+																															cessna_digital_twin.Pilot[] pilot_array = new System.Func<cessna_digital_twin.Pilot[]>(() => {
+																																
+																																var _sourceMapped1959_57363 = this.Position;
+																																var _source1959_57363 = _sourceMapped1959_57363;
+																																var _range1959_57363 = -1;
+																																			
+																																Func<cessna_digital_twin.Pilot, bool> _predicate1959_57363 = new Func<cessna_digital_twin.Pilot,bool>((cessna_digital_twin.Pilot x) => 
+																																 {
+																																		{
+																																		return Equals(x.Get_state()
+																																		, "TakeOff")
+																																		;}
+																																		;
+																																		return default(bool);;
+																																});
+																																Func<cessna_digital_twin.Pilot, bool> _predicateMod1959_57363 = new Func<cessna_digital_twin.Pilot, bool>(_it => 
+																																{
+																																	if (_it?.ID == this.ID)
+																																	{
+																																		return false;
+																																	} else if (_predicate1959_57363 != null)
+																																	{
+																																		return _predicate1959_57363.Invoke(_it);
+																																	} else return true;
+																																});
+																																
+																																return _AgentLayer._PilotEnvironment.Explore(_source1959_57363 , _range1959_57363, -1, _predicate1959_57363).ToArray();
+																															}).Invoke();
+																															if(pilot_array.Length >= 1) {
+																																			{
+																																			request_approval = false
+																																			;}
+																																	;} else {
+																																			{
+																																			request_approval = true
+																																			;}
+																																		;};
 																															agentlayer.Communicate_answer_on_frequency(identifier,callsign_received,"AnswerLanding",taxipath,runway_heading_calculated,request_approval)
 																															;}
 																													;} else {

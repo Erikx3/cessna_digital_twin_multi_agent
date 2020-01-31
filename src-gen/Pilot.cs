@@ -1369,7 +1369,11 @@ namespace cessna_digital_twin {
 																			{
 																			next_action = "Clear_frequency"
 																			;}
-																	;} 
+																	;} else {
+																			{
+																			agentlayer.Clear_frequency()
+																			;}
+																		;}
 															;}
 													;} ;
 											timehandler.create_action_duration(10,0,"pilot_age_and_experience");
@@ -1741,11 +1745,11 @@ namespace cessna_digital_twin {
 											active_taxi_point);
 											cessna_digital_twin.Aircraft[] aircraft_array = new System.Func<cessna_digital_twin.Aircraft[]>(() => {
 												
-												var _sourceMapped1580_46744 = this.Position;
-												var _source1580_46744 = _sourceMapped1580_46744;
-												var _range1580_46744 = -1;
+												var _sourceMapped1583_46774 = this.Position;
+												var _source1583_46774 = _sourceMapped1583_46774;
+												var _range1583_46774 = -1;
 															
-												Func<cessna_digital_twin.Aircraft, bool> _predicate1580_46744 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft x) => 
+												Func<cessna_digital_twin.Aircraft, bool> _predicate1583_46774 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft x) => 
 												 {
 														{
 														return formula.haversine(myAircraft.Get_position(),
@@ -1756,18 +1760,18 @@ namespace cessna_digital_twin {
 														;
 														return default(bool);;
 												});
-												Func<cessna_digital_twin.Aircraft, bool> _predicateMod1580_46744 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
+												Func<cessna_digital_twin.Aircraft, bool> _predicateMod1583_46774 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
 												{
 													if (_it?.ID == this.ID)
 													{
 														return false;
-													} else if (_predicate1580_46744 != null)
+													} else if (_predicate1583_46774 != null)
 													{
-														return _predicate1580_46744.Invoke(_it);
+														return _predicate1583_46774.Invoke(_it);
 													} else return true;
 												});
 												
-												return _AgentLayer._AircraftEnvironment.Explore(_source1580_46744 , _range1580_46744, -1, _predicate1580_46744).ToArray();
+												return _AgentLayer._AircraftEnvironment.Explore(_source1583_46774 , _range1583_46774, -1, _predicate1583_46774).ToArray();
 											}).Invoke();
 											if(aircraft_array.Length > 1) {
 															{

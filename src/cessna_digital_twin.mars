@@ -1254,10 +1254,13 @@ agent Pilot on AgentLayer{
 			{
 				taxi_path = agentlayer.Listen_message_information_path_on_frequency()
 				var temp_bool = agentlayer.Listen_message_information_bool()
-				//TODO add go around mechanism, if answer returns false
 				if (temp_bool === true)
 				{
 					next_action = "Clear_frequency"
+				}
+				else
+				{
+					agentlayer.Clear_frequency() // and attempt after time below
 				}
 			}
 			
@@ -1953,7 +1956,15 @@ agent AirTrafficController on AgentLayer
 					else if(message_type_received === "RequestLanding")
 					{
 						taxipath = airportstade.Get_taxipath_to_ApronPoint(runway_heading_calculated)
-						request_approval = true // TODO: always true so far for landing clearance
+						var pilot_array = explore Pilot where [x => return x.Get_state() === "TakeOff"]
+						if (length(pilot_array) >= 1) // active aircraft on runway
+						{
+							request_approval = false
+						}
+						else
+						{
+							request_approval = true
+						}
 						agentlayer.Communicate_answer_on_frequency(identifier, callsign_received, "AnswerLanding", taxipath, runway_heading_calculated, request_approval)
 					}
 					else if(message_type_received === "RequestLeavingAirpsace")
