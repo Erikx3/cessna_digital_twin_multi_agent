@@ -299,7 +299,7 @@ namespace cessna_digital_twin {
 			}
 		}
 		private double __Brake__deceleration_force_max
-			 = 3000;
+			 = 2500;
 		internal double Brake__deceleration_force_max { 
 			get { return __Brake__deceleration_force_max; }
 			set{
@@ -874,14 +874,14 @@ namespace cessna_digital_twin {
 							{
 							new System.Func<Tuple<double,double>>(() => {
 								
-								var _speed289_10356 = Aircraft__movement_x
+								var _speed290_10483 = Aircraft__movement_x
 							;
 								
-								var _entity289_10356 = this;
+								var _entity290_10483 = this;
 								
-								Func<double[], bool> _predicate289_10356 = null;
+								Func<double[], bool> _predicate290_10483 = null;
 								
-								_AgentLayer._AircraftEnvironment.MoveTowards(_entity289_10356, Aircraft__heading_bearing, _speed289_10356);	
+								_AgentLayer._AircraftEnvironment.MoveTowards(_entity290_10483, Aircraft__heading_bearing, _speed290_10483);	
 								
 								return new Tuple<double, double>(Position.X, Position.Y);
 							}).Invoke()
@@ -1274,7 +1274,7 @@ namespace cessna_digital_twin {
 			Aircraft__true_air_speed_x = 32.0;
 			Aircraft__ground_speed_x = 30.0;
 			Aircraft__true_air_speed = 32.04;
-			Aircraft__height = 90;
+			Aircraft__height = 115;
 			Aircraft__flight_phase = "in-air";
 			Aircraft__rate_of_climb = -1.5;
 			Aircraft__pitch = 3.5;
@@ -1311,10 +1311,30 @@ namespace cessna_digital_twin {
 		public void Remove() {
 			{
 			new System.Action(() => {
-				var _target85_2375 = this;
-				if (_target85_2375 != null) {
-					_AgentLayer._KillAircraft(_target85_2375, _target85_2375._executionFrequency);
+				var _target85_2376 = this;
+				if (_target85_2376 != null) {
+					_AgentLayer._KillAircraft(_target85_2376, _target85_2376._executionFrequency);
 				}
+			}).Invoke()
+					;
+			}
+			
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void Teleport(
+		System.Tuple<double,double> cor) {
+			{
+			new System.Func<System.Tuple<double,double>>(() => {
+				
+				var _taget86_2431 = cor;
+				
+				var _object86_2431 = this;
+				
+				_AgentLayer._AircraftEnvironment.PosAt(_object86_2431, 
+					_taget86_2431.Item1, _taget86_2431.Item2
+				);
+				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke()
 					;
 			}

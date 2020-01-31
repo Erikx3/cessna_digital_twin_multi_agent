@@ -138,13 +138,13 @@ namespace cessna_digital_twin {
 			if(Equals(heading, available_runway_heading_list.Get(0)
 			)) {
 							{
-							return new System.Tuple<double,double>(9.474354,53.566459)
+							return new System.Tuple<double,double>(9.467238,53.567997)
 							;}
 					;} else {
 							if(Equals(heading, available_runway_heading_list.Get(1)
 							)) {
 											{
-											return new System.Tuple<double,double>(9.522902,53.555969)
+											return new System.Tuple<double,double>(9.530016,53.554431)
 											;}
 									;} 
 						;}

@@ -310,12 +310,12 @@ namespace cessna_digital_twin {
 							System.Console.WriteLine("-----End of information-----");
 							;}
 					;} ;
-			if(Equals((int) Mars.Core.SimulationManager.Entities.SimulationClock.CurrentStep, 1)) {
+			if(Equals((int) Mars.Core.SimulationManager.Entities.SimulationClock.CurrentStep, 1) || Equals((int) Mars.Core.SimulationManager.Entities.SimulationClock.CurrentStep % 100, 0)) {
 							{
 							spawn_pilot_and_aircraft_on_ground()
 							;}
 					;} ;
-			if(Equals((int) Mars.Core.SimulationManager.Entities.SimulationClock.CurrentStep, 2)) {
+			if(Equals((int) Mars.Core.SimulationManager.Entities.SimulationClock.CurrentStep, 1) || Equals((int) Mars.Core.SimulationManager.Entities.SimulationClock.CurrentStep % 250, 0)) {
 							{
 							spawn_pilot_and_aircraft_landing()
 							;}

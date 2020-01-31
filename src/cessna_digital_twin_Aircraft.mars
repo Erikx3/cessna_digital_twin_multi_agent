@@ -54,7 +54,7 @@ agent Aircraft on AgentLayer{
 		Aircraft__true_air_speed_x = 32.0
 		Aircraft__ground_speed_x = 30.0
 		Aircraft__true_air_speed = 32.04
-		Aircraft__height = 90
+		Aircraft__height = 115
 		Aircraft__flight_phase = "in-air"
 		Aircraft__rate_of_climb = -1.5 // almost standard descent glide scope of 3°
 		Aircraft__pitch = 3.5
@@ -83,6 +83,7 @@ agent Aircraft on AgentLayer{
 	passive Set_occupied() => occupied = true
 	
 	passive Remove() => kill me
+	passive Teleport(cor : Tuple<real, real>) => pos at cor  // TODO: Remove this workaround when bug fixed (see pilot comment)
 
 	observe var event_info : string // maybe add something like this or think about it
 	
@@ -295,7 +296,7 @@ agent Aircraft on AgentLayer{
 	
 	observe var Brake__deceleration_application : real // value No brakes applied 0...1 Full Brakes applied
 	observe var Brake__deceleration_force : real // Newton
-	var Brake__deceleration_force_max : real = 3000 // Newton
+	var Brake__deceleration_force_max : real = 2500 // Newton
 	
 	//TODO: Add brake_health dependency on Tire inflation
 	

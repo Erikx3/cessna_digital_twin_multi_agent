@@ -11,7 +11,7 @@
         "deltaT": 1,
         "output": "csv",
         "options": {
-            "delimiter": ";",
+            "delimiter": ",",
             "numberFormat" : "G",
            // "decimal": ".",
            //"format": "en-EN"

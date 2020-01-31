@@ -193,12 +193,12 @@ agent Observer on AgentLayer{
 			println "-----End of information-----"
 		}
 		
-		if (simtime === 1 or simtime % 75 === 0) // add for multiple spawns: or simtime % 100 === 0
+		if (simtime === 1 or simtime % 100 === 0) // add for multiple spawns: or simtime % 100 === 0
 		{
 			spawn_pilot_and_aircraft_on_ground()
 		}
 		
-		if (simtime === 1 or simtime % 120 === 0) // add for multiple spawns: or simtime % 100 === 0
+		if (simtime === 1 or simtime % 250 === 0) // add for multiple spawns: or simtime % 100 === 0
 		{
 			spawn_pilot_and_aircraft_landing()
 		}
@@ -317,12 +317,12 @@ agent Pilot on AgentLayer{
 	var state_after_taxiing : string  // since taxi state has multiple use
 	var distance_to_next_point : real // calculated distance to a point in [m]
 	var first_fixing_attempt : bool = true // checker if first repair attempt has been done
-	var first_request : bool // checker for communication attempt
+	var request_attempts : integer// checker for communication attempt
 	var killme_info : string //info for "killme" sequence
 	
 	// settings for aircraft handling
-	var V_rotate : real = 30  // Speed on where to rotate (for cessna152 its 
-	var spacing_to_next_aircraft : real = 25.0 // distance kept to the next aircraft
+	var V_rotate : real = 30  // Speed on where to rotate (for cessna152 its normally at 25)
+	var spacing_to_next_aircraft : real = 30.0 // distance kept to the next aircraft (when start braking)
 	var angle_of_vision : real = 60.0 // angle of vision when looking with current heading
 	
 	def go_to_next_state(_state : string)
@@ -1234,7 +1234,7 @@ agent Pilot on AgentLayer{
 		{
 			next_action = "Communicate_on_frequency"
 			first_action_set = true
-			first_request = true
+			request_attempts = 0
 		}
 		
 		if (next_action === "Communicate_on_frequency")
@@ -1265,13 +1265,13 @@ agent Pilot on AgentLayer{
 			timehandler.create_action_duration(10, 0, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
-				if (first_request === false)
+				if (request_attempts >= 3)
 				{
 					go_to_next_state("GoAround")
 				}
 				else
 				{
-					first_request = false
+					request_attempts = request_attempts + 1
 					next_action = "Communicate_on_frequency"
 				}				
 			}
@@ -1453,7 +1453,16 @@ agent Pilot on AgentLayer{
 	//-----State Leaving Frequency-----
 	def LeavingFrequency_action()
 	{
-		remove_me_and_my_aircraft(killme_info)
+		//TODO: Remove this workaround, when bug is fixed, where "removed" pilots and aircrafts
+		//can still be found via explore function, which leads to unwanted collision
+		myAircraft.Teleport(#(9.501273,53.559141)) // Workaround
+		
+		timehandler.create_action_duration(3, 0, "None")
+		if (timehandler.hold_action_time(timehandler.action_duration))
+		{
+			remove_me_and_my_aircraft(killme_info)
+		}
+		
 	}
 	
 	
@@ -1475,14 +1484,14 @@ agent Pilot on AgentLayer{
 		{
 			if (distance_to_next_point < 10)
 			{
-				Taxiing_brake(0.1, 0.5)
+				Taxiing_brake(0.1, 0.8)
 				next_action = "End_of_Actions"
 			}
 			else
 			{
 				if (Check_Visual_Aircraft__ground_speed_x() > 5)
 				{
-					Taxiing_brake(0.1, 0.3)
+					Taxiing_brake(0.1, 0.2)
 				}
 				else if(Check_Visual_Aircraft__ground_speed_x() < 1)
 				{
@@ -2066,12 +2075,12 @@ class AirportStade
 	{
 		if (heading === available_runway_heading_list.Get(0))
 		{
-			return #(9.474354,53.566459)
+			return #(9.467238,53.567997)
 		}
 		
 		else if (heading === available_runway_heading_list.Get(1))
 		{
-			return #(9.522902,53.555969)
+			return #(9.530016,53.554431)
 		}
 	}
 	
