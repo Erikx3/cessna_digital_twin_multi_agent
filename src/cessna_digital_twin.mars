@@ -202,9 +202,6 @@ agent Observer on AgentLayer{
 		{
 			spawn_pilot_and_aircraft_landing()
 		}
-		
-		
-		
 	}
 }
 
@@ -226,8 +223,8 @@ agent Pilot on AgentLayer{
 		
 		// Pilot attributes and share them with classes
 		age = age_min + random((age_max - age_min) + 1)
-		flight_experience = random(age - age_min) +1
-		timehandler.initialize_variables(age, flight_experience, age_max, age_min)
+		flight_experience = random((age - age_min) * flight_experience_max / (age_max - age_min))
+		timehandler.initialize_variables(age, flight_experience, flight_experience_max, age_max, age_min)
 	}
 		
 	tick
@@ -360,13 +357,13 @@ agent Pilot on AgentLayer{
 	}
 	
 	//-----General Pilot Values and functions-----
-	observe var age: integer // years
-	observe var flight_experience : integer // years
+	observe var age: real // years
+	observe var flight_experience : real // years
 		
 	//Settings
-	var age_max : integer = 75
-	var age_min : integer = 18
-	var flight_experience_max : integer = 57
+	var age_max : real = 75.0
+	var age_min : real = 18.0
+	var flight_experience_max : real = 5700.0 // hours
 	
 	
 	//-----State Preflight Inspection-----
@@ -2209,31 +2206,35 @@ class Formula
 class TimeHandler
 {
 	//general values for timehandling
-	var action_run_time : integer =  0
+	var action_run_time : real =  0
 	var action_duration_time_set : bool = false
-	var action_duration : integer
+	var action_duration : real
 	
 	// pilot characteristics for time calculations
-	var pilot_age : integer
-	var pilot_flight_experience: integer
-	var pilot_age_max : integer
-	var pilot_age_min : integer
+	var pilot_age : real
+	var pilot_flight_experience: real
+	var pilot_flight_experience_max : real
+	var pilot_age_max : real
+	var pilot_age_min : real
 	
 	def initialize_variables
 	(
-		p_age : integer, 
-		p_exp : integer,
-		p_age_max : integer,
-		p_age_min : integer
+		p_age : real, 
+		p_exp : real,
+		p_exp_max : real,
+		p_age_max : real,
+		p_age_min : real
+		
 	)
 	{
 		pilot_age = p_age
 		pilot_flight_experience = p_exp
+		pilot_flight_experience_max = p_exp_max
 		pilot_age_max = p_age_max
 		pilot_age_min = p_age_min
 	}
 	
-	def hold_action_time(time_needed : integer): bool 
+	def hold_action_time(time_needed : real): bool 
 	{
 		action_run_time = action_run_time + 1
 		if (action_run_time >= time_needed)
@@ -2253,14 +2254,14 @@ class TimeHandler
 		action_run_time = 0
 	}
 	
-	def create_action_duration(action_duration_base : integer, action_duration_extra : integer, mode : string)
+	def create_action_duration(action_duration_base : real, action_duration_extra : real, mode : string)
 	{
 		if (action_duration_time_set === false)
 		{
 			action_duration_time_set = true			
 			if (mode === "pilot_age_and_experience")
 			{
-				var action_duration_extra_calc = action_duration_extra * (1 + (pilot_age / pilot_age_max) - pilot_flight_experience / (pilot_age_max - pilot_age_min) )
+				var action_duration_extra_calc = action_duration_extra * (1 + (pilot_age / pilot_age_max) - pilot_flight_experience / (pilot_flight_experience_max) )
 				action_duration = action_duration_base + random(action_duration_extra_calc)
 			}
 			else

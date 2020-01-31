@@ -218,44 +218,44 @@ namespace cessna_digital_twin {
 				if(System.Math.Abs(__angle_of_vision - value) > 0.0000001) __angle_of_vision = value;
 			}
 		}
-		private int __age
-			 = default(int);
-		public int age { 
+		private double __age
+			 = default(double);
+		public double age { 
 			get { return __age; }
 			set{
-				if(__age != value) __age = value;
+				if(System.Math.Abs(__age - value) > 0.0000001) __age = value;
 			}
 		}
-		private int __flight_experience
-			 = default(int);
-		public int flight_experience { 
+		private double __flight_experience
+			 = default(double);
+		public double flight_experience { 
 			get { return __flight_experience; }
 			set{
-				if(__flight_experience != value) __flight_experience = value;
+				if(System.Math.Abs(__flight_experience - value) > 0.0000001) __flight_experience = value;
 			}
 		}
-		private int __age_max
-			 = 75;
-		internal int age_max { 
+		private double __age_max
+			 = 75.0;
+		internal double age_max { 
 			get { return __age_max; }
 			set{
-				if(__age_max != value) __age_max = value;
+				if(System.Math.Abs(__age_max - value) > 0.0000001) __age_max = value;
 			}
 		}
-		private int __age_min
-			 = 18;
-		internal int age_min { 
+		private double __age_min
+			 = 18.0;
+		internal double age_min { 
 			get { return __age_min; }
 			set{
-				if(__age_min != value) __age_min = value;
+				if(System.Math.Abs(__age_min - value) > 0.0000001) __age_min = value;
 			}
 		}
-		private int __flight_experience_max
-			 = 57;
-		internal int flight_experience_max { 
+		private double __flight_experience_max
+			 = 5700.0;
+		internal double flight_experience_max { 
 			get { return __flight_experience_max; }
 			set{
-				if(__flight_experience_max != value) __flight_experience_max = value;
+				if(System.Math.Abs(__flight_experience_max - value) > 0.0000001) __flight_experience_max = value;
 			}
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
@@ -279,9 +279,9 @@ namespace cessna_digital_twin {
 			event_info = "End flight mission due to " + info;
 			myAircraft.Remove();
 			new System.Action(() => {
-				var _target343_10988 = this;
-				if (_target343_10988 != null) {
-					_AgentLayer._KillPilot(_target343_10988, _target343_10988._executionFrequency);
+				var _target340_11044 = this;
+				if (_target340_11044 != null) {
+					_AgentLayer._KillPilot(_target340_11044, _target340_11044._executionFrequency);
 				}
 			}).Invoke()
 			;}
@@ -293,13 +293,13 @@ namespace cessna_digital_twin {
 			{
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget348_11039 = (myAircraft.Get_position()
+				var _taget345_11095 = (myAircraft.Get_position()
 				);
 				
-				var _object348_11039 = this;
+				var _object345_11095 = this;
 				
-				_AgentLayer._PilotEnvironment.PosAt(_object348_11039, 
-					_taget348_11039.Item1, _taget348_11039.Item2
+				_AgentLayer._PilotEnvironment.PosAt(_object345_11095, 
+					_taget345_11095.Item1, _taget345_11095.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
@@ -1745,11 +1745,11 @@ namespace cessna_digital_twin {
 											active_taxi_point);
 											cessna_digital_twin.Aircraft[] aircraft_array = new System.Func<cessna_digital_twin.Aircraft[]>(() => {
 												
-												var _sourceMapped1583_46774 = this.Position;
-												var _source1583_46774 = _sourceMapped1583_46774;
-												var _range1583_46774 = -1;
+												var _sourceMapped1580_46832 = this.Position;
+												var _source1580_46832 = _sourceMapped1580_46832;
+												var _range1580_46832 = -1;
 															
-												Func<cessna_digital_twin.Aircraft, bool> _predicate1583_46774 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft x) => 
+												Func<cessna_digital_twin.Aircraft, bool> _predicate1580_46832 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft x) => 
 												 {
 														{
 														return formula.haversine(myAircraft.Get_position(),
@@ -1760,18 +1760,18 @@ namespace cessna_digital_twin {
 														;
 														return default(bool);;
 												});
-												Func<cessna_digital_twin.Aircraft, bool> _predicateMod1583_46774 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
+												Func<cessna_digital_twin.Aircraft, bool> _predicateMod1580_46832 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
 												{
 													if (_it?.ID == this.ID)
 													{
 														return false;
-													} else if (_predicate1583_46774 != null)
+													} else if (_predicate1580_46832 != null)
 													{
-														return _predicate1583_46774.Invoke(_it);
+														return _predicate1580_46832.Invoke(_it);
 													} else return true;
 												});
 												
-												return _AgentLayer._AircraftEnvironment.Explore(_source1583_46774 , _range1583_46774, -1, _predicate1583_46774).ToArray();
+												return _AgentLayer._AircraftEnvironment.Explore(_source1580_46832 , _range1580_46832, -1, _predicate1580_46832).ToArray();
 											}).Invoke();
 											if(aircraft_array.Length > 1) {
 															{
@@ -2199,7 +2199,7 @@ namespace cessna_digital_twin {
 			_executionFrequency = freq;
 			{
 			myAircraft = new Func<cessna_digital_twin.Aircraft>(() => {
-				Func<cessna_digital_twin.Aircraft, bool> _predicate217_7174 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft it) => 
+				Func<cessna_digital_twin.Aircraft, bool> _predicate214_7162 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft it) => 
 				 {
 						{
 						return Equals(it.Get_occupy_bool()
@@ -2208,21 +2208,21 @@ namespace cessna_digital_twin {
 						;
 						return default(bool);;
 				});
-				Func<cessna_digital_twin.Aircraft, bool> _predicateMod217_7174 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
+				Func<cessna_digital_twin.Aircraft, bool> _predicateMod214_7162 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
 				{
 					if (_it?.ID == this.ID)
 					{
 						return false;
-					} else if (_predicate217_7174 != null)
+					} else if (_predicate214_7162 != null)
 					{
-						return _predicate217_7174.Invoke(_it);
+						return _predicate214_7162.Invoke(_it);
 					} else return true;
 				});
 				
-				const int _range217_7174 = -1;
-				var _source217_7174 = this.Position;
+				const int _range214_7162 = -1;
+				var _source214_7162 = this.Position;
 				
-				return _AgentLayer._AircraftEnvironment.Explore(_source217_7174, _range217_7174, 1, _predicateMod217_7174)?.FirstOrDefault();
+				return _AgentLayer._AircraftEnvironment.Explore(_source214_7162, _range214_7162, 1, _predicateMod214_7162)?.FirstOrDefault();
 			}).Invoke();
 			myAircraft.Set_occupied();
 			myAircraft_callsign = myAircraft.Get_callsign();
@@ -2231,10 +2231,9 @@ namespace cessna_digital_twin {
 			current_activity = "Initialization:)";
 			event_info = "None";
 			takeoff_distance = 0;
-			age = age_min + _Random.Next((age_max - age_min) + 1);
-			flight_experience = _Random.Next(age - age_min)
-			 + 1;
-			timehandler.initialize_variables(age,flight_experience,age_max,age_min)
+			age = age_min + Mars.Mathematics.Statistics.RandomHelper.NextDouble(_Random, 0, (age_max - age_min) + 1);
+			flight_experience = Mars.Mathematics.Statistics.RandomHelper.NextDouble(_Random, 0, (age - age_min) * flight_experience_max / (age_max - age_min));
+			timehandler.initialize_variables(age,flight_experience,flight_experience_max,age_max,age_min)
 			;}
 		}
 		

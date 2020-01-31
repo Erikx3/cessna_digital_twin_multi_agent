@@ -18,12 +18,12 @@ namespace cessna_digital_twin {
 		private static readonly Mars.Common.Logging.ILogger _Logger = 
 					Mars.Common.Logging.LoggerFactory.GetLogger(typeof(TimeHandler));
 		private readonly System.Random _Random = new System.Random();
-		private int __action_run_time
+		private double __action_run_time
 			 = 0;
-		internal int action_run_time { 
+		internal double action_run_time { 
 			get { return __action_run_time; }
 			set{
-				if(__action_run_time != value) __action_run_time = value;
+				if(System.Math.Abs(__action_run_time - value) > 0.0000001) __action_run_time = value;
 			}
 		}
 		private bool __action_duration_time_set
@@ -34,59 +34,68 @@ namespace cessna_digital_twin {
 				if(__action_duration_time_set != value) __action_duration_time_set = value;
 			}
 		}
-		private int __action_duration
-			 = default(int);
-		internal int action_duration { 
+		private double __action_duration
+			 = default(double);
+		internal double action_duration { 
 			get { return __action_duration; }
 			set{
-				if(__action_duration != value) __action_duration = value;
+				if(System.Math.Abs(__action_duration - value) > 0.0000001) __action_duration = value;
 			}
 		}
-		private int __pilot_age
-			 = default(int);
-		internal int pilot_age { 
+		private double __pilot_age
+			 = default(double);
+		internal double pilot_age { 
 			get { return __pilot_age; }
 			set{
-				if(__pilot_age != value) __pilot_age = value;
+				if(System.Math.Abs(__pilot_age - value) > 0.0000001) __pilot_age = value;
 			}
 		}
-		private int __pilot_flight_experience
-			 = default(int);
-		internal int pilot_flight_experience { 
+		private double __pilot_flight_experience
+			 = default(double);
+		internal double pilot_flight_experience { 
 			get { return __pilot_flight_experience; }
 			set{
-				if(__pilot_flight_experience != value) __pilot_flight_experience = value;
+				if(System.Math.Abs(__pilot_flight_experience - value) > 0.0000001) __pilot_flight_experience = value;
 			}
 		}
-		private int __pilot_age_max
-			 = default(int);
-		internal int pilot_age_max { 
+		private double __pilot_flight_experience_max
+			 = default(double);
+		internal double pilot_flight_experience_max { 
+			get { return __pilot_flight_experience_max; }
+			set{
+				if(System.Math.Abs(__pilot_flight_experience_max - value) > 0.0000001) __pilot_flight_experience_max = value;
+			}
+		}
+		private double __pilot_age_max
+			 = default(double);
+		internal double pilot_age_max { 
 			get { return __pilot_age_max; }
 			set{
-				if(__pilot_age_max != value) __pilot_age_max = value;
+				if(System.Math.Abs(__pilot_age_max - value) > 0.0000001) __pilot_age_max = value;
 			}
 		}
-		private int __pilot_age_min
-			 = default(int);
-		internal int pilot_age_min { 
+		private double __pilot_age_min
+			 = default(double);
+		internal double pilot_age_min { 
 			get { return __pilot_age_min; }
 			set{
-				if(__pilot_age_min != value) __pilot_age_min = value;
+				if(System.Math.Abs(__pilot_age_min - value) > 0.0000001) __pilot_age_min = value;
 			}
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public virtual void initialize_variables(int p_age, int p_exp, int p_age_max, int p_age_min) 
+		public virtual void initialize_variables(double p_age, double p_exp, double p_exp_max, double p_age_max, double p_age_min) 
 		{
 			{
 			pilot_age = p_age;
 			pilot_flight_experience = p_exp;
+			pilot_flight_experience_max = p_exp_max;
 			pilot_age_max = p_age_max;
 			pilot_age_min = p_age_min
 			;}
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public virtual bool hold_action_time(int time_needed) 
+		public virtual bool hold_action_time(double time_needed) 
 		{
 			{
 			action_run_time = action_run_time + 1;
@@ -113,7 +122,7 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public virtual void create_action_duration(int action_duration_base, int action_duration_extra, string mode) 
+		public virtual void create_action_duration(double action_duration_base, double action_duration_extra, string mode) 
 		{
 			{
 			if(Equals(action_duration_time_set, false)) {
@@ -121,12 +130,12 @@ namespace cessna_digital_twin {
 							action_duration_time_set = true;
 							if(Equals(mode, "pilot_age_and_experience")) {
 											{
-											int action_duration_extra_calc = action_duration_extra * (1 + (pilot_age / pilot_age_max) - pilot_flight_experience / (pilot_age_max - pilot_age_min));
-											action_duration = action_duration_base + _Random.Next(action_duration_extra_calc)
+											double action_duration_extra_calc = action_duration_extra * (1 + (pilot_age / pilot_age_max) - pilot_flight_experience / (pilot_flight_experience_max));
+											action_duration = action_duration_base + Mars.Mathematics.Statistics.RandomHelper.NextDouble(_Random, 0, action_duration_extra_calc)
 											;}
 									;} else {
 											{
-											action_duration = action_duration_base + _Random.Next(action_duration_extra)
+											action_duration = action_duration_base + Mars.Mathematics.Statistics.RandomHelper.NextDouble(_Random, 0, action_duration_extra)
 											;}
 										;}
 							;}
