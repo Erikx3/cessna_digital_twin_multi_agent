@@ -664,7 +664,8 @@ agent Pilot on AgentLayer{
 						}
 						else
 						{
-							remove_me_and_my_aircraft("low engine oil pressure")
+							killme_info = "low engine oil pressure"
+							go_to_next_state("LeavingFrequency")
 						}
 					}
 				}
@@ -690,7 +691,8 @@ agent Pilot on AgentLayer{
 						}
 						else
 						{
-							remove_me_and_my_aircraft("high engine oil temperature")
+							killme_info = "high engine oil temperature"
+							go_to_next_state("LeavingFrequency")
 						}
 					}
 				}				
@@ -837,7 +839,8 @@ agent Pilot on AgentLayer{
 				{
 					if(skip_action(0.05, "Check_Instrument_Engine__oil_temperature") === false)
 					{
-						remove_me_and_my_aircraft("high engine oil temperature")
+						killme_info = "high engine oil temperature"
+						go_to_next_state("LeavingFrequency")
 					}
 				}
 				
@@ -845,7 +848,8 @@ agent Pilot on AgentLayer{
 				{
 					if(skip_action(0.05, "Check_Instrument_Engine__oil_pressure") === false)
 					{
-						remove_me_and_my_aircraft("low engine oil pressure")
+						killme_info = "low engine oil pressure"
+						go_to_next_state("LeavingFrequency")
 					}
 				}
 				
@@ -1111,7 +1115,8 @@ agent Pilot on AgentLayer{
 		// TODO: Think about better handling and protocol
 		if (myAircraft.Get_Engine__failure() === true)
 		{
-			remove_me_and_my_aircraft("Engine__Failure during TakeOff")
+			killme_info = "Engine__Failure during TakeOff"
+			go_to_next_state("LeavingFrequency")
 		}
 	}
 	
@@ -1612,7 +1617,8 @@ agent Pilot on AgentLayer{
 		// TODO: Think about better handling and protocol
 		if (myAircraft.Get_Engine__failure() === true)
 		{
-			remove_me_and_my_aircraft("Engine__Failure during Taxiing")
+			killme_info = "Engine__Failure during Taxiing"
+			go_to_next_state("LeavingFrequency")
 		}		
 	}
 	

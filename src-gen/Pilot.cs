@@ -279,11 +279,12 @@ namespace cessna_digital_twin {
 			event_info = "End flight mission due to " + info;
 			myAircraft.Remove();
 			new System.Action(() => {
-				var _target343_10946 = this;
-				if (_target343_10946 != null) {
-					_AgentLayer._KillPilot(_target343_10946, _target343_10946._executionFrequency);
+				var _target343_10901 = this;
+				if (_target343_10901 != null) {
+					_AgentLayer._KillPilot(_target343_10901, _target343_10901._executionFrequency);
 				}
-			}).Invoke()
+			}).Invoke();
+			System.Console.WriteLine("now i should be dead");
 			;}
 			return;
 		}
@@ -293,13 +294,13 @@ namespace cessna_digital_twin {
 			{
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget348_10997 = (myAircraft.Get_position()
+				var _taget349_10986 = (myAircraft.Get_position()
 				);
 				
-				var _object348_10997 = this;
+				var _object349_10986 = this;
 				
-				_AgentLayer._PilotEnvironment.PosAt(_object348_10997, 
-					_taget348_10997.Item1, _taget348_10997.Item2
+				_AgentLayer._PilotEnvironment.PosAt(_object349_10986, 
+					_taget349_10986.Item1, _taget349_10986.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
@@ -667,7 +668,8 @@ namespace cessna_digital_twin {
 																																																			;}
 																																																	;} else {
 																																																			{
-																																																			remove_me_and_my_aircraft("low engine oil pressure")
+																																																			killme_info = "low engine oil pressure";
+																																																			go_to_next_state("LeavingFrequency")
 																																																			;}
 																																																		;}
 																																															;}
@@ -699,7 +701,8 @@ namespace cessna_digital_twin {
 																																																							;}
 																																																					;} else {
 																																																							{
-																																																							remove_me_and_my_aircraft("high engine oil temperature")
+																																																							killme_info = "high engine oil temperature";
+																																																							go_to_next_state("LeavingFrequency")
 																																																							;}
 																																																						;}
 																																																			;}
@@ -877,7 +880,8 @@ namespace cessna_digital_twin {
 																															{
 																															if(Equals(skip_action(0.05,"Check_Instrument_Engine__oil_temperature"), false)) {
 																																			{
-																																			remove_me_and_my_aircraft("high engine oil temperature")
+																																			killme_info = "high engine oil temperature";
+																																			go_to_next_state("LeavingFrequency")
 																																			;}
 																																	;} 
 																															;}
@@ -887,7 +891,8 @@ namespace cessna_digital_twin {
 																															{
 																															if(Equals(skip_action(0.05,"Check_Instrument_Engine__oil_pressure"), false)) {
 																																			{
-																																			remove_me_and_my_aircraft("low engine oil pressure")
+																																			killme_info = "low engine oil pressure";
+																																			go_to_next_state("LeavingFrequency")
 																																			;}
 																																	;} 
 																															;}
@@ -1091,7 +1096,7 @@ namespace cessna_digital_twin {
 					;} ;
 			if(Equals(next_action, "Set_Throttle_and_Heading")) {
 							{
-							timehandler.create_action_duration(10,2,"pilot_age_and_experience");
+							timehandler.create_action_duration(4,2,"pilot_age_and_experience");
 							if(timehandler.hold_action_time(timehandler.action_duration)
 							) {
 											{
@@ -1199,7 +1204,8 @@ namespace cessna_digital_twin {
 			if(Equals(myAircraft.Get_Engine__failure()
 			, true)) {
 							{
-							remove_me_and_my_aircraft("Engine__Failure during TakeOff")
+							killme_info = "Engine__Failure during TakeOff";
+							go_to_next_state("LeavingFrequency")
 							;}
 					;} 
 			;}
@@ -1729,11 +1735,11 @@ namespace cessna_digital_twin {
 											active_taxi_point);
 											cessna_digital_twin.Aircraft[] aircraft_array = new System.Func<cessna_digital_twin.Aircraft[]>(() => {
 												
-												var _sourceMapped1566_46226 = this.Position;
-												var _source1566_46226 = _sourceMapped1566_46226;
-												var _range1566_46226 = -1;
+												var _sourceMapped1572_46307 = this.Position;
+												var _source1572_46307 = _sourceMapped1572_46307;
+												var _range1572_46307 = -1;
 															
-												Func<cessna_digital_twin.Aircraft, bool> _predicate1566_46226 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft x) => 
+												Func<cessna_digital_twin.Aircraft, bool> _predicate1572_46307 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft x) => 
 												 {
 														{
 														return formula.haversine(myAircraft.Get_position(),
@@ -1744,18 +1750,18 @@ namespace cessna_digital_twin {
 														;
 														return default(bool);;
 												});
-												Func<cessna_digital_twin.Aircraft, bool> _predicateMod1566_46226 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
+												Func<cessna_digital_twin.Aircraft, bool> _predicateMod1572_46307 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
 												{
 													if (_it?.ID == this.ID)
 													{
 														return false;
-													} else if (_predicate1566_46226 != null)
+													} else if (_predicate1572_46307 != null)
 													{
-														return _predicate1566_46226.Invoke(_it);
+														return _predicate1572_46307.Invoke(_it);
 													} else return true;
 												});
 												
-												return _AgentLayer._AircraftEnvironment.Explore(_source1566_46226 , _range1566_46226, -1, _predicate1566_46226).ToArray();
+												return _AgentLayer._AircraftEnvironment.Explore(_source1572_46307 , _range1572_46307, -1, _predicate1572_46307).ToArray();
 											}).Invoke();
 											if(aircraft_array.Length > 1) {
 															{
@@ -1810,7 +1816,8 @@ namespace cessna_digital_twin {
 			if(Equals(myAircraft.Get_Engine__failure()
 			, true)) {
 							{
-							remove_me_and_my_aircraft("Engine__Failure during Taxiing")
+							killme_info = "Engine__Failure during Taxiing";
+							go_to_next_state("LeavingFrequency")
 							;}
 					;} 
 			;}
@@ -2182,7 +2189,7 @@ namespace cessna_digital_twin {
 			_executionFrequency = freq;
 			{
 			myAircraft = new Func<cessna_digital_twin.Aircraft>(() => {
-				Func<cessna_digital_twin.Aircraft, bool> _predicate217_7173 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft it) => 
+				Func<cessna_digital_twin.Aircraft, bool> _predicate217_7128 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft it) => 
 				 {
 						{
 						return Equals(it.Get_occupy_bool()
@@ -2191,21 +2198,21 @@ namespace cessna_digital_twin {
 						;
 						return default(bool);;
 				});
-				Func<cessna_digital_twin.Aircraft, bool> _predicateMod217_7173 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
+				Func<cessna_digital_twin.Aircraft, bool> _predicateMod217_7128 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
 				{
 					if (_it?.ID == this.ID)
 					{
 						return false;
-					} else if (_predicate217_7173 != null)
+					} else if (_predicate217_7128 != null)
 					{
-						return _predicate217_7173.Invoke(_it);
+						return _predicate217_7128.Invoke(_it);
 					} else return true;
 				});
 				
-				const int _range217_7173 = -1;
-				var _source217_7173 = this.Position;
+				const int _range217_7128 = -1;
+				var _source217_7128 = this.Position;
 				
-				return _AgentLayer._AircraftEnvironment.Explore(_source217_7173, _range217_7173, 1, _predicateMod217_7173)?.FirstOrDefault();
+				return _AgentLayer._AircraftEnvironment.Explore(_source217_7128, _range217_7128, 1, _predicateMod217_7128)?.FirstOrDefault();
 			}).Invoke();
 			myAircraft.Set_occupied();
 			myAircraft_callsign = myAircraft.Get_callsign();
