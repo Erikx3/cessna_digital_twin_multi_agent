@@ -20,10 +20,6 @@
     "layers": [
         {
             "name": "AgentLayer"
-        },
-        {
-            "name": "AirportStadeLayer",
-            "file": "AirportStade.geojson"
         }
     ],
     "agents": [

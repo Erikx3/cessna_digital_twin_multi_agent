@@ -628,7 +628,7 @@ namespace cessna_digital_twin {
 		}
 		private int __TireRightMainWheel__inflation
 			 = default(int);
-		public int TireRightMainWheel__inflation { 
+		internal int TireRightMainWheel__inflation { 
 			get { return __TireRightMainWheel__inflation; }
 			set{
 				if(__TireRightMainWheel__inflation != value) __TireRightMainWheel__inflation = value;
@@ -636,7 +636,7 @@ namespace cessna_digital_twin {
 		}
 		private int __TireLeftMainWheel__inflation
 			 = default(int);
-		public int TireLeftMainWheel__inflation { 
+		internal int TireLeftMainWheel__inflation { 
 			get { return __TireLeftMainWheel__inflation; }
 			set{
 				if(__TireLeftMainWheel__inflation != value) __TireLeftMainWheel__inflation = value;
@@ -644,7 +644,7 @@ namespace cessna_digital_twin {
 		}
 		private int __TireNoseWheel__inflation
 			 = default(int);
-		public int TireNoseWheel__inflation { 
+		internal int TireNoseWheel__inflation { 
 			get { return __TireNoseWheel__inflation; }
 			set{
 				if(__TireNoseWheel__inflation != value) __TireNoseWheel__inflation = value;
@@ -874,14 +874,14 @@ namespace cessna_digital_twin {
 							{
 							new System.Func<Tuple<double,double>>(() => {
 								
-								var _speed290_10483 = Aircraft__movement_x
+								var _speed288_10306 = Aircraft__movement_x
 							;
 								
-								var _entity290_10483 = this;
+								var _entity288_10306 = this;
 								
-								Func<double[], bool> _predicate290_10483 = null;
+								Func<double[], bool> _predicate288_10306 = null;
 								
-								_AgentLayer._AircraftEnvironment.MoveTowards(_entity290_10483, Aircraft__heading_bearing, _speed290_10483);	
+								_AgentLayer._AircraftEnvironment.MoveTowards(_entity288_10306, Aircraft__heading_bearing, _speed288_10306);	
 								
 								return new Tuple<double, double>(Position.X, Position.Y);
 							}).Invoke()
@@ -1003,7 +1003,7 @@ namespace cessna_digital_twin {
 			Engine__power = 0.0;
 			Engine__running = false;
 			Engine__oil_pressure = 101325;
-			Engine__oil_temperature = 15;
+			Engine__oil_temperature = agentlayer.Get_Weather__temperature();
 			Engine__failure_probability = 0.0;
 			Engine__failure = false;
 			Engine__fuel_consumption = 0.0;
@@ -1184,6 +1184,17 @@ namespace cessna_digital_twin {
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public virtual void initialize_Tire() 
+		{
+			{
+			TireRightMainWheel__inflation = TireRightMainWheel__inflation_max;
+			TireLeftMainWheel__inflation = TireLeftMainWheel__inflation_max;
+			TireNoseWheel__inflation = TireNoseWheel__inflation_max;
+			Tire__friction_force = 0
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public virtual void initialize_Tire_alternative() 
 		{
 			{
 			if(_Random.Next(100)
@@ -1725,8 +1736,6 @@ namespace cessna_digital_twin {
 		public cessna_digital_twin.AgentLayer _Layer_ => _AgentLayer;
 		public cessna_digital_twin.AgentLayer _AgentLayer { get; set; }
 		public cessna_digital_twin.AgentLayer agentlayer => _AgentLayer;
-		public cessna_digital_twin.AirportStadeLayer _AirportStadeLayer { get; set; }
-		public cessna_digital_twin.AirportStadeLayer airportstadelayer => _AirportStadeLayer;
 		
 		[Mars.Interfaces.LIFECapabilities.PublishForMappingInMars]
 		public Aircraft (
@@ -1735,14 +1744,12 @@ namespace cessna_digital_twin {
 		Mars.Interfaces.Layer.RegisterAgent _register,
 		Mars.Interfaces.Layer.UnregisterAgent _unregister,
 		Mars.Components.Environments.GeoHashEnvironment<Aircraft> _AircraftEnvironment,
-		cessna_digital_twin.AirportStadeLayer _AirportStadeLayer
-	,	double xcor = 0, double ycor = 0, int freq = 1)
+		double xcor = 0, double ycor = 0, int freq = 1)
 		{
 			_AgentLayer = _layer;
 			ID = _id;
 			Position = Mars.Interfaces.Environment.Position.CreatePosition(xcor, ycor);
 			_Random = new System.Random(ID.GetHashCode());
-			this._AirportStadeLayer = _AirportStadeLayer;
 			_AgentLayer._AircraftEnvironment.Insert(this);
 			_register(_layer, this, freq);
 			_isAlive = true;

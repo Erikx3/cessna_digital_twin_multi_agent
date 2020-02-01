@@ -5,10 +5,14 @@ use Mars
 layer AgentLayer as agentlayer
 {	
 	//Weather Values TODO: Think about another solution for weather
-	var Weather__wind_bearing : real = 107 // ° range 0..360
-	var Weather__wind_speed : real = 5 // m/s
+	// TODO: Add Temperature and thus changing density dependency
+	var Weather__wind_bearing : real = 107.0 // ° range 0..360
+	var Weather__wind_speed : real = 5.0 // m/s
+	var Weather__temperature : real = 15.0 // C°
+	
 	def Get_Weather__wind_bearing() => return Weather__wind_bearing
 	def Get_Weather__wind_speed() => return Weather__wind_speed
+	def Get_Weather__temperature() => return Weather__temperature
 	
 	//help variables for density calculations
 	var density_zero : real = 1.225 // kg/m^3 - mean sea level ISA
@@ -92,8 +96,6 @@ layer AgentLayer as agentlayer
 	
 }
 
-//TODO: Not used so far
-vector-layer AirportStadeLayer as airportstadelayer
 
 // -----Agent Observer for spawning sequence-----
 agent Observer on AgentLayer{
@@ -357,12 +359,12 @@ agent Pilot on AgentLayer{
 	}
 	
 	//-----General Pilot Values and functions-----
-	observe var age: real // years
+	observe var age: integer // years
 	observe var flight_experience : real // years
 		
 	//Settings
-	var age_max : real = 75.0
-	var age_min : real = 18.0
+	var age_max : integer = 75
+	var age_min : integer = 18
 	var flight_experience_max : real = 5700.0 // hours
 	
 	
@@ -1019,7 +1021,6 @@ agent Pilot on AgentLayer{
 			takeoff_distance = takeoff_distance + myAircraft.Get_Aircraft__ground_speed_x() * 1 //since ticksize is one
 		}
 		
-		//TODO: Add check if runway is still occupied, maybe at ATC
 		if (next_action === "Set_Throttle_and_Heading")
 		{
 			timehandler.create_action_duration(4, 2, "pilot_age_and_experience")
@@ -1109,7 +1110,7 @@ agent Pilot on AgentLayer{
 		}	
 		
 		
-		// TODO: Think about better handling and protocol
+		// TODO: Think about better handling and protocol, when engine failure occur
 		if (myAircraft.Get_Engine__failure() === true)
 		{
 			killme_info = "Engine__Failure during TakeOff"
@@ -1190,8 +1191,7 @@ agent Pilot on AgentLayer{
 			if (temp_receiver === myAircraft_callsign)
 			{
 				var temp_bool = agentlayer.Listen_message_information_bool()
-				//TODO add waiting mechanism, if answer returns false
-				if (temp_bool === true)
+				if (temp_bool === true) //always true so far
 				{
 					next_action = "Clear_frequency"
 				}
@@ -1341,7 +1341,7 @@ agent Pilot on AgentLayer{
 	}
 	
 	//-----State Landing-----
-	//TODO: Improve simultaneous landing and communication action feature (done next to one another)
+	//TODO: Improve simultaneous landing and communication action feature (done after each other)
 	def Landing_action()
 	{
 		if (first_action_set === false)
@@ -1359,7 +1359,7 @@ agent Pilot on AgentLayer{
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				Set_Aircraft__heading_bearing(heading_information)
-				//TODO: Control behavior optimization, since pitch, throttle, ROC and TAS are all interdependent
+				//TODO: Control behavior optimization, since pitch, throttle, ROC and TAS are all interdependent (AI Pilot/Bot)
 				// pitch control
 				if (Hear_Aircraft__stall_sound() === true)
 				{
@@ -1467,8 +1467,8 @@ agent Pilot on AgentLayer{
 	
 	
 	//-----State Taxiing in general-----
-	//TODO: During taxi the pilot receives the actual ground speed, since in cockpit he would see
-	//the true airspeed but with strong headwind the pilot would not move!
+	//TODO: Here the speed is checked against ground speed, normally the speed on the speed indicator in
+	//cockpit shows the true airspeed, but with strong headwind this would lead to pilots not moving
 	
 	// defining help functions for taxiing
 	def Taxiing_brake(throttle : real, brake : real)
@@ -1623,7 +1623,7 @@ agent Pilot on AgentLayer{
 			first_action_set = false
 		}
 		
-		// TODO: Think about better handling and protocol
+		// TODO: Think about better handling and protocol for engine failure
 		if (myAircraft.Get_Engine__failure() === true)
 		{
 			killme_info = "Engine__Failure during Taxiing"
@@ -2012,7 +2012,7 @@ agent AirTrafficController on AgentLayer
 
 
 
-// TODO: Make a more convenient way for information retrieval of airport
+// TODO: Make a more convenient way for information retrieval of airport (graph based system, ...)
 class AirportStade
 {
 	var taxipath: List<Tuple<real, real>>

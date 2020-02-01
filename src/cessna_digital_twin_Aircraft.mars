@@ -254,7 +254,6 @@ agent Aircraft on AgentLayer{
 			Aircraft__drag = Aircraft__drag_coefficient * agentlayer.Get_Weather__density(Aircraft__height) * Aircraft__true_air_speed**2 * Aircraft__wing_area / 2
 			
 			//Z Movement calculation
-			// TODO: The right angle is Aircraft__climb_angle here, but that would lead to VERY unstable behavior due to linking effects
 			Aircraft__acceleration_z = ((Propeller__thrust - Tire__friction_force - Aircraft__drag) * Math.Sin(Aircraft__climb_angle_rad) + Aircraft__lift * Math.Cos(Aircraft__climb_angle_rad) - Aircraft__mass * agentlayer.Get_gravity()) / Aircraft__mass 
 			Aircraft__rate_of_climb = Aircraft__rate_of_climb + Aircraft__acceleration_z / n_cycle
 			Aircraft__height = Aircraft__height + Aircraft__rate_of_climb / n_cycle
@@ -284,7 +283,6 @@ agent Aircraft on AgentLayer{
 			Aircraft__true_air_speed = (Aircraft__true_air_speed_x**2 + Aircraft__rate_of_climb**2)**0.5
 		}
 		
-		// TODO: Add ground speed calculation here !
 		if (Aircraft__movement_x > 0)
 		{
 			move me Aircraft__movement_x to Aircraft__heading_bearing
@@ -299,7 +297,6 @@ agent Aircraft on AgentLayer{
 	var Brake__deceleration_force_max : real = 2500 // Newton
 	
 	//TODO: Add brake_health dependency on Tire inflation
-	
 	def initialize_Brake()
 	{
 		Brake__parking_brake = "SET" 
@@ -437,8 +434,8 @@ agent Aircraft on AgentLayer{
 		Engine__RPM = 0.0
 		Engine__power = 0.0
 		Engine__running = false
-		Engine__oil_pressure = 101325 //TODO: Set equal to ambient pressure
-		Engine__oil_temperature = 15
+		Engine__oil_pressure = 101325
+		Engine__oil_temperature = agentlayer.Get_Weather__temperature()
 		Engine__failure_probability = 0.0
 		Engine__failure = false
 		Engine__fuel_consumption = 0.0
@@ -608,9 +605,9 @@ agent Aircraft on AgentLayer{
 	
 	
 	// -----Tire-----
-	observe var TireRightMainWheel__inflation : integer
-	observe var TireLeftMainWheel__inflation : integer
-	observe var TireNoseWheel__inflation : integer
+	var TireRightMainWheel__inflation : integer
+	var TireLeftMainWheel__inflation : integer
+	var TireNoseWheel__inflation : integer
 	var TireRightMainWheel__inflation_max : integer = 145000
 	var TireLeftMainWheel__inflation_max : integer = 145000
 	var TireNoseWheel__inflation_max : integer = 207000
@@ -622,6 +619,15 @@ agent Aircraft on AgentLayer{
 	var Tire__roll_coefficient : real = 0.002 //meters
 	
 	def initialize_Tire()
+	{
+		TireRightMainWheel__inflation = TireRightMainWheel__inflation_max
+		TireLeftMainWheel__inflation = TireLeftMainWheel__inflation_max
+		TireNoseWheel__inflation = TireNoseWheel__inflation_max
+		Tire__friction_force = 0
+	}
+	
+	//TODO: Add Tire condition dependencies and then user other initialize
+	def initialize_Tire_alternative()
 	{
 		//Inflation with 1% Chance that a Tire is not fully inflated
 		if (random(100) <= 99)
@@ -759,7 +765,6 @@ agent Aircraft on AgentLayer{
 	//airspeed_indicator
 	passive IP_Get_Aircraft__true_air_speed()
 	{
-		//TODO: Right Aircraft Speed indication calculation after wind implementation
 		return Aircraft__true_air_speed
 	}
 	

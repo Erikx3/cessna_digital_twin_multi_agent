@@ -40,7 +40,6 @@ namespace cessna_digital_twin {
 		public Mars.Components.Environments.GeoHashEnvironment<Aircraft> _AircraftEnvironment { get; set; }
 		public Mars.Components.Environments.GeoHashEnvironment<Observer> _ObserverEnvironment { get; set; }
 		public Mars.Components.Environments.GeoHashEnvironment<Pilot> _PilotEnvironment { get; set; }
-		public AirportStadeLayer _AirportStadeLayer { get; set; }
 		public System.Collections.Generic.IDictionary<System.Guid, AirTrafficController> _AirTrafficControllerAgents { get; set; }
 		public System.Collections.Generic.IDictionary<System.Guid, Aircraft> _AircraftAgents { get; set; }
 		public System.Collections.Generic.IDictionary<System.Guid, Observer> _ObserverAgents { get; set; }
@@ -49,7 +48,7 @@ namespace cessna_digital_twin {
 		public AgentLayer _AgentLayer => this;
 		public AgentLayer agentlayer => this;
 		private double __Weather__wind_bearing
-			 = 107;
+			 = 107.0;
 		internal double Weather__wind_bearing { 
 			get { return __Weather__wind_bearing; }
 			set{
@@ -57,11 +56,19 @@ namespace cessna_digital_twin {
 			}
 		}
 		private double __Weather__wind_speed
-			 = 5;
+			 = 5.0;
 		internal double Weather__wind_speed { 
 			get { return __Weather__wind_speed; }
 			set{
 				if(System.Math.Abs(__Weather__wind_speed - value) > 0.0000001) __Weather__wind_speed = value;
+			}
+		}
+		private double __Weather__temperature
+			 = 15.0;
+		internal double Weather__temperature { 
+			get { return __Weather__temperature; }
+			set{
+				if(System.Math.Abs(__Weather__temperature - value) > 0.0000001) __Weather__temperature = value;
 			}
 		}
 		private double __density_zero
@@ -174,6 +181,15 @@ namespace cessna_digital_twin {
 		{
 			{
 			return Weather__wind_speed
+					;
+			}
+			return default(double);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public virtual double Get_Weather__temperature() 
+		{
+			{
+			return Weather__temperature
 					;
 			}
 			return default(double);;
@@ -306,12 +322,10 @@ namespace cessna_digital_twin {
 			return;
 		}
 		public AgentLayer (
-		AirportStadeLayer _airportstadelayer, 
 		double? minLon = null, double? minLat = null,
 		double? maxLon = null, double? maxLat = null,
 		int? cellSizeMeters = null
 		) {
-			this._AirportStadeLayer = _airportstadelayer;
 			_minLon = minLon ?? 0;
 			_minLat = minLat ?? 0;
 			_maxLon = maxLon ?? 1;
@@ -334,7 +348,7 @@ namespace cessna_digital_twin {
 			this._Unregister = unregHandle;
 			
 			_DistanceMetric = Mars.Mathematics.SpaceDistanceMetric.Chebyshev;
-			var _gisLayerExist = true;
+			var _gisLayerExist = false;
 			if (!_isDefault && _lowerLeft != null && _upperRight != null) {
 				this._AirTrafficControllerEnvironment = Mars.Components.Environments.GeoHashEnvironment<AirTrafficController>.BuildByBBox(_lowerLeft.Longitude, _lowerLeft.Latitude, _upperRight.Longitude, _upperRight.Latitude);
 				this._AircraftEnvironment = Mars.Components.Environments.GeoHashEnvironment<Aircraft>.BuildByBBox(_lowerLeft.Longitude, _lowerLeft.Latitude, _upperRight.Longitude, _upperRight.Latitude);
@@ -344,7 +358,6 @@ namespace cessna_digital_twin {
 			{
 				var geometries = new List<GeoAPI.Geometries.IGeometry>();
 				var _factory = new NetTopologySuite.Utilities.GeometricShapeFactory();
-				geometries.AddRange(this._AirportStadeLayer.GeometryCollection.Geometries);
 				var _feature = new NetTopologySuite.Geometries.GeometryCollection(geometries.ToArray()).EnvelopeInternal;
 				_minLon = _feature.MinX;
 				_minLat = _feature.MinY;
@@ -372,19 +385,19 @@ namespace cessna_digital_twin {
 			_AirTrafficControllerAgents = Mars.Components.Services.AgentManager.SpawnAgents<AirTrafficController>(
 			initData.AgentInitConfigs.First(config => config.Type == typeof(AirTrafficController)),
 			regHandle, unregHandle, 
-			new System.Collections.Generic.List<Mars.Interfaces.Layer.ILayer> { this, this._AirportStadeLayer });
+			new System.Collections.Generic.List<Mars.Interfaces.Layer.ILayer> { this });
 			_AircraftAgents = Mars.Components.Services.AgentManager.SpawnAgents<Aircraft>(
 			initData.AgentInitConfigs.First(config => config.Type == typeof(Aircraft)),
 			regHandle, unregHandle, 
-			new System.Collections.Generic.List<Mars.Interfaces.Layer.ILayer> { this, this._AirportStadeLayer });
+			new System.Collections.Generic.List<Mars.Interfaces.Layer.ILayer> { this });
 			_ObserverAgents = Mars.Components.Services.AgentManager.SpawnAgents<Observer>(
 			initData.AgentInitConfigs.First(config => config.Type == typeof(Observer)),
 			regHandle, unregHandle, 
-			new System.Collections.Generic.List<Mars.Interfaces.Layer.ILayer> { this, this._AirportStadeLayer });
+			new System.Collections.Generic.List<Mars.Interfaces.Layer.ILayer> { this });
 			_PilotAgents = Mars.Components.Services.AgentManager.SpawnAgents<Pilot>(
 			initData.AgentInitConfigs.First(config => config.Type == typeof(Pilot)),
 			regHandle, unregHandle, 
-			new System.Collections.Generic.List<Mars.Interfaces.Layer.ILayer> { this, this._AirportStadeLayer });
+			new System.Collections.Generic.List<Mars.Interfaces.Layer.ILayer> { this });
 			
 			return true;
 		}
@@ -394,8 +407,7 @@ namespace cessna_digital_twin {
 			var id = System.Guid.NewGuid();
 			var agent = new cessna_digital_twin.AirTrafficController(id, this, _Register, _Unregister,
 			_AirTrafficControllerEnvironment,
-			_AirportStadeLayer
-		, 	xcor, ycor, freq);
+			xcor, ycor, freq);
 			_AirTrafficControllerAgents.Add(id, agent);
 			return agent;
 		}
@@ -404,8 +416,7 @@ namespace cessna_digital_twin {
 			var id = System.Guid.NewGuid();
 			var agent = new cessna_digital_twin.Aircraft(id, this, _Register, _Unregister,
 			_AircraftEnvironment,
-			_AirportStadeLayer
-		, 	xcor, ycor, freq);
+			xcor, ycor, freq);
 			_AircraftAgents.Add(id, agent);
 			return agent;
 		}
@@ -414,8 +425,7 @@ namespace cessna_digital_twin {
 			var id = System.Guid.NewGuid();
 			var agent = new cessna_digital_twin.Observer(id, this, _Register, _Unregister,
 			_ObserverEnvironment,
-			_AirportStadeLayer
-		, 	xcor, ycor, freq);
+			xcor, ycor, freq);
 			_ObserverAgents.Add(id, agent);
 			return agent;
 		}
@@ -424,8 +434,7 @@ namespace cessna_digital_twin {
 			var id = System.Guid.NewGuid();
 			var agent = new cessna_digital_twin.Pilot(id, this, _Register, _Unregister,
 			_PilotEnvironment,
-			_AirportStadeLayer
-		, 	xcor, ycor, freq);
+			xcor, ycor, freq);
 			_PilotAgents.Add(id, agent);
 			return agent;
 		}
