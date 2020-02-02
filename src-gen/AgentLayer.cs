@@ -370,6 +370,15 @@ namespace cessna_digital_twin {
 			default(double), 
 			default(double), 
 			default(double), 
+			default(double), 
+			default(int), 
+			default(double), 
+			default(double), 
+			default(double), 
+			default(double), 
+			default(double), 
+			default(int), 
+			default(int), 
 			default(double)
 		, 	xcor, ycor, freq);
 			_PilotAgents.Add(id, agent);

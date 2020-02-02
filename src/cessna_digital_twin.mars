@@ -354,10 +354,9 @@ agent Pilot on AgentLayer{
 	var request_attempts : integer // checker for communication attempt
 	var killme_info : string //info for "killme" sequence
 	
-	// settings for aircraft handling
-	external var TakeOff__V_rotate : real  // Speed on where to rotate (for cessna152 its normally at 25)
-	external var Taxiing__spacing_to_next_aircraft : real // distance kept to the next aircraft (when start braking)
-	external var Taxiing__angle_of_vision : real // angle of vision when looking with current heading
+	// settings for handling
+	external var time_base_next_communication_attempt : real
+	external var time_extra_next_communication_attempt : real
 	
 	def go_to_next_state(_state : string)
 	{
@@ -780,7 +779,7 @@ agent Pilot on AgentLayer{
 			}
 			
 			//retry contacting tower after a specific period of time
-			timehandler.create_action_duration(10, 5, "pilot_age_and_experience")
+			timehandler.create_action_duration(time_base_next_communication_attempt, time_extra_next_communication_attempt, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				next_action = "Communicate_on_frequency"
@@ -825,6 +824,7 @@ agent Pilot on AgentLayer{
 			}
 		}
 		
+		// TODO: Add follow up action for checks		
 		else if (next_action === "Check_all_Flight_Instruments")
 		{
 			timehandler.create_action_duration(20, 10, "pilot_age_and_experience")
@@ -951,7 +951,7 @@ agent Pilot on AgentLayer{
 			}
 			
 			//retry contacting tower after a specific period of time
-			timehandler.create_action_duration(10, 5, "pilot_age_and_experience")
+			timehandler.create_action_duration(time_base_next_communication_attempt, time_extra_next_communication_attempt, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				next_action = "Communicate_on_frequency"
@@ -1016,7 +1016,7 @@ agent Pilot on AgentLayer{
 				}
 			}
 			//retry contacting tower after a specific period of time
-			timehandler.create_action_duration(15, 5, "pilot_age_and_experience")
+			timehandler.create_action_duration(time_base_next_communication_attempt, time_extra_next_communication_attempt, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				next_action = "Communicate_on_frequency"
@@ -1025,7 +1025,7 @@ agent Pilot on AgentLayer{
 		
 		else if (next_action === "Wait_to_communicate_on_frequency")
 		{
-			timehandler.create_action_duration(20, 5, "pilot_age_and_experience")
+			timehandler.create_action_duration(time_base_next_communication_attempt, time_extra_next_communication_attempt, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				next_action = "Communicate_on_frequency"
@@ -1053,6 +1053,11 @@ agent Pilot on AgentLayer{
 
 	//-----State TakeOff-----
 	//TODO: Add Instrument Screening and better mechanism for take off
+	
+	//variables
+	external var TakeOff__V_rotate : real  // Speed on where to rotate (for cessna152 its normally at 25)
+	external var TakeOff__rotate_pitch : integer // pitch applied when rotating
+	
 	def TakeOff_action()
 	{
 		if (first_action_set === false)
@@ -1090,7 +1095,7 @@ agent Pilot on AgentLayer{
 				{
 					temp_pitch_value = temp_pitch_value + 2
 					Apply_Aircraft__pitch(temp_pitch_value)
-					if (temp_pitch_value >= 8)
+					if (temp_pitch_value >= TakeOff__rotate_pitch)
 					{
 						next_action = "HoldAircraft"
 					}
@@ -1118,38 +1123,6 @@ agent Pilot on AgentLayer{
 			}
 		}
 		
-		else if (next_action === "ControlAircraft")
-		{
-			timehandler.create_action_duration(3, 1, "pilot_age_and_experience")  // simulating check of instrument every 2 sec
-			if (timehandler.hold_action_time(timehandler.action_duration))
-			{
-				if (Hear_Aircraft__stall_sound() === true)
-				{
-					temp_pitch_value = temp_pitch_value - 1
-				}
-				else if (Check_Instrument_Aircraft__rate_of_climb() > 3)
-				{
-					if (Feel_Aircraft__deceleration_z === false)
-					{
-						temp_pitch_value = temp_pitch_value - 0.5
-					}
-				}
-				else if (Check_Instrument_Aircraft__rate_of_climb() < 1)
-				{
-					if (Feel_Aircraft__acceleration_z === false)
-					{
-						temp_pitch_value = temp_pitch_value + 0.5
-					}
-				}
-				Apply_Aircraft__pitch(temp_pitch_value)
-				
-				if (Check_Instrument_Aircraft__height() > 300)
-				{
-					next_action = "End_of_Actions"
-				}
-			}
-		}
-		
 		if (next_action === "End_of_Actions")
 		{
 			go_to_next_state("Climb")
@@ -1166,6 +1139,12 @@ agent Pilot on AgentLayer{
 	
 	
 	//-----State Climb-----
+	
+	//variable
+	external var Climb__rate_of_climb_upper_limit : real
+	external var Climb__rate_of_climb_lower_limit : real
+	external var Climb__pitch_magnitude : real
+	
 	def Climb_action()
 	{
 		if (first_action_set === false)
@@ -1182,18 +1161,18 @@ agent Pilot on AgentLayer{
 				{
 					temp_pitch_value = temp_pitch_value - 1
 				}
-				else if (Check_Instrument_Aircraft__rate_of_climb() > 3)
+				else if (Check_Instrument_Aircraft__rate_of_climb() > Climb__rate_of_climb_upper_limit)
 				{
 					if (Feel_Aircraft__deceleration_z === false)
 					{
-						temp_pitch_value = temp_pitch_value - 0.5
+						temp_pitch_value = temp_pitch_value - Climb__pitch_magnitude
 					}
 				}
-				else if (Check_Instrument_Aircraft__rate_of_climb() < 1)
+				else if (Check_Instrument_Aircraft__rate_of_climb() < Climb__rate_of_climb_lower_limit)
 				{
 					if (Feel_Aircraft__acceleration_z === false)
 					{
-						temp_pitch_value = temp_pitch_value + 0.5
+						temp_pitch_value = temp_pitch_value + Climb__pitch_magnitude
 					}
 				}
 				Apply_Aircraft__pitch(temp_pitch_value)
@@ -1244,7 +1223,7 @@ agent Pilot on AgentLayer{
 			}
 			
 			//retry contacting tower after a specific period of time
-			timehandler.create_action_duration(10, 5, "pilot_age_and_experience")
+			timehandler.create_action_duration(time_base_next_communication_attempt, time_extra_next_communication_attempt, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				next_action = "Communicate_on_frequency"
@@ -1470,6 +1449,7 @@ agent Pilot on AgentLayer{
 			}
 		}
 		
+		// using this part so state is still landing and ATC does not clear other aircraft for take off
 		else if (next_action === "Taxiing_off_runway")
 		{
 			// Get active Taxi point
@@ -1516,6 +1496,13 @@ agent Pilot on AgentLayer{
 	//TODO: Here the speed is checked against ground speed, normally the speed on the speed indicator in
 	//cockpit shows the true airspeed, but with strong headwind this would lead to pilots not moving
 	
+	//variables:
+	external var Taxiing__spacing_to_next_aircraft : real // distance kept to the next aircraft (when start braking)
+	external var Taxiing__angle_of_vision : real // angle of vision when looking with current heading
+	external var Taxiing__final_point_distance : integer
+	external var Taxiing__next_point_distance : integer
+	external var Taxiing__speed : real
+	
 	// defining help functions for taxiing
 	def Taxiing_brake(throttle : real, brake : real)
 	{
@@ -1528,7 +1515,7 @@ agent Pilot on AgentLayer{
 	{
 		if (distance_to_next_point < 20)
 		{
-			if (distance_to_next_point < 10)
+			if (distance_to_next_point < Taxiing__final_point_distance)
 			{
 				Taxiing_brake(0.1, 0.8)
 				next_action = "End_of_Actions"
@@ -1561,7 +1548,7 @@ agent Pilot on AgentLayer{
 		Apply_Brake__deceleration(0.0)
 		
 		// taxi throttle control
-		if (Check_Visual_Aircraft__ground_speed_x() > 6)
+		if (Check_Visual_Aircraft__ground_speed_x() > Taxiing__speed+0.5)
 		{	
 			if (Feel_Aircraft__deceleration_x() === false)
 			{
@@ -1575,13 +1562,14 @@ agent Pilot on AgentLayer{
 				temp_throttle_value = temp_throttle_value + 0.30
 			}
 		}
-		else if (Check_Visual_Aircraft__ground_speed_x() < 5)
+		else if (Check_Visual_Aircraft__ground_speed_x() < Taxiing__speed-0.5)
 		{
 			if (Feel_Aircraft__acceleration_x() === false)
 			{
 				temp_throttle_value = temp_throttle_value + 0.05
 			}
 		}
+		// lower limit for applying throttle
 		if (temp_throttle_value < 0.05)
 		{
 			temp_throttle_value = 0.05
@@ -1653,7 +1641,7 @@ agent Pilot on AgentLayer{
 				{
 					Taxiing_normal()
 					// drive to next point after reaching another point
-					if (distance_to_next_point < 8)
+					if (distance_to_next_point < Taxiing__next_point_distance)
 					{
 						active_taxi_point_number = active_taxi_point_number + 1
 					}
