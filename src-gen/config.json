@@ -26,6 +26,40 @@
         {
             "name":"Pilot",
             "count":0,
+            "mapping" : [
+                {
+                    "parameter" : "TakeOff__V_rotate",
+                    "value" : 30
+                },
+                {
+                    "parameter" : "Taxiing__spacing_to_next_aircraft",
+                    "value" : 30
+                },
+                {
+                    "parameter" : "Check_RWT__water_sediments_skip_probability",
+                    "value" : 0.05
+                },
+                {
+                    "parameter" : "Check_Engine__oil_skip_probability",
+                    "value" : 0.05
+                },
+                {
+                    "parameter" : "Check_LWT__water_sediments_skip_probability",
+                    "value" : 0.05
+                },
+                {
+                    "parameter" : "Set_Engine__mixture_control_skip_probability",
+                    "value" : 0.05
+                },
+                {
+                    "parameter" : "Check_Instrument_Engine__oil_pressure_skip_probability",
+                    "value" : 0.05
+                },
+                {
+                    "parameter" : "Check_Instrument_Engine__oil_temperature_skip_probability",
+                    "value" : 0.05
+                }
+            ]
         },
         {
             "name":"Aircraft",
@@ -38,20 +72,20 @@
             "outputFrequency": -1,
             "mapping": [
                 {
-                    "parameter" : "wind_bearing",
-                    "value" : 107.0
+                    "parameter": "pressure_QNH",
+                    "value": 101325
                 },
                 {
-                    "parameter" : "wind_speed",
-                    "value" : 5.0
+                    "parameter": "temperature",
+                    "value": 15
                 },
                 {
-                    "parameter" : "temperature",
-                    "value" : 15.0
+                    "parameter": "wind_bearing",
+                    "value": 107
                 },
                 {
-                    "parameter" : "pressure_QNH",
-                    "value" : 101325
+                    "parameter": "wind_speed",
+                    "value": 5
                 }
             ]
         },
@@ -66,16 +100,16 @@
             "outputFrequency": -1,
             "mapping" : [
                 {
-                    "parameter" : "number_of_spawning_points",
-                    "value" : 8
+                    "parameter": "landing_spawn_interval",
+                    "value": 88888
                 },
                 {
-                    "parameter" : "takeoff_spawn_interval",
-                    "value" : 88888
+                    "parameter": "number_of_spawning_points",
+                    "value": 8
                 },
                 {
-                    "parameter" : "landing_spawn_interval",
-                    "value" : 88888
+                    "parameter": "takeoff_spawn_interval",
+                    "value": 88888
                 }
             ]
         }      

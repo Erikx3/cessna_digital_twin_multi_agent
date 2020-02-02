@@ -351,13 +351,13 @@ agent Pilot on AgentLayer{
 	var state_after_taxiing : string  // since taxi state has multiple use
 	var distance_to_next_point : real // calculated distance to a point in [m]
 	var first_fixing_attempt : bool = true // checker if first repair attempt has been done
-	var request_attempts : integer// checker for communication attempt
+	var request_attempts : integer // checker for communication attempt
 	var killme_info : string //info for "killme" sequence
 	
 	// settings for aircraft handling
-	var V_rotate : real = 30  // Speed on where to rotate (for cessna152 its normally at 25)
-	var spacing_to_next_aircraft : real = 30.0 // distance kept to the next aircraft (when start braking)
-	var angle_of_vision : real = 60.0 // angle of vision when looking with current heading
+	external var TakeOff__V_rotate : real  // Speed on where to rotate (for cessna152 its normally at 25)
+	external var Taxiing__spacing_to_next_aircraft : real // distance kept to the next aircraft (when start braking)
+	external var Taxiing__angle_of_vision : real // angle of vision when looking with current heading
 	
 	def go_to_next_state(_state : string)
 	{
@@ -405,7 +405,7 @@ agent Pilot on AgentLayer{
 	
 	//-----State Preflight Inspection-----
 	
-	//help function:
+	// help function:
 	def skip_action(base_probability: real, action_name : string) : bool
 	{
 		// the probability of skiping repair action increases with flight experience
@@ -421,6 +421,11 @@ agent Pilot on AgentLayer{
 			return true
 		}
 	}
+	
+	// variables
+	external var Check_RWT__water_sediments_skip_probability : real
+	external var Check_Engine__oil_skip_probability : real
+	external var Check_LWT__water_sediments_skip_probability : real
 	
 	def PreflightInspection_action()
 	{
@@ -454,7 +459,7 @@ agent Pilot on AgentLayer{
 				
 				if (check_value === true)
 				{
-					if(skip_action(0.05, "Repair_RWT__water_sediments") === false)
+					if(skip_action(Check_RWT__water_sediments_skip_probability, "Repair_RWT__water_sediments") === false)
 					{
 						next_action = "Repair_RWT__water_sediments"
 					}
@@ -496,7 +501,7 @@ agent Pilot on AgentLayer{
 				
 				if (check_value < myAircraft.Get_Engine__oil_min())
 				{
-					if (skip_action(0.05, "Refill_Engine__oil") === false)
+					if (skip_action(Check_Engine__oil_skip_probability, "Refill_Engine__oil") === false)
 					{
 						next_action = "Refill_Engine__oil"
 					}					
@@ -550,7 +555,7 @@ agent Pilot on AgentLayer{
 				
 				if (check_value === true)
 				{
-					if(skip_action(0.05, "Repair_LWT__water_sediments") === false)
+					if(skip_action(Check_LWT__water_sediments_skip_probability, "Repair_LWT__water_sediments") === false)
 					{
 						next_action = "Repair_LWT__water_sediments"
 					}
@@ -590,6 +595,12 @@ agent Pilot on AgentLayer{
 	
 	
 	//-----State Starting Engine-----
+	
+	//variables
+	external var Set_Engine__mixture_control_skip_probability : real
+	external var Check_Instrument_Engine__oil_pressure_skip_probability : real
+	external var Check_Instrument_Engine__oil_temperature_skip_probability : real
+	
 	def StartingEngine_action()
 	{
 		if (first_action_set === false)
@@ -613,7 +624,7 @@ agent Pilot on AgentLayer{
 			timehandler.create_action_duration(4, 2, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
-				if(skip_action(0.05, "Set_Engine__mixture_control") === false)
+				if(skip_action(Set_Engine__mixture_control_skip_probability, "Set_Engine__mixture_control") === false)
 				{
 					Set_Engine__mixture_control("RICH") // set to rich
 				}
@@ -687,7 +698,7 @@ agent Pilot on AgentLayer{
 				next_action = "Check_Instrument_Engine__oil_temperature"
 				if (Check_Instrument_Engine__oil_pressure() < myAircraft.Get_Engine__oil_pressure_normal_min())
 				{
-					if(skip_action(0.05, "Check_Instrument_Engine__oil_pressure") === false)
+					if(skip_action(Check_Instrument_Engine__oil_pressure_skip_probability, "Check_Instrument_Engine__oil_pressure") === false)
 					{
 						if (first_fixing_attempt === true)
 						{
@@ -714,7 +725,7 @@ agent Pilot on AgentLayer{
 				next_action = "End_of_Actions"
 				if (Check_Instrument_Engine__oil_temperature() > myAircraft.Get_Engine__oil_temperature_normal_max())
 				{
-					if(skip_action(0.05, "Check_Instrument_Engine__oil_temperature") === false)
+					if(skip_action(Check_Instrument_Engine__oil_temperature_skip_probability, "Check_Instrument_Engine__oil_temperature") === false)
 					{
 						if (first_fixing_attempt === true)
 						{
@@ -834,7 +845,7 @@ agent Pilot on AgentLayer{
 			timehandler.create_action_duration(4, 2, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
-				if(skip_action(0.05, "Set_Engine__mixture_control") === false)
+				if(skip_action(Set_Engine__mixture_control_skip_probability, "Set_Engine__mixture_control") === false)
 				{
 					Set_Engine__mixture_control("RICH") // set to rich
 				}
@@ -871,7 +882,7 @@ agent Pilot on AgentLayer{
 				
 				if (Check_Instrument_Engine__oil_temperature() > myAircraft.Get_Engine__oil_temperature_normal_max())
 				{
-					if(skip_action(0.05, "Check_Instrument_Engine__oil_temperature") === false)
+					if(skip_action(Check_Instrument_Engine__oil_temperature_skip_probability, "Check_Instrument_Engine__oil_temperature") === false)
 					{
 						killme_info = "high engine oil temperature"
 						go_to_next_state("LeavingFrequency")
@@ -880,7 +891,7 @@ agent Pilot on AgentLayer{
 				
 				if (Check_Instrument_Engine__oil_pressure() < myAircraft.Get_Engine__oil_pressure_normal_min())
 				{
-					if(skip_action(0.05, "Check_Instrument_Engine__oil_pressure") === false)
+					if(skip_action(Check_Instrument_Engine__oil_pressure_skip_probability, "Check_Instrument_Engine__oil_pressure") === false)
 					{
 						killme_info = "low engine oil pressure"
 						go_to_next_state("LeavingFrequency")
@@ -1075,7 +1086,7 @@ agent Pilot on AgentLayer{
 			timehandler.create_action_duration(1, 1, "pilot_age_and_experience")  // simulating check of instrument
 			if (timehandler.hold_action_time(timehandler.action_duration))  
 			{
-				if (Check_Instrument_Aircraft__true_air_speed() > V_rotate)
+				if (Check_Instrument_Aircraft__true_air_speed() > TakeOff__V_rotate)
 				{
 					temp_pitch_value = temp_pitch_value + 2
 					Apply_Aircraft__pitch(temp_pitch_value)
@@ -1101,7 +1112,7 @@ agent Pilot on AgentLayer{
 				{
 					temp_pitch_value = 0
 					Apply_Aircraft__pitch(temp_pitch_value)
-					V_rotate = V_rotate + 5
+					TakeOff__V_rotate = TakeOff__V_rotate + 5
 					next_action = "ReadyForRotate"
 				}
 			}
@@ -1612,7 +1623,7 @@ agent Pilot on AgentLayer{
 			
 			
 			//Check for collision TODO: Add collision conflict handling (e.g. when two aircrafts won't move)
-			var aircraft_array = explore Aircraft where [x => return formula.haversine(myAircraft.Get_position(), x.Get_position()) < spacing_to_next_aircraft]
+			var aircraft_array = explore Aircraft where [x => return formula.haversine(myAircraft.Get_position(), x.Get_position()) < Taxiing__spacing_to_next_aircraft]
 			if (length(aircraft_array) > 1) // since list contains ALWAYS the airplane controlled by the pilot!
 			{
 				// check if aircraft is on path and angle of vision, note at index 0 is own aircraft
@@ -1621,7 +1632,7 @@ agent Pilot on AgentLayer{
 					//calculate bearing to aircraft nearby
 					var bearing_to_next_aircraft = formula.bearing(myAircraft.Get_position(), aircraft_array[i].Get_position())
 					//check if bearing to next aircraft lies in between own visual sight cone
-					if (formula.bearing_between_thresholds(myAircraft__heading, angle_of_vision, bearing_to_next_aircraft) === true)
+					if (formula.bearing_between_thresholds(myAircraft__heading, Taxiing__angle_of_vision, bearing_to_next_aircraft) === true)
 					{
 						//do some braking or set brake flags
 						avoid_collision = true
