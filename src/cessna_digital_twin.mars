@@ -150,27 +150,31 @@ agent Observer on AgentLayer{
 			println "-----End of information-----"
 		}
 		
-		if (simtime === 1 or simtime === 2) // add for multiple spawns: or simtime % 100 === 0
+		if (simtime === 1 or simtime % takeoff_spawn_interval === 0) // add for multiple spawns: or simtime % 100 === 0
 		{
 			spawn_pilot_and_aircraft_on_ground()
 		}
 		
-		if (simtime === 111111) // add for multiple spawns: or simtime % 100 === 0
+		if (simtime === 1 or simtime % landing_spawn_interval === 0) // add for multiple spawns: or simtime % 100 === 0
 		{
 			spawn_pilot_and_aircraft_landing()
 		}
 	}
+	
+	//Setting
 	var state_list = new List<string>
 	var formula = new Formula()
 	var airportstade = new AirportStade()
 	
 	//-----Spawn Handling-----
 	// Apron spawn coordinates and handling
+	external var number_of_spawning_points : integer
+	external var takeoff_spawn_interval : integer
+	external var landing_spawn_interval: integer
 	var left_xcor : real
 	var left_ycor : real 
 	var right_xcor : real 
 	var right_ycor : real
-	var number_of_spawning_points : integer = 8
 	var spawn_xcor_list = new List<real>()
 	var spawn_ycor_list = new List<real>()
 	var spawn_location_number : integer

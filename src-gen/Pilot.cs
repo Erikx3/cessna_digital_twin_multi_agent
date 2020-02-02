@@ -287,9 +287,9 @@ namespace cessna_digital_twin {
 			event_info = "End flight mission due to " + info;
 			myAircraft.Remove();
 			new System.Action(() => {
-				var _target373_12562 = this;
-				if (_target373_12562 != null) {
-					_AgentLayer._KillPilot(_target373_12562, _target373_12562._executionFrequency);
+				var _target377_12739 = this;
+				if (_target377_12739 != null) {
+					_AgentLayer._KillPilot(_target377_12739, _target377_12739._executionFrequency);
 				}
 			}).Invoke()
 			;}
@@ -301,13 +301,13 @@ namespace cessna_digital_twin {
 			{
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget378_12613 = (myAircraft.Get_position()
+				var _taget382_12790 = (myAircraft.Get_position()
 				);
 				
-				var _object378_12613 = this;
+				var _object382_12790 = this;
 				
-				_AgentLayer._PilotEnvironment.PosAt(_object378_12613, 
-					_taget378_12613.Item1, _taget378_12613.Item2
+				_AgentLayer._PilotEnvironment.PosAt(_object382_12790, 
+					_taget382_12790.Item1, _taget382_12790.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
@@ -1753,11 +1753,11 @@ namespace cessna_digital_twin {
 											active_taxi_point);
 											cessna_digital_twin.Aircraft[] aircraft_array = new System.Func<cessna_digital_twin.Aircraft[]>(() => {
 												
-												var _sourceMapped1611_48326 = this.Position;
-												var _source1611_48326 = _sourceMapped1611_48326;
-												var _range1611_48326 = -1;
+												var _sourceMapped1615_48503 = this.Position;
+												var _source1615_48503 = _sourceMapped1615_48503;
+												var _range1615_48503 = -1;
 															
-												Func<cessna_digital_twin.Aircraft, bool> _predicate1611_48326 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft x) => 
+												Func<cessna_digital_twin.Aircraft, bool> _predicate1615_48503 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft x) => 
 												 {
 														{
 														return formula.haversine(myAircraft.Get_position(),
@@ -1768,18 +1768,18 @@ namespace cessna_digital_twin {
 														;
 														return default(bool);;
 												});
-												Func<cessna_digital_twin.Aircraft, bool> _predicateMod1611_48326 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
+												Func<cessna_digital_twin.Aircraft, bool> _predicateMod1615_48503 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
 												{
 													if (_it?.ID == this.ID)
 													{
 														return false;
-													} else if (_predicate1611_48326 != null)
+													} else if (_predicate1615_48503 != null)
 													{
-														return _predicate1611_48326.Invoke(_it);
+														return _predicate1615_48503.Invoke(_it);
 													} else return true;
 												});
 												
-												return _AgentLayer._AircraftEnvironment.Explore(_source1611_48326 , _range1611_48326, -1, _predicate1611_48326).ToArray();
+												return _AgentLayer._AircraftEnvironment.Explore(_source1615_48503 , _range1615_48503, -1, _predicate1615_48503).ToArray();
 											}).Invoke();
 											if(aircraft_array.Length > 1) {
 															{
@@ -2204,7 +2204,7 @@ namespace cessna_digital_twin {
 			_executionFrequency = freq;
 			{
 			myAircraft = new Func<cessna_digital_twin.Aircraft>(() => {
-				Func<cessna_digital_twin.Aircraft, bool> _predicate245_8594 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft it) => 
+				Func<cessna_digital_twin.Aircraft, bool> _predicate249_8771 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft it) => 
 				 {
 						{
 						return Equals(it.Get_occupy_bool()
@@ -2213,41 +2213,41 @@ namespace cessna_digital_twin {
 						;
 						return default(bool);;
 				});
-				Func<cessna_digital_twin.Aircraft, bool> _predicateMod245_8594 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
+				Func<cessna_digital_twin.Aircraft, bool> _predicateMod249_8771 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
 				{
 					if (_it?.ID == this.ID)
 					{
 						return false;
-					} else if (_predicate245_8594 != null)
+					} else if (_predicate249_8771 != null)
 					{
-						return _predicate245_8594.Invoke(_it);
+						return _predicate249_8771.Invoke(_it);
 					} else return true;
 				});
 				
-				const int _range245_8594 = -1;
-				var _source245_8594 = this.Position;
+				const int _range249_8771 = -1;
+				var _source249_8771 = this.Position;
 				
-				return _AgentLayer._AircraftEnvironment.Explore(_source245_8594, _range245_8594, 1, _predicateMod245_8594)?.FirstOrDefault();
+				return _AgentLayer._AircraftEnvironment.Explore(_source249_8771, _range249_8771, 1, _predicateMod249_8771)?.FirstOrDefault();
 			}).Invoke();
 			myAircraft.Set_occupied();
 			myAircraft_callsign = myAircraft.Get_callsign();
 			weather = new Func<cessna_digital_twin.Weather>(() => {
-				Func<cessna_digital_twin.Weather, bool> _predicate248_8800 = null;
-				Func<cessna_digital_twin.Weather, bool> _predicateMod248_8800 = new Func<cessna_digital_twin.Weather, bool>(_it => 
+				Func<cessna_digital_twin.Weather, bool> _predicate252_8977 = null;
+				Func<cessna_digital_twin.Weather, bool> _predicateMod252_8977 = new Func<cessna_digital_twin.Weather, bool>(_it => 
 				{
 					if (_it?.ID == this.ID)
 					{
 						return false;
-					} else if (_predicate248_8800 != null)
+					} else if (_predicate252_8977 != null)
 					{
-						return _predicate248_8800.Invoke(_it);
+						return _predicate252_8977.Invoke(_it);
 					} else return true;
 				});
 				
-				const int _range248_8800 = -1;
-				var _source248_8800 = this.Position;
+				const int _range252_8977 = -1;
+				var _source252_8977 = this.Position;
 				
-				return _AgentLayer._WeatherEnvironment.Explore(_source248_8800, _range248_8800, 1, _predicateMod248_8800)?.FirstOrDefault();
+				return _AgentLayer._WeatherEnvironment.Explore(_source252_8977, _range252_8977, 1, _predicateMod252_8977)?.FirstOrDefault();
 			}).Invoke();
 			update_general_values();
 			state = "PreflightInspection";

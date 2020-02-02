@@ -63,7 +63,21 @@
             "name":"Observer",
             "count":1,
             // Deactivate the output for an agent
-            "outputFrequency": -1
+            "outputFrequency": -1,
+            "mapping" : [
+                {
+                    "parameter" : "number_of_spawning_points",
+                    "value" : 8
+                },
+                {
+                    "parameter" : "takeoff_spawn_interval",
+                    "value" : 88888
+                },
+                {
+                    "parameter" : "landing_spawn_interval",
+                    "value" : 88888
+                }
+            ]
         }      
     ]
 }

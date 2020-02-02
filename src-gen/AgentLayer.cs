@@ -350,7 +350,10 @@ namespace cessna_digital_twin {
 			var id = System.Guid.NewGuid();
 			var agent = new cessna_digital_twin.Observer(id, this, _Register, _Unregister,
 			_ObserverEnvironment,
-			xcor, ycor, freq);
+			default(int), 
+			default(int), 
+			default(int)
+		, 	xcor, ycor, freq);
 			_ObserverAgents.Add(id, agent);
 			return agent;
 		}
