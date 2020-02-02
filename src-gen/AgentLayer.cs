@@ -368,7 +368,11 @@ namespace cessna_digital_twin {
 			var id = System.Guid.NewGuid();
 			var agent = new cessna_digital_twin.Weather(id, this, _Register, _Unregister,
 			_WeatherEnvironment,
-			xcor, ycor, freq);
+			default(double), 
+			default(double), 
+			default(double), 
+			default(double)
+		, 	xcor, ycor, freq);
 			_WeatherAgents.Add(id, agent);
 			return agent;
 		}

@@ -82,8 +82,8 @@ agent Weather on AgentLayer{
 	}
 	
 	//Weather Values TODO: Think about another solution for weather
-	var wind_bearing : real = 107.0 // ° range 0..360
-	var wind_speed : real = 5.0 // m/s
+	external var wind_bearing : real // ° range 0..360
+	external var wind_speed : real // m/s
 	
 	passive Get_wind_bearing() => return wind_bearing
 	passive Get_wind_speed() => return wind_speed
@@ -91,10 +91,10 @@ agent Weather on AgentLayer{
 	
 	//help variables for density calculations
 	var density_zero : real = 1.225 // kg/m^3 - mean sea level ISA
-	var temperature : real = 15.0 // C°
+	external var temperature : real // C°
 	var temperature_zero : real = 288.15 // Kelvin - mean sea level ISA
 	var pressure_zero : real = 101325.0 //Pascal - mean sea level ISA
-	var pressure_QNH : real = 101325.0 //Pa, same es QNH since Airport elevation is zero
+	external var pressure_QNH : real  //Pa, same es QNH since Airport elevation is zero
 	var L_constant : real = 0.0065 // constant for dT/dh
 	var C_K_constant : real = 273.15 // constant for transformation from celsius to kelvin
 	var gas_constant : real = 287.3 // J/(kg*K)

@@ -19,7 +19,7 @@ namespace cessna_digital_twin {
 					Mars.Common.Logging.LoggerFactory.GetLogger(typeof(Weather));
 		private readonly System.Random _Random = new System.Random();
 		private double __wind_bearing
-			 = 107.0;
+			 = default(double);
 		internal double wind_bearing { 
 			get { return __wind_bearing; }
 			set{
@@ -27,7 +27,7 @@ namespace cessna_digital_twin {
 			}
 		}
 		private double __wind_speed
-			 = 5.0;
+			 = default(double);
 		internal double wind_speed { 
 			get { return __wind_speed; }
 			set{
@@ -43,7 +43,7 @@ namespace cessna_digital_twin {
 			}
 		}
 		private double __temperature
-			 = 15.0;
+			 = default(double);
 		internal double temperature { 
 			get { return __temperature; }
 			set{
@@ -67,7 +67,7 @@ namespace cessna_digital_twin {
 			}
 		}
 		private double __pressure_QNH
-			 = 101325.0;
+			 = default(double);
 		internal double pressure_QNH { 
 			get { return __pressure_QNH; }
 			set{
@@ -160,12 +160,20 @@ namespace cessna_digital_twin {
 		Mars.Interfaces.Layer.RegisterAgent _register,
 		Mars.Interfaces.Layer.UnregisterAgent _unregister,
 		Mars.Components.Environments.GeoHashEnvironment<Weather> _WeatherEnvironment,
-		double xcor = 0, double ycor = 0, int freq = 1)
+		double wind_bearing,
+		double wind_speed,
+		double temperature,
+		double pressure_QNH
+	,	double xcor = 0, double ycor = 0, int freq = 1)
 		{
 			_AgentLayer = _layer;
 			ID = _id;
 			Position = Mars.Interfaces.Environment.Position.CreatePosition(xcor, ycor);
 			_Random = new System.Random(ID.GetHashCode());
+			this.wind_bearing = wind_bearing;
+			this.wind_speed = wind_speed;
+			this.temperature = temperature;
+			this.pressure_QNH = pressure_QNH;
 			_AgentLayer._WeatherEnvironment.Insert(this);
 			_register(_layer, this, freq);
 			_isAlive = true;

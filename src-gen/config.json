@@ -35,7 +35,25 @@
             "name":"Weather",
             "count":1,
             // Deactivate the output for an agent
-            "outputFrequency": -1
+            "outputFrequency": -1,
+            "mapping": [
+                {
+                    "parameter" : "wind_bearing",
+                    "value" : 107.0
+                },
+                {
+                    "parameter" : "wind_speed",
+                    "value" : 5.0
+                },
+                {
+                    "parameter" : "temperature",
+                    "value" : 15.0
+                },
+                {
+                    "parameter" : "pressure_QNH",
+                    "value" : 101325
+                }
+            ]
         },
         {
             "name":"AirTrafficController",
