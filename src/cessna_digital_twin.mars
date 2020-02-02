@@ -2549,7 +2549,7 @@ agent Aircraft on AgentLayer{
 		Tire__friction_force = 0
 	}
 	
-	//TODO: Add Tire condition dependencies and then user other initialize
+	//TODO: Add Tire condition dependencies and then use other initialize
 	def initialize_Tire_alternative()
 	{
 		//Inflation with 1% Chance that a Tire is not fully inflated
