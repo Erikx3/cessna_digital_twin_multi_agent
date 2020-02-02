@@ -76,10 +76,9 @@ layer AgentLayer as agentlayer
 agent Weather on AgentLayer{
 	initialize
 	{
-		pos at #(12.12, 12.12)
 	}
 	tick
-	{
+	{ 
 	}
 	
 	//Weather Values TODO: Think about another solution for weather
@@ -92,7 +91,7 @@ agent Weather on AgentLayer{
 	
 	//help variables for density calculations
 	var density_zero : real = 1.225 // kg/m^3 - mean sea level ISA
-	var temperature : real = 40.0 // C°
+	var temperature : real = 15.0 // C°
 	var temperature_zero : real = 288.15 // Kelvin - mean sea level ISA
 	var pressure_zero : real = 101325.0 //Pascal - mean sea level ISA
 	var pressure_QNH : real = 101325.0 //Pa, same es QNH since Airport elevation is zero
@@ -128,11 +127,42 @@ agent Weather on AgentLayer{
 
 // -----Agent Observer for spawning sequence-----
 agent Observer on AgentLayer{
+	initialize{
+		state_list = #["PreflightInspection", "StartingEngine", "TakeOffPreparationRequest", "Taxiing", "TakeOffPreparation", "TakeOffHoldShortRequest", "TakeOffRequest", "TakeOff", "Climb", "LeavingFrequencyRequest", "LandingRequest","GoAround","Landing", "LeavingFrequency"]
+		available_runway_heading = airportstade.Get_available_runway_heading_list()
+		initialize_spawn_cor()
+	}
+	
+	tick
+	{	
+		weather = nearest Weather // Has do be done here, since during initialization Weather agent might not be existing yet
+		
+		
+		if (simtime % 150 === 0)
+		{
+			println "Simulation Time: " + simtime
+			println "Number of Pilots in each State"
+			each (var state in state_list)
+			{
+				var pilot_array = explore Pilot where [x => return x.Get_state() === state]
+				println state + ": " + length(pilot_array)
+			}
+			println "-----End of information-----"
+		}
+		
+		if (simtime === 1 or simtime === 2) // add for multiple spawns: or simtime % 100 === 0
+		{
+			spawn_pilot_and_aircraft_on_ground()
+		}
+		
+		if (simtime === 111111) // add for multiple spawns: or simtime % 100 === 0
+		{
+			spawn_pilot_and_aircraft_landing()
+		}
+	}
 	var state_list = new List<string>
 	var formula = new Formula()
 	var airportstade = new AirportStade()
-	
-	
 	
 	//-----Spawn Handling-----
 	// Apron spawn coordinates and handling
@@ -203,39 +233,6 @@ agent Observer on AgentLayer{
 		var spawn_pilot = spawn Pilot at landing_spawn_cor
 		spawn_pilot.Initialize_landing(runway_heading_calculated)
 		
-	}
-
-	initialize{
-		state_list = #["PreflightInspection", "StartingEngine", "TakeOffPreparationRequest", "Taxiing", "TakeOffPreparation", "TakeOffHoldShortRequest", "TakeOffRequest", "TakeOff", "Climb", "LeavingFrequencyRequest", "LandingRequest","GoAround","Landing", "LeavingFrequency"]
-		available_runway_heading = airportstade.Get_available_runway_heading_list()
-		initialize_spawn_cor()
-	}
-	
-	tick
-	{	
-		weather = nearest Weather // Has do be done here, since during initialization Weather agent might not be existing yet
-		
-		if (simtime % 150 === 0)
-		{
-			println "Simulation Time: " + simtime
-			println "Number of Pilots in each State"
-			each (var state in state_list)
-			{
-				var pilot_array = explore Pilot where [x => return x.Get_state() === state]
-				println state + ": " + length(pilot_array)
-			}
-			println "-----End of information-----"
-		}
-		
-		if (simtime === 1 or simtime === 2) // add for multiple spawns: or simtime % 100 === 0
-		{
-			spawn_pilot_and_aircraft_on_ground()
-		}
-		
-		if (simtime === 111111) // add for multiple spawns: or simtime % 100 === 0
-		{
-			spawn_pilot_and_aircraft_landing()
-		}
 	}
 }
 

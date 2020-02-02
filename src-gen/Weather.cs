@@ -43,7 +43,7 @@ namespace cessna_digital_twin {
 			}
 		}
 		private double __temperature
-			 = 40.0;
+			 = 15.0;
 		internal double temperature { 
 			get { return __temperature; }
 			set{
@@ -171,18 +171,7 @@ namespace cessna_digital_twin {
 			_isAlive = true;
 			_executionFrequency = freq;
 			{
-			new System.Func<System.Tuple<double,double>>(() => {
-				
-				var _taget79_2339 = new System.Tuple<double,double>(12.12,12.12);
-				
-				var _object79_2339 = this;
-				
-				_AgentLayer._WeatherEnvironment.PosAt(_object79_2339, 
-					_taget79_2339.Item1, _taget79_2339.Item2
-				);
-				return new Tuple<double, double>(Position.X, Position.Y);
-			}).Invoke()
-			;}
+			}
 		}
 		
 		public void Tick()

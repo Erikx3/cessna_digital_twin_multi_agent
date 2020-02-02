@@ -730,22 +730,22 @@ namespace cessna_digital_twin {
 			Latitude = this.Position.Y;
 			event_info = "None";
 			weather = new Func<cessna_digital_twin.Weather>(() => {
-				Func<cessna_digital_twin.Weather, bool> _predicate2017_58830 = null;
-				Func<cessna_digital_twin.Weather, bool> _predicateMod2017_58830 = new Func<cessna_digital_twin.Weather, bool>(_it => 
+				Func<cessna_digital_twin.Weather, bool> _predicate2014_58801 = null;
+				Func<cessna_digital_twin.Weather, bool> _predicateMod2014_58801 = new Func<cessna_digital_twin.Weather, bool>(_it => 
 				{
 					if (_it?.ID == this.ID)
 					{
 						return false;
-					} else if (_predicate2017_58830 != null)
+					} else if (_predicate2014_58801 != null)
 					{
-						return _predicate2017_58830.Invoke(_it);
+						return _predicate2014_58801.Invoke(_it);
 					} else return true;
 				});
 				
-				const int _range2017_58830 = -1;
-				var _source2017_58830 = this.Position;
+				const int _range2014_58801 = -1;
+				var _source2014_58801 = this.Position;
 				
-				return _AgentLayer._WeatherEnvironment.Explore(_source2017_58830, _range2017_58830, 1, _predicateMod2017_58830)?.FirstOrDefault();
+				return _AgentLayer._WeatherEnvironment.Explore(_source2014_58801, _range2014_58801, 1, _predicateMod2014_58801)?.FirstOrDefault();
 			}).Invoke()
 			;}
 			return;
@@ -900,14 +900,14 @@ namespace cessna_digital_twin {
 							{
 							new System.Func<Tuple<double,double>>(() => {
 								
-								var _speed2210_66398 = Aircraft__movement_x
+								var _speed2207_66369 = Aircraft__movement_x
 							;
 								
-								var _entity2210_66398 = this;
+								var _entity2207_66369 = this;
 								
-								Func<double[], bool> _predicate2210_66398 = null;
+								Func<double[], bool> _predicate2207_66369 = null;
 								
-								_AgentLayer._AircraftEnvironment.MoveTowards(_entity2210_66398, Aircraft__heading_bearing, _speed2210_66398);	
+								_AgentLayer._AircraftEnvironment.MoveTowards(_entity2207_66369, Aircraft__heading_bearing, _speed2207_66369);	
 								
 								return new Tuple<double, double>(Position.X, Position.Y);
 							}).Invoke()
@@ -1348,9 +1348,9 @@ namespace cessna_digital_twin {
 		public void Remove() {
 			{
 			new System.Action(() => {
-				var _target2006_58487 = this;
-				if (_target2006_58487 != null) {
-					_AgentLayer._KillAircraft(_target2006_58487, _target2006_58487._executionFrequency);
+				var _target2003_58458 = this;
+				if (_target2003_58458 != null) {
+					_AgentLayer._KillAircraft(_target2003_58458, _target2003_58458._executionFrequency);
 				}
 			}).Invoke()
 					;
@@ -1364,12 +1364,12 @@ namespace cessna_digital_twin {
 			{
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget2007_58542 = cor;
+				var _taget2004_58513 = cor;
 				
-				var _object2007_58542 = this;
+				var _object2004_58513 = this;
 				
-				_AgentLayer._AircraftEnvironment.PosAt(_object2007_58542, 
-					_taget2007_58542.Item1, _taget2007_58542.Item2
+				_AgentLayer._AircraftEnvironment.PosAt(_object2004_58513, 
+					_taget2004_58513.Item1, _taget2004_58513.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke()
