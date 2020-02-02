@@ -106,6 +106,14 @@ namespace cessna_digital_twin {
 				if(__formula != value) __formula = value;
 			}
 		}
+		private cessna_digital_twin.Weather __weather
+			 = default(cessna_digital_twin.Weather);
+		internal cessna_digital_twin.Weather weather { 
+			get { return __weather; }
+			set{
+				if(__weather != value) __weather = value;
+			}
+		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public virtual void initialize_general_values() 
 		{
@@ -134,6 +142,7 @@ namespace cessna_digital_twin {
 		public cessna_digital_twin.AgentLayer _AgentLayer { get; set; }
 		public cessna_digital_twin.AgentLayer agentlayer => _AgentLayer;
 		public Mars.Components.Environments.GeoHashEnvironment<Pilot> _PilotEnvironment { get; set; }
+		public Mars.Components.Environments.GeoHashEnvironment<Weather> _WeatherEnvironment { get; set; }
 		
 		[Mars.Interfaces.LIFECapabilities.PublishForMappingInMars]
 		public AirTrafficController (
@@ -158,12 +167,12 @@ namespace cessna_digital_twin {
 			double y_spawn = 53.559712;
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget1897_54888 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget2737_82947 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object1897_54888 = this;
+				var _object2737_82947 = this;
 				
-				_AgentLayer._AirTrafficControllerEnvironment.PosAt(_object1897_54888, 
-					_taget1897_54888.Item1, _taget1897_54888.Item2
+				_AgentLayer._AirTrafficControllerEnvironment.PosAt(_object2737_82947, 
+					_taget2737_82947.Item1, _taget2737_82947.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
@@ -176,6 +185,24 @@ namespace cessna_digital_twin {
 		{
 			{ if (!_isAlive) return; }
 			{
+			weather = new Func<cessna_digital_twin.Weather>(() => {
+				Func<cessna_digital_twin.Weather, bool> _predicate2744_83119 = null;
+				Func<cessna_digital_twin.Weather, bool> _predicateMod2744_83119 = new Func<cessna_digital_twin.Weather, bool>(_it => 
+				{
+					if (_it?.ID == this.ID)
+					{
+						return false;
+					} else if (_predicate2744_83119 != null)
+					{
+						return _predicate2744_83119.Invoke(_it);
+					} else return true;
+				});
+				
+				const int _range2744_83119 = -1;
+				var _source2744_83119 = this.Position;
+				
+				return _AgentLayer._WeatherEnvironment.Explore(_source2744_83119, _range2744_83119, 1, _predicateMod2744_83119)?.FirstOrDefault();
+			}).Invoke();
 			if(Equals(state, "Listen_on_frequency")) {
 							{
 							timehandler.create_action_duration(2,2,"None");
@@ -200,7 +227,7 @@ namespace cessna_digital_twin {
 											if(timehandler.hold_action_time(timehandler.action_duration)
 											) {
 															{
-															double wind_bearing = agentlayer.Get_Weather__wind_bearing();
+															double wind_bearing = weather.Get_wind_bearing();
 															runway_heading_calculated = formula.calculate_runway_heading(available_runway_heading,wind_bearing);
 															if(Equals(message_type_received, "RequestTakeOffPreparationPoint")) {
 																			{
@@ -219,11 +246,11 @@ namespace cessna_digital_twin {
 																											taxipath = airportstade.Get_taxipath_to_RunwayLineUpPoint(runway_heading_calculated);
 																											cessna_digital_twin.Pilot[] pilot_array = new System.Func<cessna_digital_twin.Pilot[]>(() => {
 																												
-																												var _sourceMapped1942_56887 = this.Position;
-																												var _source1942_56887 = _sourceMapped1942_56887;
-																												var _range1942_56887 = -1;
+																												var _sourceMapped2784_85061 = this.Position;
+																												var _source2784_85061 = _sourceMapped2784_85061;
+																												var _range2784_85061 = -1;
 																															
-																												Func<cessna_digital_twin.Pilot, bool> _predicate1942_56887 = new Func<cessna_digital_twin.Pilot,bool>((cessna_digital_twin.Pilot x) => 
+																												Func<cessna_digital_twin.Pilot, bool> _predicate2784_85061 = new Func<cessna_digital_twin.Pilot,bool>((cessna_digital_twin.Pilot x) => 
 																												 {
 																														{
 																														return Equals(x.Get_state()
@@ -233,18 +260,18 @@ namespace cessna_digital_twin {
 																														;
 																														return default(bool);;
 																												});
-																												Func<cessna_digital_twin.Pilot, bool> _predicateMod1942_56887 = new Func<cessna_digital_twin.Pilot, bool>(_it => 
+																												Func<cessna_digital_twin.Pilot, bool> _predicateMod2784_85061 = new Func<cessna_digital_twin.Pilot, bool>(_it => 
 																												{
 																													if (_it?.ID == this.ID)
 																													{
 																														return false;
-																													} else if (_predicate1942_56887 != null)
+																													} else if (_predicate2784_85061 != null)
 																													{
-																														return _predicate1942_56887.Invoke(_it);
+																														return _predicate2784_85061.Invoke(_it);
 																													} else return true;
 																												});
 																												
-																												return _AgentLayer._PilotEnvironment.Explore(_source1942_56887 , _range1942_56887, -1, _predicate1942_56887).ToArray();
+																												return _AgentLayer._PilotEnvironment.Explore(_source2784_85061 , _range2784_85061, -1, _predicate2784_85061).ToArray();
 																											}).Invoke();
 																											if(pilot_array.Length >= 1) {
 																															{
@@ -263,11 +290,11 @@ namespace cessna_digital_twin {
 																															taxipath = airportstade.Get_taxipath_to_ApronPoint(runway_heading_calculated);
 																															cessna_digital_twin.Pilot[] pilot_array = new System.Func<cessna_digital_twin.Pilot[]>(() => {
 																																
-																																var _sourceMapped1956_57496 = this.Position;
-																																var _source1956_57496 = _sourceMapped1956_57496;
-																																var _range1956_57496 = -1;
+																																var _sourceMapped2798_85670 = this.Position;
+																																var _source2798_85670 = _sourceMapped2798_85670;
+																																var _range2798_85670 = -1;
 																																			
-																																Func<cessna_digital_twin.Pilot, bool> _predicate1956_57496 = new Func<cessna_digital_twin.Pilot,bool>((cessna_digital_twin.Pilot x) => 
+																																Func<cessna_digital_twin.Pilot, bool> _predicate2798_85670 = new Func<cessna_digital_twin.Pilot,bool>((cessna_digital_twin.Pilot x) => 
 																																 {
 																																		{
 																																		return Equals(x.Get_state()
@@ -276,18 +303,18 @@ namespace cessna_digital_twin {
 																																		;
 																																		return default(bool);;
 																																});
-																																Func<cessna_digital_twin.Pilot, bool> _predicateMod1956_57496 = new Func<cessna_digital_twin.Pilot, bool>(_it => 
+																																Func<cessna_digital_twin.Pilot, bool> _predicateMod2798_85670 = new Func<cessna_digital_twin.Pilot, bool>(_it => 
 																																{
 																																	if (_it?.ID == this.ID)
 																																	{
 																																		return false;
-																																	} else if (_predicate1956_57496 != null)
+																																	} else if (_predicate2798_85670 != null)
 																																	{
-																																		return _predicate1956_57496.Invoke(_it);
+																																		return _predicate2798_85670.Invoke(_it);
 																																	} else return true;
 																																});
 																																
-																																return _AgentLayer._PilotEnvironment.Explore(_source1956_57496 , _range1956_57496, -1, _predicate1956_57496).ToArray();
+																																return _AgentLayer._PilotEnvironment.Explore(_source2798_85670 , _range2798_85670, -1, _predicate2798_85670).ToArray();
 																															}).Invoke();
 																															if(pilot_array.Length >= 1) {
 																																			{

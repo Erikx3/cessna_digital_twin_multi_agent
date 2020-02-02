@@ -42,6 +42,14 @@ namespace cessna_digital_twin {
 				if(__Utility != value) __Utility = value;
 			}
 		}
+		private cessna_digital_twin.Weather __weather
+			 = default(cessna_digital_twin.Weather);
+		internal cessna_digital_twin.Weather weather { 
+			get { return __weather; }
+			set{
+				if(__weather != value) __weather = value;
+			}
+		}
 		private bool __occupied
 			 = false;
 		internal bool occupied { 
@@ -720,7 +728,25 @@ namespace cessna_digital_twin {
 			{
 			Longitude = this.Position.X;
 			Latitude = this.Position.Y;
-			event_info = "None"
+			event_info = "None";
+			weather = new Func<cessna_digital_twin.Weather>(() => {
+				Func<cessna_digital_twin.Weather, bool> _predicate2017_58830 = null;
+				Func<cessna_digital_twin.Weather, bool> _predicateMod2017_58830 = new Func<cessna_digital_twin.Weather, bool>(_it => 
+				{
+					if (_it?.ID == this.ID)
+					{
+						return false;
+					} else if (_predicate2017_58830 != null)
+					{
+						return _predicate2017_58830.Invoke(_it);
+					} else return true;
+				});
+				
+				const int _range2017_58830 = -1;
+				var _source2017_58830 = this.Position;
+				
+				return _AgentLayer._WeatherEnvironment.Explore(_source2017_58830, _range2017_58830, 1, _predicateMod2017_58830)?.FirstOrDefault();
+			}).Invoke()
 			;}
 			return;
 		}
@@ -816,7 +842,7 @@ namespace cessna_digital_twin {
 							Aircraft__flight_phase = "on-ground"
 							;}
 						;};
-			double delta_wind_bearing = ((Aircraft__heading_bearing - agentlayer.Get_Weather__wind_bearing()
+			double delta_wind_bearing = ((Aircraft__heading_bearing - weather.Get_wind_bearing()
 			) + 180) % 360 - 180;
 			double delta_wind_bearing_rad = delta_wind_bearing * Mars.Components.Common.Constants.Pi / 180;
 			int n_cycle = 100;
@@ -833,10 +859,10 @@ namespace cessna_digital_twin {
 					 	Aircraft__angle_of_attack = (Aircraft__pitch - Aircraft__rate_of_climb);
 					 	double Aircraft__climb_angle_rad = Aircraft__climb_angle * Mars.Components.Common.Constants.Pi / 180;
 					 	Aircraft__lift_coefficient = Get_Aircraft__lift_coefficient();
-					 	Aircraft__lift = Aircraft__lift_coefficient * agentlayer.Get_Weather__density(Aircraft__height)
+					 	Aircraft__lift = Aircraft__lift_coefficient * weather.Get_density(Aircraft__height)
 					 	 * Mars.Components.Common.Math.Pow(Aircraft__true_air_speed, 2) * Aircraft__wing_area / 2;
 					 	Aircraft__drag_coefficient = Get_Aircraft__drag_coefficient();
-					 	Aircraft__drag = Aircraft__drag_coefficient * agentlayer.Get_Weather__density(Aircraft__height)
+					 	Aircraft__drag = Aircraft__drag_coefficient * weather.Get_density(Aircraft__height)
 					 	 * Mars.Components.Common.Math.Pow(Aircraft__true_air_speed, 2) * Aircraft__wing_area / 2;
 					 	Aircraft__acceleration_z = ((Propeller__thrust - Tire__friction_force - Aircraft__drag) * Mars.Components.Common.Math.Sin(Aircraft__climb_angle_rad)
 					 	 + Aircraft__lift * Mars.Components.Common.Math.Cos(Aircraft__climb_angle_rad)
@@ -854,7 +880,7 @@ namespace cessna_digital_twin {
 					 	 - Aircraft__lift * Mars.Components.Common.Math.Sin(Aircraft__climb_angle_rad)
 					 	) / Aircraft__mass;
 					 	Aircraft__ground_speed_x = Aircraft__ground_speed_x + Aircraft__acceleration_x / n_cycle;
-					 	Aircraft__true_air_speed_x = Aircraft__ground_speed_x + agentlayer.Get_Weather__wind_speed()
+					 	Aircraft__true_air_speed_x = Aircraft__ground_speed_x + weather.Get_wind_speed()
 					 	 * Mars.Components.Common.Math.Cos(delta_wind_bearing_rad);
 					 	if(Aircraft__true_air_speed_x < 0) {
 					 					{
@@ -874,14 +900,14 @@ namespace cessna_digital_twin {
 							{
 							new System.Func<Tuple<double,double>>(() => {
 								
-								var _speed288_10306 = Aircraft__movement_x
+								var _speed2210_66398 = Aircraft__movement_x
 							;
 								
-								var _entity288_10306 = this;
+								var _entity2210_66398 = this;
 								
-								Func<double[], bool> _predicate288_10306 = null;
+								Func<double[], bool> _predicate2210_66398 = null;
 								
-								_AgentLayer._AircraftEnvironment.MoveTowards(_entity288_10306, Aircraft__heading_bearing, _speed288_10306);	
+								_AgentLayer._AircraftEnvironment.MoveTowards(_entity2210_66398, Aircraft__heading_bearing, _speed2210_66398);	
 								
 								return new Tuple<double, double>(Position.X, Position.Y);
 							}).Invoke()
@@ -957,7 +983,7 @@ namespace cessna_digital_twin {
 		{
 			{
 			Propeller__thrust_coefficient = Get_Propeller__thrust_coefficient();
-			Propeller__thrust = Propeller__thrust_coefficient * agentlayer.Get_Weather__density(Aircraft__height)
+			Propeller__thrust = Propeller__thrust_coefficient * weather.Get_density(Aircraft__height)
 			 * Mars.Components.Common.Math.Pow((Engine__RPM / 60), 2) * Mars.Components.Common.Math.Pow(Propeller__diameter, 4)
 			;}
 			return;
@@ -1003,7 +1029,7 @@ namespace cessna_digital_twin {
 			Engine__power = 0.0;
 			Engine__running = false;
 			Engine__oil_pressure = 101325;
-			Engine__oil_temperature = agentlayer.Get_Weather__temperature();
+			Engine__oil_temperature = weather.Get_temperature();
 			Engine__failure_probability = 0.0;
 			Engine__failure = false;
 			Engine__fuel_consumption = 0.0;
@@ -1076,7 +1102,7 @@ namespace cessna_digital_twin {
 		{
 			{
 			Engine__power_coefficient = Get_Engine__power_coefficient();
-			Engine__RPM = Mars.Components.Common.Math.Pow((Engine__power / (Engine__power_coefficient * agentlayer.Get_Weather__density(Aircraft__height)
+			Engine__RPM = Mars.Components.Common.Math.Pow((Engine__power / (Engine__power_coefficient * weather.Get_density(Aircraft__height)
 			 * Mars.Components.Common.Math.Pow(Propeller__diameter, 5))), 0.3333) * 60;
 			if(Engine__RPM > Engine__RPM_max) {
 							{
@@ -1322,9 +1348,9 @@ namespace cessna_digital_twin {
 		public void Remove() {
 			{
 			new System.Action(() => {
-				var _target85_2376 = this;
-				if (_target85_2376 != null) {
-					_AgentLayer._KillAircraft(_target85_2376, _target85_2376._executionFrequency);
+				var _target2006_58487 = this;
+				if (_target2006_58487 != null) {
+					_AgentLayer._KillAircraft(_target2006_58487, _target2006_58487._executionFrequency);
 				}
 			}).Invoke()
 					;
@@ -1338,12 +1364,12 @@ namespace cessna_digital_twin {
 			{
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget86_2431 = cor;
+				var _taget2007_58542 = cor;
 				
-				var _object86_2431 = this;
+				var _object2007_58542 = this;
 				
-				_AgentLayer._AircraftEnvironment.PosAt(_object86_2431, 
-					_taget86_2431.Item1, _taget86_2431.Item2
+				_AgentLayer._AircraftEnvironment.PosAt(_object2007_58542, 
+					_taget2007_58542.Item1, _taget2007_58542.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke()
@@ -1736,6 +1762,7 @@ namespace cessna_digital_twin {
 		public cessna_digital_twin.AgentLayer _Layer_ => _AgentLayer;
 		public cessna_digital_twin.AgentLayer _AgentLayer { get; set; }
 		public cessna_digital_twin.AgentLayer agentlayer => _AgentLayer;
+		public Mars.Components.Environments.GeoHashEnvironment<Weather> _WeatherEnvironment { get; set; }
 		
 		[Mars.Interfaces.LIFECapabilities.PublishForMappingInMars]
 		public Aircraft (

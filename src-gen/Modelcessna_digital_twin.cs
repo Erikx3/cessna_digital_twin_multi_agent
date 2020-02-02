@@ -11,6 +11,7 @@ public static class Program {
 		description.AddAgent<cessna_digital_twin.Aircraft, cessna_digital_twin.AgentLayer>();
 		description.AddAgent<cessna_digital_twin.Observer, cessna_digital_twin.AgentLayer>();
 		description.AddAgent<cessna_digital_twin.Pilot, cessna_digital_twin.AgentLayer>();
+		description.AddAgent<cessna_digital_twin.Weather, cessna_digital_twin.AgentLayer>();
 		var task = Mars.Core.SimulationStarter.SimulationStarter.Start(description, args);
 		var loopResults = task.Run();
 		System.Console.WriteLine($"Simulation execution finished after {loopResults.Iterations} steps");

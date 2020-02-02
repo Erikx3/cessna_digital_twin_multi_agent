@@ -40,61 +40,15 @@ namespace cessna_digital_twin {
 		public Mars.Components.Environments.GeoHashEnvironment<Aircraft> _AircraftEnvironment { get; set; }
 		public Mars.Components.Environments.GeoHashEnvironment<Observer> _ObserverEnvironment { get; set; }
 		public Mars.Components.Environments.GeoHashEnvironment<Pilot> _PilotEnvironment { get; set; }
+		public Mars.Components.Environments.GeoHashEnvironment<Weather> _WeatherEnvironment { get; set; }
 		public System.Collections.Generic.IDictionary<System.Guid, AirTrafficController> _AirTrafficControllerAgents { get; set; }
 		public System.Collections.Generic.IDictionary<System.Guid, Aircraft> _AircraftAgents { get; set; }
 		public System.Collections.Generic.IDictionary<System.Guid, Observer> _ObserverAgents { get; set; }
 		public System.Collections.Generic.IDictionary<System.Guid, Pilot> _PilotAgents { get; set; }
+		public System.Collections.Generic.IDictionary<System.Guid, Weather> _WeatherAgents { get; set; }
 		
 		public AgentLayer _AgentLayer => this;
 		public AgentLayer agentlayer => this;
-		private double __Weather__wind_bearing
-			 = 107.0;
-		internal double Weather__wind_bearing { 
-			get { return __Weather__wind_bearing; }
-			set{
-				if(System.Math.Abs(__Weather__wind_bearing - value) > 0.0000001) __Weather__wind_bearing = value;
-			}
-		}
-		private double __Weather__wind_speed
-			 = 5.0;
-		internal double Weather__wind_speed { 
-			get { return __Weather__wind_speed; }
-			set{
-				if(System.Math.Abs(__Weather__wind_speed - value) > 0.0000001) __Weather__wind_speed = value;
-			}
-		}
-		private double __Weather__temperature
-			 = 15.0;
-		internal double Weather__temperature { 
-			get { return __Weather__temperature; }
-			set{
-				if(System.Math.Abs(__Weather__temperature - value) > 0.0000001) __Weather__temperature = value;
-			}
-		}
-		private double __density_zero
-			 = 1.225;
-		internal double density_zero { 
-			get { return __density_zero; }
-			set{
-				if(System.Math.Abs(__density_zero - value) > 0.0000001) __density_zero = value;
-			}
-		}
-		private double __temperature_zero
-			 = 288.15;
-		internal double temperature_zero { 
-			get { return __temperature_zero; }
-			set{
-				if(System.Math.Abs(__temperature_zero - value) > 0.0000001) __temperature_zero = value;
-			}
-		}
-		private double __L_constant
-			 = 0.0065;
-		internal double L_constant { 
-			get { return __L_constant; }
-			set{
-				if(System.Math.Abs(__L_constant - value) > 0.0000001) __L_constant = value;
-			}
-		}
 		private double __gravity
 			 = 9.81;
 		internal double gravity { 
@@ -166,43 +120,6 @@ namespace cessna_digital_twin {
 			set{
 				if(__message_information_bool != value) __message_information_bool = value;
 			}
-		}
-		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public virtual double Get_Weather__wind_bearing() 
-		{
-			{
-			return Weather__wind_bearing
-					;
-			}
-			return default(double);;
-		}
-		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public virtual double Get_Weather__wind_speed() 
-		{
-			{
-			return Weather__wind_speed
-					;
-			}
-			return default(double);;
-		}
-		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public virtual double Get_Weather__temperature() 
-		{
-			{
-			return Weather__temperature
-					;
-			}
-			return default(double);;
-		}
-		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public virtual double Get_Weather__density(double height) 
-		{
-			{
-			double Weather__density = default(double);;
-			Weather__density = density_zero * Mars.Components.Common.Math.Pow((1 - (L_constant * height / temperature_zero)), 4.2561);
-			return Weather__density
-			;}
-			return default(double);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public virtual double Get_gravity() 
@@ -354,6 +271,7 @@ namespace cessna_digital_twin {
 				this._AircraftEnvironment = Mars.Components.Environments.GeoHashEnvironment<Aircraft>.BuildByBBox(_lowerLeft.Longitude, _lowerLeft.Latitude, _upperRight.Longitude, _upperRight.Latitude);
 				this._ObserverEnvironment = Mars.Components.Environments.GeoHashEnvironment<Observer>.BuildByBBox(_lowerLeft.Longitude, _lowerLeft.Latitude, _upperRight.Longitude, _upperRight.Latitude);
 				this._PilotEnvironment = Mars.Components.Environments.GeoHashEnvironment<Pilot>.BuildByBBox(_lowerLeft.Longitude, _lowerLeft.Latitude, _upperRight.Longitude, _upperRight.Latitude);
+				this._WeatherEnvironment = Mars.Components.Environments.GeoHashEnvironment<Weather>.BuildByBBox(_lowerLeft.Longitude, _lowerLeft.Latitude, _upperRight.Longitude, _upperRight.Latitude);
 			} else if (_gisLayerExist)
 			{
 				var geometries = new List<GeoAPI.Geometries.IGeometry>();
@@ -372,12 +290,15 @@ namespace cessna_digital_twin {
 					.BuildByBBox(_feature.MinX, _feature.MinY, _feature.MaxX, _feature.MaxY);
 				this._PilotEnvironment = Mars.Components.Environments.GeoHashEnvironment<Pilot>
 					.BuildByBBox(_feature.MinX, _feature.MinY, _feature.MaxX, _feature.MaxY);
+				this._WeatherEnvironment = Mars.Components.Environments.GeoHashEnvironment<Weather>
+					.BuildByBBox(_feature.MinX, _feature.MinY, _feature.MaxX, _feature.MaxY);
 			} 
 			else if (_lowerLeft != null && _upperRight != null) {
 				this._AirTrafficControllerEnvironment = Mars.Components.Environments.GeoHashEnvironment<AirTrafficController>.BuildByBBox(_lowerLeft.Longitude, _lowerLeft.Latitude, _upperRight.Longitude, _upperRight.Latitude);
 				this._AircraftEnvironment = Mars.Components.Environments.GeoHashEnvironment<Aircraft>.BuildByBBox(_lowerLeft.Longitude, _lowerLeft.Latitude, _upperRight.Longitude, _upperRight.Latitude);
 				this._ObserverEnvironment = Mars.Components.Environments.GeoHashEnvironment<Observer>.BuildByBBox(_lowerLeft.Longitude, _lowerLeft.Latitude, _upperRight.Longitude, _upperRight.Latitude);
 				this._PilotEnvironment = Mars.Components.Environments.GeoHashEnvironment<Pilot>.BuildByBBox(_lowerLeft.Longitude, _lowerLeft.Latitude, _upperRight.Longitude, _upperRight.Latitude);
+				this._WeatherEnvironment = Mars.Components.Environments.GeoHashEnvironment<Weather>.BuildByBBox(_lowerLeft.Longitude, _lowerLeft.Latitude, _upperRight.Longitude, _upperRight.Latitude);
 			} else {
 				throw new ArgumentException("No environment boundary was used for agent layer 'TestLayer'");
 			}
@@ -396,6 +317,10 @@ namespace cessna_digital_twin {
 			new System.Collections.Generic.List<Mars.Interfaces.Layer.ILayer> { this });
 			_PilotAgents = Mars.Components.Services.AgentManager.SpawnAgents<Pilot>(
 			initData.AgentInitConfigs.First(config => config.Type == typeof(Pilot)),
+			regHandle, unregHandle, 
+			new System.Collections.Generic.List<Mars.Interfaces.Layer.ILayer> { this });
+			_WeatherAgents = Mars.Components.Services.AgentManager.SpawnAgents<Weather>(
+			initData.AgentInitConfigs.First(config => config.Type == typeof(Weather)),
 			regHandle, unregHandle, 
 			new System.Collections.Generic.List<Mars.Interfaces.Layer.ILayer> { this });
 			
@@ -438,6 +363,15 @@ namespace cessna_digital_twin {
 			_PilotAgents.Add(id, agent);
 			return agent;
 		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public cessna_digital_twin.Weather _SpawnWeather(double xcor = 0, double ycor = 0, int freq = 1) {
+			var id = System.Guid.NewGuid();
+			var agent = new cessna_digital_twin.Weather(id, this, _Register, _Unregister,
+			_WeatherEnvironment,
+			xcor, ycor, freq);
+			_WeatherAgents.Add(id, agent);
+			return agent;
+		}
 		
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public void _KillAirTrafficController(cessna_digital_twin.AirTrafficController target, int executionFrequency = 1)
@@ -470,6 +404,14 @@ namespace cessna_digital_twin {
 			_PilotEnvironment.Remove(target);
 			_Unregister(this, target, target._executionFrequency);
 			_PilotAgents.Remove(target.ID);
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void _KillWeather(cessna_digital_twin.Weather target, int executionFrequency = 1)
+		{
+			target._isAlive = false;
+			_WeatherEnvironment.Remove(target);
+			_Unregister(this, target, target._executionFrequency);
+			_WeatherAgents.Remove(target.ID);
 		}
 	}
 }

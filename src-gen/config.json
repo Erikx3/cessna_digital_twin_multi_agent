@@ -32,7 +32,7 @@
             "count":0,
         },
         {
-            "name":"Observer",
+            "name":"Weather",
             "count":1,
             // Deactivate the output for an agent
             "outputFrequency": -1
@@ -40,6 +40,12 @@
         {
             "name":"AirTrafficController",
             "count":1,
-        }
+        },
+        {
+            "name":"Observer",
+            "count":1,
+            // Deactivate the output for an agent
+            "outputFrequency": -1
+        }      
     ]
 }
