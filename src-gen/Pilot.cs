@@ -35,7 +35,7 @@ namespace cessna_digital_twin {
 			}
 		}
 		private int __callsign_number
-			 = 2;
+			 = 1;
 		internal int callsign_number { 
 			get { return __callsign_number; }
 			set{
@@ -234,28 +234,20 @@ namespace cessna_digital_twin {
 				if(__killme_info != value) __killme_info = value;
 			}
 		}
-		private double __V_rotate
-			 = 30;
-		internal double V_rotate { 
-			get { return __V_rotate; }
+		private double __time_base_next_communication_attempt
+			 = default(double);
+		internal double time_base_next_communication_attempt { 
+			get { return __time_base_next_communication_attempt; }
 			set{
-				if(System.Math.Abs(__V_rotate - value) > 0.0000001) __V_rotate = value;
+				if(System.Math.Abs(__time_base_next_communication_attempt - value) > 0.0000001) __time_base_next_communication_attempt = value;
 			}
 		}
-		private double __spacing_to_next_aircraft
-			 = 30.0;
-		internal double spacing_to_next_aircraft { 
-			get { return __spacing_to_next_aircraft; }
+		private double __time_extra_next_communication_attempt
+			 = default(double);
+		internal double time_extra_next_communication_attempt { 
+			get { return __time_extra_next_communication_attempt; }
 			set{
-				if(System.Math.Abs(__spacing_to_next_aircraft - value) > 0.0000001) __spacing_to_next_aircraft = value;
-			}
-		}
-		private double __angle_of_vision
-			 = 60.0;
-		internal double angle_of_vision { 
-			get { return __angle_of_vision; }
-			set{
-				if(System.Math.Abs(__angle_of_vision - value) > 0.0000001) __angle_of_vision = value;
+				if(System.Math.Abs(__time_extra_next_communication_attempt - value) > 0.0000001) __time_extra_next_communication_attempt = value;
 			}
 		}
 		private int __age
@@ -296,6 +288,134 @@ namespace cessna_digital_twin {
 			get { return __flight_experience_max; }
 			set{
 				if(System.Math.Abs(__flight_experience_max - value) > 0.0000001) __flight_experience_max = value;
+			}
+		}
+		private double __Check_RWT__water_sediments_skip_probability
+			 = default(double);
+		internal double Check_RWT__water_sediments_skip_probability { 
+			get { return __Check_RWT__water_sediments_skip_probability; }
+			set{
+				if(System.Math.Abs(__Check_RWT__water_sediments_skip_probability - value) > 0.0000001) __Check_RWT__water_sediments_skip_probability = value;
+			}
+		}
+		private double __Check_Engine__oil_skip_probability
+			 = default(double);
+		internal double Check_Engine__oil_skip_probability { 
+			get { return __Check_Engine__oil_skip_probability; }
+			set{
+				if(System.Math.Abs(__Check_Engine__oil_skip_probability - value) > 0.0000001) __Check_Engine__oil_skip_probability = value;
+			}
+		}
+		private double __Check_LWT__water_sediments_skip_probability
+			 = default(double);
+		internal double Check_LWT__water_sediments_skip_probability { 
+			get { return __Check_LWT__water_sediments_skip_probability; }
+			set{
+				if(System.Math.Abs(__Check_LWT__water_sediments_skip_probability - value) > 0.0000001) __Check_LWT__water_sediments_skip_probability = value;
+			}
+		}
+		private double __Set_Engine__mixture_control_skip_probability
+			 = default(double);
+		internal double Set_Engine__mixture_control_skip_probability { 
+			get { return __Set_Engine__mixture_control_skip_probability; }
+			set{
+				if(System.Math.Abs(__Set_Engine__mixture_control_skip_probability - value) > 0.0000001) __Set_Engine__mixture_control_skip_probability = value;
+			}
+		}
+		private double __Check_Instrument_Engine__oil_pressure_skip_probability
+			 = default(double);
+		internal double Check_Instrument_Engine__oil_pressure_skip_probability { 
+			get { return __Check_Instrument_Engine__oil_pressure_skip_probability; }
+			set{
+				if(System.Math.Abs(__Check_Instrument_Engine__oil_pressure_skip_probability - value) > 0.0000001) __Check_Instrument_Engine__oil_pressure_skip_probability = value;
+			}
+		}
+		private double __Check_Instrument_Engine__oil_temperature_skip_probability
+			 = default(double);
+		internal double Check_Instrument_Engine__oil_temperature_skip_probability { 
+			get { return __Check_Instrument_Engine__oil_temperature_skip_probability; }
+			set{
+				if(System.Math.Abs(__Check_Instrument_Engine__oil_temperature_skip_probability - value) > 0.0000001) __Check_Instrument_Engine__oil_temperature_skip_probability = value;
+			}
+		}
+		private double __TakeOff__V_rotate
+			 = default(double);
+		internal double TakeOff__V_rotate { 
+			get { return __TakeOff__V_rotate; }
+			set{
+				if(System.Math.Abs(__TakeOff__V_rotate - value) > 0.0000001) __TakeOff__V_rotate = value;
+			}
+		}
+		private int __TakeOff__rotate_pitch
+			 = default(int);
+		internal int TakeOff__rotate_pitch { 
+			get { return __TakeOff__rotate_pitch; }
+			set{
+				if(__TakeOff__rotate_pitch != value) __TakeOff__rotate_pitch = value;
+			}
+		}
+		private double __Climb__rate_of_climb_upper_limit
+			 = default(double);
+		internal double Climb__rate_of_climb_upper_limit { 
+			get { return __Climb__rate_of_climb_upper_limit; }
+			set{
+				if(System.Math.Abs(__Climb__rate_of_climb_upper_limit - value) > 0.0000001) __Climb__rate_of_climb_upper_limit = value;
+			}
+		}
+		private double __Climb__rate_of_climb_lower_limit
+			 = default(double);
+		internal double Climb__rate_of_climb_lower_limit { 
+			get { return __Climb__rate_of_climb_lower_limit; }
+			set{
+				if(System.Math.Abs(__Climb__rate_of_climb_lower_limit - value) > 0.0000001) __Climb__rate_of_climb_lower_limit = value;
+			}
+		}
+		private double __Climb__pitch_magnitude
+			 = default(double);
+		internal double Climb__pitch_magnitude { 
+			get { return __Climb__pitch_magnitude; }
+			set{
+				if(System.Math.Abs(__Climb__pitch_magnitude - value) > 0.0000001) __Climb__pitch_magnitude = value;
+			}
+		}
+		private double __Taxiing__spacing_to_next_aircraft
+			 = default(double);
+		internal double Taxiing__spacing_to_next_aircraft { 
+			get { return __Taxiing__spacing_to_next_aircraft; }
+			set{
+				if(System.Math.Abs(__Taxiing__spacing_to_next_aircraft - value) > 0.0000001) __Taxiing__spacing_to_next_aircraft = value;
+			}
+		}
+		private double __Taxiing__angle_of_vision
+			 = default(double);
+		internal double Taxiing__angle_of_vision { 
+			get { return __Taxiing__angle_of_vision; }
+			set{
+				if(System.Math.Abs(__Taxiing__angle_of_vision - value) > 0.0000001) __Taxiing__angle_of_vision = value;
+			}
+		}
+		private int __Taxiing__final_point_distance
+			 = default(int);
+		internal int Taxiing__final_point_distance { 
+			get { return __Taxiing__final_point_distance; }
+			set{
+				if(__Taxiing__final_point_distance != value) __Taxiing__final_point_distance = value;
+			}
+		}
+		private int __Taxiing__next_point_distance
+			 = default(int);
+		internal int Taxiing__next_point_distance { 
+			get { return __Taxiing__next_point_distance; }
+			set{
+				if(__Taxiing__next_point_distance != value) __Taxiing__next_point_distance = value;
+			}
+		}
+		private double __Taxiing__speed
+			 = default(double);
+		internal double Taxiing__speed { 
+			get { return __Taxiing__speed; }
+			set{
+				if(System.Math.Abs(__Taxiing__speed - value) > 0.0000001) __Taxiing__speed = value;
 			}
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
@@ -463,9 +583,9 @@ namespace cessna_digital_twin {
 			event_info = "End flight mission due to " + info;
 			myAircraft.Remove();
 			new System.Action(() => {
-				var _target400_13397 = this;
-				if (_target400_13397 != null) {
-					_AgentLayer._KillPilot(_target400_13397, _target400_13397._executionFrequency);
+				var _target399_13224 = this;
+				if (_target399_13224 != null) {
+					_AgentLayer._KillPilot(_target399_13224, _target399_13224._executionFrequency);
 				}
 			}).Invoke()
 			;}
@@ -479,13 +599,13 @@ namespace cessna_digital_twin {
 							{
 							new System.Func<System.Tuple<double,double>>(() => {
 								
-								var _taget407_13481 = (myAircraft.Get_position()
+								var _taget406_13308 = (myAircraft.Get_position()
 								);
 								
-								var _object407_13481 = this;
+								var _object406_13308 = this;
 								
-								_AgentLayer._PilotEnvironment.PosAt(_object407_13481, 
-									_taget407_13481.Item1, _taget407_13481.Item2
+								_AgentLayer._PilotEnvironment.PosAt(_object406_13308, 
+									_taget406_13308.Item1, _taget406_13308.Item2
 								);
 								return new Tuple<double, double>(Position.X, Position.Y);
 							}).Invoke()
@@ -553,7 +673,7 @@ namespace cessna_digital_twin {
 															next_action = "Check_RWT__fuel_quantity";
 															if(Equals(check_value, true)) {
 																			{
-																			if(Equals(skip_action(0.05,"Repair_RWT__water_sediments"), false)) {
+																			if(Equals(skip_action(Check_RWT__water_sediments_skip_probability,"Repair_RWT__water_sediments"), false)) {
 																							{
 																							next_action = "Repair_RWT__water_sediments"
 																							;}
@@ -603,7 +723,7 @@ namespace cessna_digital_twin {
 																											if(check_value < myAircraft.Get_Engine__oil_min()
 																											) {
 																															{
-																															if(Equals(skip_action(0.05,"Refill_Engine__oil"), false)) {
+																															if(Equals(skip_action(Check_Engine__oil_skip_probability,"Refill_Engine__oil"), false)) {
 																																			{
 																																			next_action = "Refill_Engine__oil"
 																																			;}
@@ -668,7 +788,7 @@ namespace cessna_digital_twin {
 																																											next_action = "Check_LWT__fuel_quantity";
 																																											if(Equals(check_value, true)) {
 																																															{
-																																															if(Equals(skip_action(0.05,"Repair_LWT__water_sediments"), false)) {
+																																															if(Equals(skip_action(Check_LWT__water_sediments_skip_probability,"Repair_LWT__water_sediments"), false)) {
 																																																			{
 																																																			next_action = "Repair_LWT__water_sediments"
 																																																			;}
@@ -753,7 +873,7 @@ namespace cessna_digital_twin {
 											if(timehandler.hold_action_time(timehandler.action_duration)
 											) {
 															{
-															if(Equals(skip_action(0.05,"Set_Engine__mixture_control"), false)) {
+															if(Equals(skip_action(Set_Engine__mixture_control_skip_probability,"Set_Engine__mixture_control"), false)) {
 																			{
 																			Set_Engine__mixture_control("RICH")
 																			;}
@@ -844,7 +964,7 @@ namespace cessna_digital_twin {
 																																							if(Check_Instrument_Engine__oil_pressure() < myAircraft.Get_Engine__oil_pressure_normal_min()
 																																							) {
 																																											{
-																																											if(Equals(skip_action(0.05,"Check_Instrument_Engine__oil_pressure"), false)) {
+																																											if(Equals(skip_action(Check_Instrument_Engine__oil_pressure_skip_probability,"Check_Instrument_Engine__oil_pressure"), false)) {
 																																															{
 																																															if(Equals(first_fixing_attempt, true)) {
 																																																			{
@@ -877,7 +997,7 @@ namespace cessna_digital_twin {
 																																											if(Check_Instrument_Engine__oil_temperature() > myAircraft.Get_Engine__oil_temperature_normal_max()
 																																											) {
 																																															{
-																																															if(Equals(skip_action(0.05,"Check_Instrument_Engine__oil_temperature"), false)) {
+																																															if(Equals(skip_action(Check_Instrument_Engine__oil_temperature_skip_probability,"Check_Instrument_Engine__oil_temperature"), false)) {
 																																																			{
 																																																			if(Equals(first_fixing_attempt, true)) {
 																																																							{
@@ -947,7 +1067,7 @@ namespace cessna_digital_twin {
 															next_action = "Clear_frequency"
 															;}
 													;} ;
-											timehandler.create_action_duration(10,5,"pilot_age_and_experience");
+											timehandler.create_action_duration(time_base_next_communication_attempt,time_extra_next_communication_attempt,"pilot_age_and_experience");
 											if(timehandler.hold_action_time(timehandler.action_duration)
 											) {
 															{
@@ -1024,7 +1144,7 @@ namespace cessna_digital_twin {
 															if(timehandler.hold_action_time(timehandler.action_duration)
 															) {
 																			{
-																			if(Equals(skip_action(0.05,"Set_Engine__mixture_control"), false)) {
+																			if(Equals(skip_action(Set_Engine__mixture_control_skip_probability,"Set_Engine__mixture_control"), false)) {
 																							{
 																							Set_Engine__mixture_control("RICH")
 																							;}
@@ -1065,7 +1185,7 @@ namespace cessna_digital_twin {
 																											if(Check_Instrument_Engine__oil_temperature() > myAircraft.Get_Engine__oil_temperature_normal_max()
 																											) {
 																															{
-																															if(Equals(skip_action(0.05,"Check_Instrument_Engine__oil_temperature"), false)) {
+																															if(Equals(skip_action(Check_Instrument_Engine__oil_temperature_skip_probability,"Check_Instrument_Engine__oil_temperature"), false)) {
 																																			{
 																																			killme_info = "high engine oil temperature";
 																																			go_to_next_state("LeavingFrequency")
@@ -1076,7 +1196,7 @@ namespace cessna_digital_twin {
 																											if(Check_Instrument_Engine__oil_pressure() < myAircraft.Get_Engine__oil_pressure_normal_min()
 																											) {
 																															{
-																															if(Equals(skip_action(0.05,"Check_Instrument_Engine__oil_pressure"), false)) {
+																															if(Equals(skip_action(Check_Instrument_Engine__oil_pressure_skip_probability,"Check_Instrument_Engine__oil_pressure"), false)) {
 																																			{
 																																			killme_info = "low engine oil pressure";
 																																			go_to_next_state("LeavingFrequency")
@@ -1146,7 +1266,7 @@ namespace cessna_digital_twin {
 															next_action = "Clear_frequency"
 															;}
 													;} ;
-											timehandler.create_action_duration(10,5,"pilot_age_and_experience");
+											timehandler.create_action_duration(time_base_next_communication_attempt,time_extra_next_communication_attempt,"pilot_age_and_experience");
 											if(timehandler.hold_action_time(timehandler.action_duration)
 											) {
 															{
@@ -1220,7 +1340,7 @@ namespace cessna_digital_twin {
 																		;}
 															;}
 													;} ;
-											timehandler.create_action_duration(15,5,"pilot_age_and_experience");
+											timehandler.create_action_duration(time_base_next_communication_attempt,time_extra_next_communication_attempt,"pilot_age_and_experience");
 											if(timehandler.hold_action_time(timehandler.action_duration)
 											) {
 															{
@@ -1231,7 +1351,7 @@ namespace cessna_digital_twin {
 									;} else {
 											if(Equals(next_action, "Wait_to_communicate_on_frequency")) {
 															{
-															timehandler.create_action_duration(20,5,"pilot_age_and_experience");
+															timehandler.create_action_duration(time_base_next_communication_attempt,time_extra_next_communication_attempt,"pilot_age_and_experience");
 															if(timehandler.hold_action_time(timehandler.action_duration)
 															) {
 																			{
@@ -1302,11 +1422,11 @@ namespace cessna_digital_twin {
 											if(timehandler.hold_action_time(timehandler.action_duration)
 											) {
 															{
-															if(Check_Instrument_Aircraft__true_air_speed() > V_rotate) {
+															if(Check_Instrument_Aircraft__true_air_speed() > TakeOff__V_rotate) {
 																			{
 																			temp_pitch_value = temp_pitch_value + 2;
 																			Apply_Aircraft__pitch(temp_pitch_value);
-																			if(temp_pitch_value >= 8) {
+																			if(temp_pitch_value >= TakeOff__rotate_pitch) {
 																							{
 																							next_action = "HoldAircraft"
 																							;}
@@ -1331,7 +1451,7 @@ namespace cessna_digital_twin {
 																							{
 																							temp_pitch_value = 0;
 																							Apply_Aircraft__pitch(temp_pitch_value);
-																							V_rotate = V_rotate + 5;
+																							TakeOff__V_rotate = TakeOff__V_rotate + 5;
 																							next_action = "ReadyForRotate"
 																							;}
 																						;}
@@ -1376,20 +1496,20 @@ namespace cessna_digital_twin {
 															temp_pitch_value = temp_pitch_value - 1
 															;}
 													;} else {
-															if(Check_Instrument_Aircraft__rate_of_climb() > 3) {
+															if(Check_Instrument_Aircraft__rate_of_climb() > Climb__rate_of_climb_upper_limit) {
 																			{
 																			if(Equals(Feel_Aircraft__deceleration_z(), false)) {
 																							{
-																							temp_pitch_value = temp_pitch_value - 0.5
+																							temp_pitch_value = temp_pitch_value - Climb__pitch_magnitude
 																							;}
 																					;} 
 																			;}
 																	;} else {
-																			if(Check_Instrument_Aircraft__rate_of_climb() < 1) {
+																			if(Check_Instrument_Aircraft__rate_of_climb() < Climb__rate_of_climb_lower_limit) {
 																							{
 																							if(Equals(Feel_Aircraft__acceleration_z(), false)) {
 																											{
-																											temp_pitch_value = temp_pitch_value + 0.5
+																											temp_pitch_value = temp_pitch_value + Climb__pitch_magnitude
 																											;}
 																									;} 
 																							;}
@@ -1449,7 +1569,7 @@ namespace cessna_digital_twin {
 																	;} 
 															;}
 													;} ;
-											timehandler.create_action_duration(10,5,"pilot_age_and_experience");
+											timehandler.create_action_duration(time_base_next_communication_attempt,time_extra_next_communication_attempt,"pilot_age_and_experience");
 											if(timehandler.hold_action_time(timehandler.action_duration)
 											) {
 															{
@@ -1778,7 +1898,7 @@ namespace cessna_digital_twin {
 			{
 			if(distance_to_next_point < 20) {
 							{
-							if(distance_to_next_point < 10) {
+							if(distance_to_next_point < Taxiing__final_point_distance) {
 											{
 											Taxiing_brake(0.1,0.8);
 											next_action = "End_of_Actions"
@@ -1818,7 +1938,7 @@ namespace cessna_digital_twin {
 		{
 			{
 			Apply_Brake__deceleration(0.0);
-			if(Check_Visual_Aircraft__ground_speed_x() > 6) {
+			if(Check_Visual_Aircraft__ground_speed_x() > Taxiing__speed + 0.5) {
 							{
 							if(Equals(Feel_Aircraft__deceleration_x(), false)) {
 											{
@@ -1836,7 +1956,7 @@ namespace cessna_digital_twin {
 													;} 
 											;}
 									;} else {
-											if(Check_Visual_Aircraft__ground_speed_x() < 5) {
+											if(Check_Visual_Aircraft__ground_speed_x() < Taxiing__speed - 0.5) {
 															{
 															if(Equals(Feel_Aircraft__acceleration_x(), false)) {
 																			{
@@ -1891,33 +2011,33 @@ namespace cessna_digital_twin {
 											active_taxi_point);
 											cessna_digital_twin.Aircraft[] aircraft_array = new System.Func<cessna_digital_twin.Aircraft[]>(() => {
 												
-												var _sourceMapped1604_48181 = this.Position;
-												var _source1604_48181 = _sourceMapped1604_48181;
-												var _range1604_48181 = -1;
+												var _sourceMapped1635_50350 = this.Position;
+												var _source1635_50350 = _sourceMapped1635_50350;
+												var _range1635_50350 = -1;
 															
-												Func<cessna_digital_twin.Aircraft, bool> _predicate1604_48181 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft x) => 
+												Func<cessna_digital_twin.Aircraft, bool> _predicate1635_50350 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft x) => 
 												 {
 														{
 														return formula.haversine(myAircraft.Get_position(),
 														x.Get_position()
 														)
-														 < spacing_to_next_aircraft
+														 < Taxiing__spacing_to_next_aircraft
 														;}
 														;
 														return default(bool);;
 												});
-												Func<cessna_digital_twin.Aircraft, bool> _predicateMod1604_48181 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
+												Func<cessna_digital_twin.Aircraft, bool> _predicateMod1635_50350 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
 												{
 													if (_it?.ID == this.ID)
 													{
 														return false;
-													} else if (_predicate1604_48181 != null)
+													} else if (_predicate1635_50350 != null)
 													{
-														return _predicate1604_48181.Invoke(_it);
+														return _predicate1635_50350.Invoke(_it);
 													} else return true;
 												});
 												
-												return _AgentLayer._AircraftEnvironment.Explore(_source1604_48181 , _range1604_48181, -1, _predicate1604_48181).ToArray();
+												return _AgentLayer._AircraftEnvironment.Explore(_source1635_50350 , _range1635_50350, -1, _predicate1635_50350).ToArray();
 											}).Invoke();
 											if(aircraft_array.Length > 1) {
 															{
@@ -1928,7 +2048,7 @@ namespace cessna_digital_twin {
 																	 	double bearing_to_next_aircraft = formula.bearing(myAircraft.Get_position(),
 																	 	aircraft_array[i].Get_position()
 																	 	);
-																	 	if(Equals(formula.bearing_between_thresholds(myAircraft__heading,angle_of_vision,bearing_to_next_aircraft)
+																	 	if(Equals(formula.bearing_between_thresholds(myAircraft__heading,Taxiing__angle_of_vision,bearing_to_next_aircraft)
 																	 	, true)) {
 																	 					{
 																	 					avoid_collision = true
@@ -1951,7 +2071,7 @@ namespace cessna_digital_twin {
 																	;} else {
 																			{
 																			Taxiing_normal();
-																			if(distance_to_next_point < 8) {
+																			if(distance_to_next_point < Taxiing__next_point_distance) {
 																							{
 																							active_taxi_point_number = active_taxi_point_number + 1
 																							;}
@@ -2320,12 +2440,48 @@ namespace cessna_digital_twin {
 		Mars.Interfaces.Layer.RegisterAgent _register,
 		Mars.Interfaces.Layer.UnregisterAgent _unregister,
 		Mars.Components.Environments.GeoHashEnvironment<Pilot> _PilotEnvironment,
-		double xcor = 0, double ycor = 0, int freq = 1)
+		double time_base_next_communication_attempt,
+		double time_extra_next_communication_attempt,
+		double Check_RWT__water_sediments_skip_probability,
+		double Check_Engine__oil_skip_probability,
+		double Check_LWT__water_sediments_skip_probability,
+		double Set_Engine__mixture_control_skip_probability,
+		double Check_Instrument_Engine__oil_pressure_skip_probability,
+		double Check_Instrument_Engine__oil_temperature_skip_probability,
+		double TakeOff__V_rotate,
+		int TakeOff__rotate_pitch,
+		double Climb__rate_of_climb_upper_limit,
+		double Climb__rate_of_climb_lower_limit,
+		double Climb__pitch_magnitude,
+		double Taxiing__spacing_to_next_aircraft,
+		double Taxiing__angle_of_vision,
+		int Taxiing__final_point_distance,
+		int Taxiing__next_point_distance,
+		double Taxiing__speed
+	,	double xcor = 0, double ycor = 0, int freq = 1)
 		{
 			_AgentLayer = _layer;
 			ID = _id;
 			Position = Mars.Interfaces.Environment.Position.CreatePosition(xcor, ycor);
 			_Random = new System.Random(ID.GetHashCode());
+			this.time_base_next_communication_attempt = time_base_next_communication_attempt;
+			this.time_extra_next_communication_attempt = time_extra_next_communication_attempt;
+			this.Check_RWT__water_sediments_skip_probability = Check_RWT__water_sediments_skip_probability;
+			this.Check_Engine__oil_skip_probability = Check_Engine__oil_skip_probability;
+			this.Check_LWT__water_sediments_skip_probability = Check_LWT__water_sediments_skip_probability;
+			this.Set_Engine__mixture_control_skip_probability = Set_Engine__mixture_control_skip_probability;
+			this.Check_Instrument_Engine__oil_pressure_skip_probability = Check_Instrument_Engine__oil_pressure_skip_probability;
+			this.Check_Instrument_Engine__oil_temperature_skip_probability = Check_Instrument_Engine__oil_temperature_skip_probability;
+			this.TakeOff__V_rotate = TakeOff__V_rotate;
+			this.TakeOff__rotate_pitch = TakeOff__rotate_pitch;
+			this.Climb__rate_of_climb_upper_limit = Climb__rate_of_climb_upper_limit;
+			this.Climb__rate_of_climb_lower_limit = Climb__rate_of_climb_lower_limit;
+			this.Climb__pitch_magnitude = Climb__pitch_magnitude;
+			this.Taxiing__spacing_to_next_aircraft = Taxiing__spacing_to_next_aircraft;
+			this.Taxiing__angle_of_vision = Taxiing__angle_of_vision;
+			this.Taxiing__final_point_distance = Taxiing__final_point_distance;
+			this.Taxiing__next_point_distance = Taxiing__next_point_distance;
+			this.Taxiing__speed = Taxiing__speed;
 			_AgentLayer._PilotEnvironment.Insert(this);
 			_register(_layer, this, freq);
 			_isAlive = true;

@@ -26,6 +26,7 @@
         {
             "name":"Pilot",
             "count":1,
+            "file" : "Pilot_variables.csv"
         },
         {
             "name":"Aircraft",

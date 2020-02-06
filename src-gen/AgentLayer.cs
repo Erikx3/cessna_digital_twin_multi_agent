@@ -327,7 +327,25 @@ namespace cessna_digital_twin {
 			var id = System.Guid.NewGuid();
 			var agent = new cessna_digital_twin.Pilot(id, this, _Register, _Unregister,
 			_PilotEnvironment,
-			xcor, ycor, freq);
+			default(double), 
+			default(double), 
+			default(double), 
+			default(double), 
+			default(double), 
+			default(double), 
+			default(double), 
+			default(double), 
+			default(double), 
+			default(int), 
+			default(double), 
+			default(double), 
+			default(double), 
+			default(double), 
+			default(double), 
+			default(int), 
+			default(int), 
+			default(double)
+		, 	xcor, ycor, freq);
 			_PilotAgents.Add(id, agent);
 			return agent;
 		}
