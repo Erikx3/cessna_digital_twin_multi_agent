@@ -4,6 +4,19 @@ use Mars
 
 layer AgentLayer as agentlayer
 {	
+	// Physics Values
+	var gravity : real = 9.81 // m/s^2
+	def Get_gravity() => return gravity
+	
+	// Callsign Handling
+	var callsign_number : integer = 0
+	
+	def Get_callsign_number()
+	{
+		callsign_number = callsign_number + 1
+		return callsign_number
+	}
+	
 	//-----Communication Handling-----
 	var frequency_blocked = false
 	var sender_identifier = ""
@@ -68,10 +81,6 @@ agent Weather on AgentLayer{
 	{ 
 	}
 	
-	// Physics Values
-	external var gravity : real // m/s^2
-	passive Get_gravity() => return gravity
-	
 	//Weather Values TODO: Think about another solution for weather
 	external var wind_bearing : real // ° range 0..360
 	external var wind_speed : real // m/s
@@ -115,10 +124,11 @@ agent Weather on AgentLayer{
 	passive Get_temperature() => return temperature
 }
 
+
 // -----Agent Observer for spawning sequence-----
 agent Observer on AgentLayer{
 	initialize{
-		state_list = #["Initialization", "PreflightInspection", "StartingEngine", "TakeOffPreparationRequest", "Taxiing", "TakeOffPreparation", "TakeOffHoldShortRequest", "TakeOffRequest", "TakeOff", "Climb", "LeavingFrequencyRequest", "LandingRequest","GoAround","Landing", "LeavingFrequency"]
+		state_list = #["PreflightInspection", "StartingEngine", "TakeOffPreparationRequest", "Taxiing", "TakeOffPreparation", "TakeOffHoldShortRequest", "TakeOffRequest", "TakeOff", "Climb", "LeavingFrequencyRequest", "LandingRequest","GoAround","Landing", "LeavingFrequency"]
 		available_runway_heading = airportstade.Get_available_runway_heading_list()
 		initialize_spawn_cor()
 	}
@@ -128,7 +138,7 @@ agent Observer on AgentLayer{
 		weather = nearest Weather // Has do be done here, since during initialization Weather agent might not be existing yet
 		
 		
-		if (simtime % print_interval === 0)
+		if (simtime % 150 === 0)
 		{
 			println "Simulation Time: " + simtime
 			println "Number of Pilots in each State"
@@ -138,6 +148,16 @@ agent Observer on AgentLayer{
 				println state + ": " + length(pilot_array)
 			}
 			println "-----End of information-----"
+		}
+		
+		if (simtime === 1 or simtime % takeoff_spawn_interval === 0) // add for multiple spawns: or simtime % 100 === 0
+		{
+			spawn_pilot_and_aircraft_on_ground()
+		}
+		
+		if (simtime === 1 or simtime % landing_spawn_interval === 0) // add for multiple spawns: or simtime % 100 === 0
+		{
+			spawn_pilot_and_aircraft_landing()
 		}
 	}
 	
@@ -149,7 +169,8 @@ agent Observer on AgentLayer{
 	//-----Spawn Handling-----
 	// Apron spawn coordinates and handling
 	external var number_of_spawning_points : integer
-	external var print_interval : integer
+	external var takeoff_spawn_interval : integer
+	external var landing_spawn_interval: integer
 	var left_xcor : real
 	var left_ycor : real 
 	var right_xcor : real 
@@ -157,7 +178,6 @@ agent Observer on AgentLayer{
 	var spawn_xcor_list = new List<real>()
 	var spawn_ycor_list = new List<real>()
 	var spawn_location_number : integer
-	var spawn_cor : Tuple<real, real> //current active spawn_cor
 	
 	// for landing spawn management
 	var available_runway_heading : List<real>
@@ -180,18 +200,22 @@ agent Observer on AgentLayer{
 		spawn_location_number = 0
 	}
 		
-	passive Get_spawn_location_bool()
+	def spawn_pilot_and_aircraft_on_ground()
 	{
-		// only allow initialization, when no aircraft is nearby, else go to next spawn location and try again until tried at all location
+		// only spawn, when no aircraft is nearby, else go to next spawn location and try again until tried at all location
+		var spawn_successful = false
 		var i = 0
-		while (i < number_of_spawning_points)
+		while (i < number_of_spawning_points and spawn_successful === false)
 		{
 			i = i + 1
-			spawn_cor = #(spawn_xcor_list.Get(spawn_location_number), spawn_ycor_list.Get(spawn_location_number))
+			var spawn_cor = #(spawn_xcor_list.Get(spawn_location_number), spawn_ycor_list.Get(spawn_location_number))
 			var aircraft_array = explore Aircraft where [x => return formula.haversine(x.Get_position(), spawn_cor) < 10]
 			if (length(aircraft_array) === 0)
 			{
-				return true
+				// spawn order is important, since pilot needs to find an aircraft! 
+				spawn Aircraft at spawn_cor
+				spawn Pilot at spawn_cor
+				spawn_successful = true
 			}
 			spawn_location_number = spawn_location_number + 1
 			
@@ -200,81 +224,39 @@ agent Observer on AgentLayer{
 				spawn_location_number = 0
 			}
 		}
-		return false
 	}
-	
-	passive Get_spawn_location_cor() => return spawn_cor
-	
-	passive Get_runway_heading()
+		
+	def spawn_pilot_and_aircraft_landing()
 	{
 		var wind_bearing = weather.Get_wind_bearing()
 		runway_heading_calculated = formula.calculate_runway_heading(available_runway_heading, wind_bearing)
-		return runway_heading_calculated
+		var landing_spawn_cor = airportstade.Get_landing_spawning_point(runway_heading_calculated)
+		
+		var spawn_aircraft = spawn Aircraft at landing_spawn_cor
+		spawn_aircraft.Initialize_landing(runway_heading_calculated)
+		var spawn_pilot = spawn Pilot at landing_spawn_cor
+		spawn_pilot.Initialize_landing(runway_heading_calculated)
+		
 	}
 }
 
 // -----Agent Pilot flying the aircraft-----
 agent Pilot on AgentLayer{
 		
-	var state_type = "Takeoff" // or "Takeoff"
-	var initialization_time : integer = 2 // bigger than two seconds!
-	var callsign_number : integer = 2
-	
-	// Second Initialization necessary after INIT time is over
-	def Second_Initialization()
-	{
-		var myAircraft_array = explore Aircraft where [it => return it.Get_callsign() === myAircraft_callsign]
-		if (length(myAircraft_array) !== 1)
-		{
-			println "WARNING: Pilot with callsign " + myAircraft_callsign + " did find " + length(myAircraft_array) + " matching aircraft(s) (not one) and will be removed!"
-			state = "LeavingFrequency"
-			event_info = "End flight mission due to no matching aircraft callsign found"
-			kill me
-		}
-		myAircraft = nearest Aircraft where [it => return it.Get_callsign() === myAircraft_callsign]
-		observer = nearest Observer // only one observer agent exists, needed for init handling
-		if (simtime === initialization_time)
-		{
-			if (state_type === "Landing")
-			{
-				state = "LandingRequest"
-				heading_information = observer.Get_runway_heading()
-				myAircraft.Initialize_landing(heading_information)
-				var landing_spawn_cor = airportstade.Get_landing_spawning_point(heading_information)
-				pos me at landing_spawn_cor
-				myAircraft.Teleport(landing_spawn_cor)
-			}
-			else if (state_type === "Takeoff")
-			{
-				if (observer.Get_spawn_location_bool() === true)
-				{
-					state = "PreflightInspection" // first state for starting on ground
-					var cor = observer.Get_spawn_location_cor()
-					pos me at cor
-					myAircraft.Teleport(cor)
-				}
-				else
-				{
-					initialization_time = initialization_time + 20
-				}
-							
-			}
-		}
-	}
-	
 	initialize
 	{	
-		//NOTE: Before second initialization aircrafts and pilots are at default position #(0.0, 0.0)
-		state = "Initialization"
-		current_activity = "Initialization"
-		next_action = "Initialization"
+		//General Initialization for Pilot starting from the ground
+		myAircraft = nearest Aircraft where [it => return it.Get_occupy_bool() === false]
+		myAircraft.Set_occupied()		
+		myAircraft_callsign = myAircraft.Get_callsign() // save aircraft callsign --> IDENTIFIER!
+		weather = nearest Weather //only ne weather agent existing
+		update_general_values() // so first row of csv is not empty
+		state = "PreflightInspection" // first state for starting on ground
+		current_activity = "Initialization:)"
 		event_info = "None"
-		takeoff_distance = 0 // for measuring takeoff distance later
-		myAircraft_callsign = "Cessna" + callsign_number
 		
-		Longitude = xcor
-		Latitude = ycor
-				
+		takeoff_distance = 0 // for measuring takeoff distance later
+		
 		// Pilot attributes and share them with classes
 		age = age_min + random((age_max - age_min) + 1)
 		flight_experience = random((age - age_min) * flight_experience_max / (age_max - age_min))
@@ -283,11 +265,7 @@ agent Pilot on AgentLayer{
 		
 	tick
 	{	
-		if (state === "Initialization"){
-			Second_Initialization()
-		}
-		
-		else if (state === "PreflightInspection"){
+		if (state === "PreflightInspection"){
 			PreflightInspection_action()
 		}
 		
@@ -358,8 +336,7 @@ agent Pilot on AgentLayer{
 	
 	//Classes and Agents
 	var myAircraft : Aircraft // for accessing the real aircraft
-	var observer : Observer
-	var airportstade = new AirportStade()
+	var weather : Weather
 	var timehandler = new TimeHandler()
 	var formula = new Formula()
 	
@@ -374,13 +351,12 @@ agent Pilot on AgentLayer{
 	var state_after_taxiing : string  // since taxi state has multiple use
 	var distance_to_next_point : real // calculated distance to a point in [m]
 	var first_fixing_attempt : bool = true // checker if first repair attempt has been done
-	var request_attempts : integer// checker for communication attempt
+	var request_attempts : integer // checker for communication attempt
 	var killme_info : string //info for "killme" sequence
 	
-	// settings for aircraft handling
-	var V_rotate : real = 30  // Speed on where to rotate (for cessna152 its normally at 25)
-	var spacing_to_next_aircraft : real = 30.0 // distance kept to the next aircraft (when start braking)
-	var angle_of_vision : real = 60.0 // angle of vision when looking with current heading
+	// settings for handling
+	external var time_base_next_communication_attempt : real
+	external var time_extra_next_communication_attempt : real
 	
 	def go_to_next_state(_state : string)
 	{
@@ -402,10 +378,7 @@ agent Pilot on AgentLayer{
 
 	def update_general_values()
 	{
-		if (myAircraft !== nil)
-		{
-			pos at(myAircraft.Get_position())
-		}
+		pos at(myAircraft.Get_position())
 		Longitude = xcor
 		Latitude = ycor
 		current_activity = next_action
@@ -413,6 +386,11 @@ agent Pilot on AgentLayer{
 	
 	// functions for observer agent
 	passive Get_state() => return state  
+	passive Initialize_landing(heading : real)
+	{
+		state = "LandingRequest"
+		heading_information = heading
+	}
 	
 	//-----General Pilot Values and functions-----
 	observe var age: integer // years
@@ -426,7 +404,7 @@ agent Pilot on AgentLayer{
 	
 	//-----State Preflight Inspection-----
 	
-	//help function:
+	// help function:
 	def skip_action(base_probability: real, action_name : string) : bool
 	{
 		// the probability of skiping repair action increases with flight experience
@@ -442,6 +420,11 @@ agent Pilot on AgentLayer{
 			return true
 		}
 	}
+	
+	// variables
+	external var Check_RWT__water_sediments_skip_probability : real
+	external var Check_Engine__oil_skip_probability : real
+	external var Check_LWT__water_sediments_skip_probability : real
 	
 	def PreflightInspection_action()
 	{
@@ -475,7 +458,7 @@ agent Pilot on AgentLayer{
 				
 				if (check_value === true)
 				{
-					if(skip_action(0.05, "Repair_RWT__water_sediments") === false)
+					if(skip_action(Check_RWT__water_sediments_skip_probability, "Repair_RWT__water_sediments") === false)
 					{
 						next_action = "Repair_RWT__water_sediments"
 					}
@@ -517,7 +500,7 @@ agent Pilot on AgentLayer{
 				
 				if (check_value < myAircraft.Get_Engine__oil_min())
 				{
-					if (skip_action(0.05, "Refill_Engine__oil") === false)
+					if (skip_action(Check_Engine__oil_skip_probability, "Refill_Engine__oil") === false)
 					{
 						next_action = "Refill_Engine__oil"
 					}					
@@ -571,7 +554,7 @@ agent Pilot on AgentLayer{
 				
 				if (check_value === true)
 				{
-					if(skip_action(0.05, "Repair_LWT__water_sediments") === false)
+					if(skip_action(Check_LWT__water_sediments_skip_probability, "Repair_LWT__water_sediments") === false)
 					{
 						next_action = "Repair_LWT__water_sediments"
 					}
@@ -611,6 +594,12 @@ agent Pilot on AgentLayer{
 	
 	
 	//-----State Starting Engine-----
+	
+	//variables
+	external var Set_Engine__mixture_control_skip_probability : real
+	external var Check_Instrument_Engine__oil_pressure_skip_probability : real
+	external var Check_Instrument_Engine__oil_temperature_skip_probability : real
+	
 	def StartingEngine_action()
 	{
 		if (first_action_set === false)
@@ -634,7 +623,7 @@ agent Pilot on AgentLayer{
 			timehandler.create_action_duration(4, 2, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
-				if(skip_action(0.05, "Set_Engine__mixture_control") === false)
+				if(skip_action(Set_Engine__mixture_control_skip_probability, "Set_Engine__mixture_control") === false)
 				{
 					Set_Engine__mixture_control("RICH") // set to rich
 				}
@@ -708,7 +697,7 @@ agent Pilot on AgentLayer{
 				next_action = "Check_Instrument_Engine__oil_temperature"
 				if (Check_Instrument_Engine__oil_pressure() < myAircraft.Get_Engine__oil_pressure_normal_min())
 				{
-					if(skip_action(0.05, "Check_Instrument_Engine__oil_pressure") === false)
+					if(skip_action(Check_Instrument_Engine__oil_pressure_skip_probability, "Check_Instrument_Engine__oil_pressure") === false)
 					{
 						if (first_fixing_attempt === true)
 						{
@@ -735,7 +724,7 @@ agent Pilot on AgentLayer{
 				next_action = "End_of_Actions"
 				if (Check_Instrument_Engine__oil_temperature() > myAircraft.Get_Engine__oil_temperature_normal_max())
 				{
-					if(skip_action(0.05, "Check_Instrument_Engine__oil_temperature") === false)
+					if(skip_action(Check_Instrument_Engine__oil_temperature_skip_probability, "Check_Instrument_Engine__oil_temperature") === false)
 					{
 						if (first_fixing_attempt === true)
 						{
@@ -790,7 +779,7 @@ agent Pilot on AgentLayer{
 			}
 			
 			//retry contacting tower after a specific period of time
-			timehandler.create_action_duration(10, 5, "pilot_age_and_experience")
+			timehandler.create_action_duration(time_base_next_communication_attempt, time_extra_next_communication_attempt, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				next_action = "Communicate_on_frequency"
@@ -835,6 +824,7 @@ agent Pilot on AgentLayer{
 			}
 		}
 		
+		// TODO: Add follow up action for checks		
 		else if (next_action === "Check_all_Flight_Instruments")
 		{
 			timehandler.create_action_duration(20, 10, "pilot_age_and_experience")
@@ -855,7 +845,7 @@ agent Pilot on AgentLayer{
 			timehandler.create_action_duration(4, 2, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
-				if(skip_action(0.05, "Set_Engine__mixture_control") === false)
+				if(skip_action(Set_Engine__mixture_control_skip_probability, "Set_Engine__mixture_control") === false)
 				{
 					Set_Engine__mixture_control("RICH") // set to rich
 				}
@@ -892,7 +882,7 @@ agent Pilot on AgentLayer{
 				
 				if (Check_Instrument_Engine__oil_temperature() > myAircraft.Get_Engine__oil_temperature_normal_max())
 				{
-					if(skip_action(0.05, "Check_Instrument_Engine__oil_temperature") === false)
+					if(skip_action(Check_Instrument_Engine__oil_temperature_skip_probability, "Check_Instrument_Engine__oil_temperature") === false)
 					{
 						killme_info = "high engine oil temperature"
 						go_to_next_state("LeavingFrequency")
@@ -901,7 +891,7 @@ agent Pilot on AgentLayer{
 				
 				if (Check_Instrument_Engine__oil_pressure() < myAircraft.Get_Engine__oil_pressure_normal_min())
 				{
-					if(skip_action(0.05, "Check_Instrument_Engine__oil_pressure") === false)
+					if(skip_action(Check_Instrument_Engine__oil_pressure_skip_probability, "Check_Instrument_Engine__oil_pressure") === false)
 					{
 						killme_info = "low engine oil pressure"
 						go_to_next_state("LeavingFrequency")
@@ -961,7 +951,7 @@ agent Pilot on AgentLayer{
 			}
 			
 			//retry contacting tower after a specific period of time
-			timehandler.create_action_duration(10, 5, "pilot_age_and_experience")
+			timehandler.create_action_duration(time_base_next_communication_attempt, time_extra_next_communication_attempt, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				next_action = "Communicate_on_frequency"
@@ -1026,7 +1016,7 @@ agent Pilot on AgentLayer{
 				}
 			}
 			//retry contacting tower after a specific period of time
-			timehandler.create_action_duration(15, 5, "pilot_age_and_experience")
+			timehandler.create_action_duration(time_base_next_communication_attempt, time_extra_next_communication_attempt, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				next_action = "Communicate_on_frequency"
@@ -1035,7 +1025,7 @@ agent Pilot on AgentLayer{
 		
 		else if (next_action === "Wait_to_communicate_on_frequency")
 		{
-			timehandler.create_action_duration(20, 5, "pilot_age_and_experience")
+			timehandler.create_action_duration(time_base_next_communication_attempt, time_extra_next_communication_attempt, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				next_action = "Communicate_on_frequency"
@@ -1063,6 +1053,11 @@ agent Pilot on AgentLayer{
 
 	//-----State TakeOff-----
 	//TODO: Add Instrument Screening and better mechanism for take off
+	
+	//variables
+	external var TakeOff__V_rotate : real  // Speed on where to rotate (for cessna152 its normally at 25)
+	external var TakeOff__rotate_pitch : integer // pitch applied when rotating
+	
 	def TakeOff_action()
 	{
 		if (first_action_set === false)
@@ -1096,11 +1091,11 @@ agent Pilot on AgentLayer{
 			timehandler.create_action_duration(1, 1, "pilot_age_and_experience")  // simulating check of instrument
 			if (timehandler.hold_action_time(timehandler.action_duration))  
 			{
-				if (Check_Instrument_Aircraft__true_air_speed() > V_rotate)
+				if (Check_Instrument_Aircraft__true_air_speed() > TakeOff__V_rotate)
 				{
 					temp_pitch_value = temp_pitch_value + 2
 					Apply_Aircraft__pitch(temp_pitch_value)
-					if (temp_pitch_value >= 8)
+					if (temp_pitch_value >= TakeOff__rotate_pitch)
 					{
 						next_action = "HoldAircraft"
 					}
@@ -1122,12 +1117,12 @@ agent Pilot on AgentLayer{
 				{
 					temp_pitch_value = 0
 					Apply_Aircraft__pitch(temp_pitch_value)
-					V_rotate = V_rotate + 5
+					TakeOff__V_rotate = TakeOff__V_rotate + 5
 					next_action = "ReadyForRotate"
 				}
 			}
 		}
-				
+		
 		if (next_action === "End_of_Actions")
 		{
 			go_to_next_state("Climb")
@@ -1144,6 +1139,12 @@ agent Pilot on AgentLayer{
 	
 	
 	//-----State Climb-----
+	
+	//variable
+	external var Climb__rate_of_climb_upper_limit : real
+	external var Climb__rate_of_climb_lower_limit : real
+	external var Climb__pitch_magnitude : real
+	
 	def Climb_action()
 	{
 		if (first_action_set === false)
@@ -1160,18 +1161,18 @@ agent Pilot on AgentLayer{
 				{
 					temp_pitch_value = temp_pitch_value - 1
 				}
-				else if (Check_Instrument_Aircraft__rate_of_climb() > 3)
+				else if (Check_Instrument_Aircraft__rate_of_climb() > Climb__rate_of_climb_upper_limit)
 				{
 					if (Feel_Aircraft__deceleration_z === false)
 					{
-						temp_pitch_value = temp_pitch_value - 0.5
+						temp_pitch_value = temp_pitch_value - Climb__pitch_magnitude
 					}
 				}
-				else if (Check_Instrument_Aircraft__rate_of_climb() < 1)
+				else if (Check_Instrument_Aircraft__rate_of_climb() < Climb__rate_of_climb_lower_limit)
 				{
 					if (Feel_Aircraft__acceleration_z === false)
 					{
-						temp_pitch_value = temp_pitch_value + 0.5
+						temp_pitch_value = temp_pitch_value + Climb__pitch_magnitude
 					}
 				}
 				Apply_Aircraft__pitch(temp_pitch_value)
@@ -1222,7 +1223,7 @@ agent Pilot on AgentLayer{
 			}
 			
 			//retry contacting tower after a specific period of time
-			timehandler.create_action_duration(10, 5, "pilot_age_and_experience")
+			timehandler.create_action_duration(time_base_next_communication_attempt, time_extra_next_communication_attempt, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				next_action = "Communicate_on_frequency"
@@ -1448,6 +1449,7 @@ agent Pilot on AgentLayer{
 			}
 		}
 		
+		// using this part so state is still landing and ATC does not clear other aircraft for take off
 		else if (next_action === "Taxiing_off_runway")
 		{
 			// Get active Taxi point
@@ -1494,6 +1496,13 @@ agent Pilot on AgentLayer{
 	//TODO: Here the speed is checked against ground speed, normally the speed on the speed indicator in
 	//cockpit shows the true airspeed, but with strong headwind this would lead to pilots not moving
 	
+	//variables:
+	external var Taxiing__spacing_to_next_aircraft : real // distance kept to the next aircraft (when start braking)
+	external var Taxiing__angle_of_vision : real // angle of vision when looking with current heading
+	external var Taxiing__final_point_distance : integer
+	external var Taxiing__next_point_distance : integer
+	external var Taxiing__speed : real
+	
 	// defining help functions for taxiing
 	def Taxiing_brake(throttle : real, brake : real)
 	{
@@ -1506,7 +1515,7 @@ agent Pilot on AgentLayer{
 	{
 		if (distance_to_next_point < 20)
 		{
-			if (distance_to_next_point < 10)
+			if (distance_to_next_point < Taxiing__final_point_distance)
 			{
 				Taxiing_brake(0.1, 0.8)
 				next_action = "End_of_Actions"
@@ -1539,7 +1548,7 @@ agent Pilot on AgentLayer{
 		Apply_Brake__deceleration(0.0)
 		
 		// taxi throttle control
-		if (Check_Visual_Aircraft__ground_speed_x() > 6)
+		if (Check_Visual_Aircraft__ground_speed_x() > Taxiing__speed+0.5)
 		{	
 			if (Feel_Aircraft__deceleration_x() === false)
 			{
@@ -1553,13 +1562,14 @@ agent Pilot on AgentLayer{
 				temp_throttle_value = temp_throttle_value + 0.30
 			}
 		}
-		else if (Check_Visual_Aircraft__ground_speed_x() < 5)
+		else if (Check_Visual_Aircraft__ground_speed_x() < Taxiing__speed-0.5)
 		{
 			if (Feel_Aircraft__acceleration_x() === false)
 			{
 				temp_throttle_value = temp_throttle_value + 0.05
 			}
 		}
+		// lower limit for applying throttle
 		if (temp_throttle_value < 0.05)
 		{
 			temp_throttle_value = 0.05
@@ -1601,7 +1611,7 @@ agent Pilot on AgentLayer{
 			
 			
 			//Check for collision TODO: Add collision conflict handling (e.g. when two aircrafts won't move)
-			var aircraft_array = explore Aircraft where [x => return formula.haversine(myAircraft.Get_position(), x.Get_position()) < spacing_to_next_aircraft]
+			var aircraft_array = explore Aircraft where [x => return formula.haversine(myAircraft.Get_position(), x.Get_position()) < Taxiing__spacing_to_next_aircraft]
 			if (length(aircraft_array) > 1) // since list contains ALWAYS the airplane controlled by the pilot!
 			{
 				// check if aircraft is on path and angle of vision, note at index 0 is own aircraft
@@ -1610,7 +1620,7 @@ agent Pilot on AgentLayer{
 					//calculate bearing to aircraft nearby
 					var bearing_to_next_aircraft = formula.bearing(myAircraft.Get_position(), aircraft_array[i].Get_position())
 					//check if bearing to next aircraft lies in between own visual sight cone
-					if (formula.bearing_between_thresholds(myAircraft__heading, angle_of_vision, bearing_to_next_aircraft) === true)
+					if (formula.bearing_between_thresholds(myAircraft__heading, Taxiing__angle_of_vision, bearing_to_next_aircraft) === true)
 					{
 						//do some braking or set brake flags
 						avoid_collision = true
@@ -1631,7 +1641,7 @@ agent Pilot on AgentLayer{
 				{
 					Taxiing_normal()
 					// drive to next point after reaching another point
-					if (distance_to_next_point < 8)
+					if (distance_to_next_point < Taxiing__next_point_distance)
 					{
 						active_taxi_point_number = active_taxi_point_number + 1
 					}
@@ -1913,7 +1923,6 @@ agent Pilot on AgentLayer{
 
 
 agent Aircraft on AgentLayer{
-	var callsign_number : integer = 1 //TODO: refactor
 	initialize
 	{
 		initialize_general_values()
@@ -1930,7 +1939,6 @@ agent Aircraft on AgentLayer{
 	
 	tick
 	{
-		weather = nearest Weather //TODO: Refactor this
 		update_general_values()
 		update_Engine()
 		update_LeftWingTank()
@@ -1990,8 +1998,13 @@ agent Aircraft on AgentLayer{
 	var Utility = new UtilityClass()
 	var weather : Weather
 	
+	//Making sure only one pilot controls the aircraft
+	var occupied : bool = false
+	passive Get_occupy_bool() => return occupied
+	passive Set_occupied() => occupied = true
+	
 	passive Remove() => kill me
-	passive Teleport(cor : Tuple<real, real>) => pos at cor
+	passive Teleport(cor : Tuple<real, real>) => pos at cor  // TODO: Remove this workaround when bug fixed (see pilot comment)
 
 	observe var event_info : string // maybe add something like this or think about it
 	
@@ -2001,6 +2014,7 @@ agent Aircraft on AgentLayer{
 		Latitude = ycor
 			
 		event_info = "None"
+		weather = nearest Weather
 	}
 	
 	def update_general_values()
@@ -2022,7 +2036,7 @@ agent Aircraft on AgentLayer{
 	
 	def initialize_AircraftCharacteristics()
 	{
-		Aircraft__callsign = "Cessna" + callsign_number
+		Aircraft__callsign = "Cessna" + agentlayer.Get_callsign_number()
 	}
 	
 	passive Get_callsign() => return Aircraft__callsign
@@ -2162,7 +2176,7 @@ agent Aircraft on AgentLayer{
 			Aircraft__drag = Aircraft__drag_coefficient * weather.Get_density(Aircraft__height) * Aircraft__true_air_speed**2 * Aircraft__wing_area / 2
 			
 			//Z Movement calculation
-			Aircraft__acceleration_z = ((Propeller__thrust - Tire__friction_force - Aircraft__drag) * Math.Sin(Aircraft__climb_angle_rad) + Aircraft__lift * Math.Cos(Aircraft__climb_angle_rad) - Aircraft__mass * weather.Get_gravity()) / Aircraft__mass 
+			Aircraft__acceleration_z = ((Propeller__thrust - Tire__friction_force - Aircraft__drag) * Math.Sin(Aircraft__climb_angle_rad) + Aircraft__lift * Math.Cos(Aircraft__climb_angle_rad) - Aircraft__mass * agentlayer.Get_gravity()) / Aircraft__mass 
 			Aircraft__rate_of_climb = Aircraft__rate_of_climb + Aircraft__acceleration_z / n_cycle
 			Aircraft__height = Aircraft__height + Aircraft__rate_of_climb / n_cycle
 			
@@ -2343,7 +2357,7 @@ agent Aircraft on AgentLayer{
 		Engine__power = 0.0
 		Engine__running = false
 		Engine__oil_pressure = 101325
-		Engine__oil_temperature = 15
+		Engine__oil_temperature = weather.Get_temperature()
 		Engine__failure_probability = 0.0
 		Engine__failure = false
 		Engine__fuel_consumption = 0.0
@@ -2534,7 +2548,7 @@ agent Aircraft on AgentLayer{
 		Tire__friction_force = 0
 	}
 	
-	//TODO: Add Tire condition dependencies and then use other initialize
+	//TODO: Add Tire condition dependencies and then user other initialize
 	def initialize_Tire_alternative()
 	{
 		//Inflation with 1% Chance that a Tire is not fully inflated
@@ -2574,7 +2588,7 @@ agent Aircraft on AgentLayer{
 		//TODO: Add friction dependency on Tire inflation
 		if (Aircraft__flight_phase === "on-ground")
 		{
-			Tire__friction_force = (Aircraft__mass * weather.Get_gravity() - Aircraft__lift) * Tire__number_of_wheels * Tire__roll_coefficient / Tire__wheel_radius
+			Tire__friction_force = (Aircraft__mass * agentlayer.Get_gravity() - Aircraft__lift) * Tire__number_of_wheels * Tire__roll_coefficient / Tire__wheel_radius
 		}
 		else
 		{
