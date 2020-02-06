@@ -1,3 +1,3 @@
 ﻿Tick;Step;DateTime;age;current_activity;event_info;flight_experience;Latitude;Longitude;myAircraft_callsign;state;takeoff_distance;0_Position;1_Position;ID
-0;0;2020-01-01T19:00:00.0000000+01:00;32;Initialization;None;782.670381470896;0;0;Cessna2;Initialization;0;0;0;688b0a99-cbf5-477b-b7a6-f871022750bd
-1;1;2020-01-01T19:00:01.0000000+01:00;32;Initialization;End flight mission due to no matching aircraft callsign found;782.670381470896;0;0;Cessna2;LeavingFrequency;0;0;0;688b0a99-cbf5-477b-b7a6-f871022750bd
+0;0;2020-01-01T19:00:00.0000000+01:00;43;Initialization;None;1155.59943772647;0;0;Cessna2;Initialization;0;0;0;bb3d00d4-55ac-4639-ac70-1672b87d9a66
+1;1;2020-01-01T19:00:01.0000000+01:00;43;Initialization;End flight mission due to no matching aircraft callsign found;1155.59943772647;0;0;Cessna2;LeavingFrequency;0;0;0;bb3d00d4-55ac-4639-ac70-1672b87d9a66

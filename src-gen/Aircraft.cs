@@ -882,14 +882,14 @@ namespace cessna_digital_twin {
 							{
 							new System.Func<Tuple<double,double>>(() => {
 								
-								var _speed2228_66944 = Aircraft__movement_x
+								var _speed2196_66039 = Aircraft__movement_x
 							;
 								
-								var _entity2228_66944 = this;
+								var _entity2196_66039 = this;
 								
-								Func<double[], bool> _predicate2228_66944 = null;
+								Func<double[], bool> _predicate2196_66039 = null;
 								
-								_AgentLayer._AircraftEnvironment.MoveTowards(_entity2228_66944, Aircraft__heading_bearing, _speed2228_66944);	
+								_AgentLayer._AircraftEnvironment.MoveTowards(_entity2196_66039, Aircraft__heading_bearing, _speed2196_66039);	
 								
 								return new Tuple<double, double>(Position.X, Position.Y);
 							}).Invoke()
@@ -1312,9 +1312,9 @@ namespace cessna_digital_twin {
 		public void Remove() {
 			{
 			new System.Action(() => {
-				var _target2025_59150 = this;
-				if (_target2025_59150 != null) {
-					_AgentLayer._KillAircraft(_target2025_59150, _target2025_59150._executionFrequency);
+				var _target1993_58245 = this;
+				if (_target1993_58245 != null) {
+					_AgentLayer._KillAircraft(_target1993_58245, _target1993_58245._executionFrequency);
 				}
 			}).Invoke()
 					;
@@ -1328,12 +1328,12 @@ namespace cessna_digital_twin {
 			{
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget2026_59205 = cor;
+				var _taget1994_58300 = cor;
 				
-				var _object2026_59205 = this;
+				var _object1994_58300 = this;
 				
-				_AgentLayer._AircraftEnvironment.PosAt(_object2026_59205, 
-					_taget2026_59205.Item1, _taget2026_59205.Item2
+				_AgentLayer._AircraftEnvironment.PosAt(_object1994_58300, 
+					_taget1994_58300.Item1, _taget1994_58300.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke()
@@ -1764,22 +1764,22 @@ namespace cessna_digital_twin {
 			{ if (!_isAlive) return; }
 			{
 			weather = new Func<cessna_digital_twin.Weather>(() => {
-				Func<cessna_digital_twin.Weather, bool> _predicate1965_57258 = null;
-				Func<cessna_digital_twin.Weather, bool> _predicateMod1965_57258 = new Func<cessna_digital_twin.Weather, bool>(_it => 
+				Func<cessna_digital_twin.Weather, bool> _predicate1933_56353 = null;
+				Func<cessna_digital_twin.Weather, bool> _predicateMod1933_56353 = new Func<cessna_digital_twin.Weather, bool>(_it => 
 				{
 					if (_it?.ID == this.ID)
 					{
 						return false;
-					} else if (_predicate1965_57258 != null)
+					} else if (_predicate1933_56353 != null)
 					{
-						return _predicate1965_57258.Invoke(_it);
+						return _predicate1933_56353.Invoke(_it);
 					} else return true;
 				});
 				
-				const int _range1965_57258 = -1;
-				var _source1965_57258 = this.Position;
+				const int _range1933_56353 = -1;
+				var _source1933_56353 = this.Position;
 				
-				return _AgentLayer._WeatherEnvironment.Explore(_source1965_57258, _range1965_57258, 1, _predicateMod1965_57258)?.FirstOrDefault();
+				return _AgentLayer._WeatherEnvironment.Explore(_source1933_56353, _range1933_56353, 1, _predicateMod1933_56353)?.FirstOrDefault();
 			}).Invoke();
 			update_general_values();
 			update_Engine();

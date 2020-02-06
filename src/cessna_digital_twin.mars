@@ -217,7 +217,7 @@ agent Observer on AgentLayer{
 agent Pilot on AgentLayer{
 		
 	var state_type = "Takeoff" // or "Takeoff"
-	var initialization_time : integer = 50 // bigger than two seconds!
+	var initialization_time : integer = 2 // bigger than two seconds!
 	var callsign_number : integer = 2
 	
 	// Second Initialization necessary after INIT time is over
@@ -1127,39 +1127,7 @@ agent Pilot on AgentLayer{
 				}
 			}
 		}
-		
-		else if (next_action === "ControlAircraft")
-		{
-			timehandler.create_action_duration(3, 1, "pilot_age_and_experience")  // simulating check of instrument every 2 sec
-			if (timehandler.hold_action_time(timehandler.action_duration))
-			{
-				if (Hear_Aircraft__stall_sound() === true)
-				{
-					temp_pitch_value = temp_pitch_value - 1
-				}
-				else if (Check_Instrument_Aircraft__rate_of_climb() > 3)
-				{
-					if (Feel_Aircraft__deceleration_z === false)
-					{
-						temp_pitch_value = temp_pitch_value - 0.5
-					}
-				}
-				else if (Check_Instrument_Aircraft__rate_of_climb() < 1)
-				{
-					if (Feel_Aircraft__acceleration_z === false)
-					{
-						temp_pitch_value = temp_pitch_value + 0.5
-					}
-				}
-				Apply_Aircraft__pitch(temp_pitch_value)
 				
-				if (Check_Instrument_Aircraft__height() > 300)
-				{
-					next_action = "End_of_Actions"
-				}
-			}
-		}
-		
 		if (next_action === "End_of_Actions")
 		{
 			go_to_next_state("Climb")
