@@ -115,8 +115,9 @@ agent Weather on AgentLayer{
 	passive Get_temperature() => return temperature
 }
 
-// -----Agent Observer for spawning sequence-----
+// -----Agent Observer-----
 agent Observer on AgentLayer{
+	// observer for for spawning management and print statements
 	initialize{
 		state_list = #["Initialization", "PreflightInspection", "StartingEngine", "TakeOffPreparationRequest", "Taxiing", "TakeOffPreparation", "TakeOffHoldShortRequest", "TakeOffRequest", "TakeOff", "Climb", "LeavingFrequencyRequest", "LandingRequest","GoAround","Landing", "LeavingFrequency"]
 		available_runway_heading = airportstade.Get_available_runway_heading_list()
@@ -130,6 +131,7 @@ agent Observer on AgentLayer{
 		
 		if (simtime % print_interval === 0)
 		{
+			println "-----Begin of information-----"
 			println "Simulation Time: " + simtime
 			println "Number of Pilots in each State"
 			each (var state in state_list)
@@ -215,10 +217,11 @@ agent Observer on AgentLayer{
 
 // -----Agent Pilot flying the aircraft-----
 agent Pilot on AgentLayer{
-		
-	var state_type = "Takeoff" // or "Takeoff"
-	var initialization_time : integer = 2 // bigger than two seconds!
-	var callsign_number : integer = 1
+	
+	//TODO: refactor
+	external var type_initialization : string // or "Takeoff"
+	external var time_initialization : integer // bigger than two seconds!
+	external var callsign_number : integer
 	
 	// Second Initialization necessary after INIT time is over
 	def Second_Initialization()
@@ -233,9 +236,9 @@ agent Pilot on AgentLayer{
 		}
 		myAircraft = nearest Aircraft where [it => return it.Get_callsign() === myAircraft_callsign]
 		observer = nearest Observer // only one observer agent exists, needed for init handling
-		if (simtime === initialization_time)
+		if (simtime === time_initialization)
 		{
-			if (state_type === "Landing")
+			if (type_initialization === "Landing")
 			{
 				state = "LandingRequest"
 				heading_information = observer.Get_runway_heading()
@@ -244,7 +247,7 @@ agent Pilot on AgentLayer{
 				pos me at landing_spawn_cor
 				myAircraft.Teleport(landing_spawn_cor)
 			}
-			else if (state_type === "Takeoff")
+			else if (type_initialization === "Takeoff")
 			{
 				if (observer.Get_spawn_location_bool() === true)
 				{
@@ -255,9 +258,15 @@ agent Pilot on AgentLayer{
 				}
 				else
 				{
-					initialization_time = initialization_time + 20
-				}
-							
+					time_initialization = time_initialization + 20
+				}							
+			}
+			else
+			{
+				println "WARNING: Pilot with callsign " + myAircraft_callsign + " has a invalid initialization type ->" + type_initialization + "<- and will be removed!"
+				state = "LeavingFrequency"
+				event_info = "End flight mission due to no valid initialization type"
+				kill me
 			}
 		}
 	}
