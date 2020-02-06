@@ -218,7 +218,7 @@ agent Pilot on AgentLayer{
 		
 	var state_type = "Takeoff" // or "Takeoff"
 	var initialization_time : integer = 50 // bigger than two seconds!
-	var callsign_number : integer = 1
+	var callsign_number : integer = 2
 	
 	// Second Initialization necessary after INIT time is over
 	def Second_Initialization()
@@ -226,9 +226,10 @@ agent Pilot on AgentLayer{
 		var myAircraft_array = explore Aircraft where [it => return it.Get_callsign() === myAircraft_callsign]
 		if (length(myAircraft_array) !== 1)
 		{
-			println "WARNING: Pilot with callsign " + myAircraft_callsign + " did find " + length(myAircraft_array) + " matching aircraft and will be removed!"
+			println "WARNING: Pilot with callsign " + myAircraft_callsign + " did find " + length(myAircraft_array) + " matching aircraft(s) (not one) and will be removed!"
 			state = "LeavingFrequency"
-			killme_info = "No matching aircraft callsign found"
+			event_info = "End flight mission due to no matching aircraft callsign found"
+			kill me
 		}
 		myAircraft = nearest Aircraft where [it => return it.Get_callsign() === myAircraft_callsign]
 		observer = nearest Observer // only one observer agent exists, needed for init handling
@@ -401,7 +402,10 @@ agent Pilot on AgentLayer{
 
 	def update_general_values()
 	{
-		pos at(myAircraft.Get_position())
+		if (myAircraft !== nil)
+		{
+			pos at(myAircraft.Get_position())
+		}
 		Longitude = xcor
 		Latitude = ycor
 		current_activity = next_action
