@@ -114,6 +114,14 @@ namespace cessna_digital_twin {
 				if(__spawn_location_number != value) __spawn_location_number = value;
 			}
 		}
+		private System.Tuple<double,double> __spawn_cor
+			 = default(System.Tuple<double,double>);
+		internal System.Tuple<double,double> spawn_cor { 
+			get { return __spawn_cor; }
+			set{
+				if(__spawn_cor != value) __spawn_cor = value;
+			}
+		}
 		private Mars.Components.Common.MarsList<double> __available_runway_heading
 			 = default(Mars.Components.Common.MarsList<double>);
 		internal Mars.Components.Common.MarsList<double> available_runway_heading { 
@@ -165,24 +173,22 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public virtual void spawn_pilot_and_aircraft_on_ground() 
-		{
+		public bool Get_spawn_location_bool() {
 			{
-			bool spawn_successful = false;
 			int i = 0;
-			while(i < number_of_spawning_points && Equals(spawn_successful, false)) { 
+			while(i < number_of_spawning_points) { 
 							{
 							i = i + 1;
-							System.Tuple<double,double> spawn_cor = new System.Tuple<double,double>(spawn_xcor_list.Get(spawn_location_number),
+							spawn_cor = new System.Tuple<double,double>(spawn_xcor_list.Get(spawn_location_number),
 							spawn_ycor_list.Get(spawn_location_number)
 							);
 							cessna_digital_twin.Aircraft[] aircraft_array = new System.Func<cessna_digital_twin.Aircraft[]>(() => {
 								
-								var _sourceMapped191_7040 = this.Position;
-								var _source191_7040 = _sourceMapped191_7040;
-								var _range191_7040 = -1;
+								var _sourceMapped191_7044 = this.Position;
+								var _source191_7044 = _sourceMapped191_7044;
+								var _range191_7044 = -1;
 											
-								Func<cessna_digital_twin.Aircraft, bool> _predicate191_7040 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft x) => 
+								Func<cessna_digital_twin.Aircraft, bool> _predicate191_7044 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft x) => 
 								 {
 										{
 										return formula.haversine(x.Get_position(),
@@ -192,28 +198,22 @@ namespace cessna_digital_twin {
 										;
 										return default(bool);;
 								});
-								Func<cessna_digital_twin.Aircraft, bool> _predicateMod191_7040 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
+								Func<cessna_digital_twin.Aircraft, bool> _predicateMod191_7044 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
 								{
 									if (_it?.ID == this.ID)
 									{
 										return false;
-									} else if (_predicate191_7040 != null)
+									} else if (_predicate191_7044 != null)
 									{
-										return _predicate191_7040.Invoke(_it);
+										return _predicate191_7044.Invoke(_it);
 									} else return true;
 								});
 								
-								return _AgentLayer._AircraftEnvironment.Explore(_source191_7040 , _range191_7040, -1, _predicate191_7040).ToArray();
+								return _AgentLayer._AircraftEnvironment.Explore(_source191_7044 , _range191_7044, -1, _predicate191_7044).ToArray();
 							}).Invoke();
 							if(Equals(aircraft_array.Length, 0)) {
 											{
-											new System.Func<cessna_digital_twin.Aircraft>(() => {
-											var _target195_7252 = spawn_cor;
-											return _AgentLayer._SpawnAircraft(_target195_7252.Item1, _target195_7252.Item2);}).Invoke();
-											new System.Func<cessna_digital_twin.Pilot>(() => {
-											var _target196_7285 = spawn_cor;
-											return _AgentLayer._SpawnPilot(_target196_7285.Item1, _target196_7285.Item2);}).Invoke();
-											spawn_successful = true
+											return true
 											;}
 									;} ;
 							spawn_location_number = spawn_location_number + 1;
@@ -223,9 +223,20 @@ namespace cessna_digital_twin {
 											;}
 									;} 
 							;}
-						}
+						};
+			return false
 			;}
-			return;
+			
+			return default(bool);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public System.Tuple<double,double> Get_spawn_location_cor() {
+			{
+			return spawn_cor
+					;
+			}
+			
+			return default(System.Tuple<double,double>);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public double Get_runway_heading() {

@@ -157,6 +157,7 @@ agent Observer on AgentLayer{
 	var spawn_xcor_list = new List<real>()
 	var spawn_ycor_list = new List<real>()
 	var spawn_location_number : integer
+	var spawn_cor : Tuple<real, real> //current active spawn_cor
 	
 	// for landing spawn management
 	var available_runway_heading : List<real>
@@ -179,22 +180,18 @@ agent Observer on AgentLayer{
 		spawn_location_number = 0
 	}
 		
-	def spawn_pilot_and_aircraft_on_ground()
+	passive Get_spawn_location_bool()
 	{
-		// only spawn, when no aircraft is nearby, else go to next spawn location and try again until tried at all location
-		var spawn_successful = false
+		// only allow initialization, when no aircraft is nearby, else go to next spawn location and try again until tried at all location
 		var i = 0
-		while (i < number_of_spawning_points and spawn_successful === false)
+		while (i < number_of_spawning_points)
 		{
 			i = i + 1
-			var spawn_cor = #(spawn_xcor_list.Get(spawn_location_number), spawn_ycor_list.Get(spawn_location_number))
+			spawn_cor = #(spawn_xcor_list.Get(spawn_location_number), spawn_ycor_list.Get(spawn_location_number))
 			var aircraft_array = explore Aircraft where [x => return formula.haversine(x.Get_position(), spawn_cor) < 10]
 			if (length(aircraft_array) === 0)
 			{
-				// spawn order is important, since pilot needs to find an aircraft! 
-				spawn Aircraft at spawn_cor
-				spawn Pilot at spawn_cor
-				spawn_successful = true
+				return true
 			}
 			spawn_location_number = spawn_location_number + 1
 			
@@ -203,7 +200,10 @@ agent Observer on AgentLayer{
 				spawn_location_number = 0
 			}
 		}
+		return false
 	}
+	
+	passive Get_spawn_location_cor() => return spawn_cor
 	
 	passive Get_runway_heading()
 	{
@@ -216,20 +216,26 @@ agent Observer on AgentLayer{
 // -----Agent Pilot flying the aircraft-----
 agent Pilot on AgentLayer{
 		
-	var state_type = "Landing" // or "Takeoff"
-	var initialization_time : integer = 50
+	var state_type = "Takeoff" // or "Takeoff"
+	var initialization_time : integer = 50 // bigger than two seconds!
 	var callsign_number : integer = 1
 	
 	// Second Initialization necessary after INIT time is over
 	def Second_Initialization()
 	{
+		var myAircraft_array = explore Aircraft where [it => return it.Get_callsign() === myAircraft_callsign]
+		if (length(myAircraft_array) !== 1)
+		{
+			println "WARNING: Pilot with callsign " + myAircraft_callsign + " did find " + length(myAircraft_array) + " matching aircraft and will be removed!"
+			state = "LeavingFrequency"
+			killme_info = "No matching aircraft callsign found"
+		}
 		myAircraft = nearest Aircraft where [it => return it.Get_callsign() === myAircraft_callsign]
 		observer = nearest Observer // only one observer agent exists, needed for init handling
 		if (simtime === initialization_time)
 		{
 			if (state_type === "Landing")
 			{
-				//TODO: Catch if callsign is missing
 				state = "LandingRequest"
 				heading_information = observer.Get_runway_heading()
 				myAircraft.Initialize_landing(heading_information)
@@ -237,9 +243,20 @@ agent Pilot on AgentLayer{
 				pos me at landing_spawn_cor
 				myAircraft.Teleport(landing_spawn_cor)
 			}
-			else
+			else if (state_type === "Takeoff")
 			{
-				state = "PreflightInspection" // first state for starting on ground
+				if (observer.Get_spawn_location_bool() === true)
+				{
+					state = "PreflightInspection" // first state for starting on ground
+					var cor = observer.Get_spawn_location_cor()
+					pos me at cor
+					myAircraft.Teleport(cor)
+				}
+				else
+				{
+					initialization_time = initialization_time + 20
+				}
+							
 			}
 		}
 	}
