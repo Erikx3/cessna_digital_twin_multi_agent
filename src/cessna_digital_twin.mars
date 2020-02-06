@@ -1954,7 +1954,7 @@ agent Pilot on AgentLayer{
 
 
 agent Aircraft on AgentLayer{
-	var callsign_number : integer = 1 //TODO: refactor
+	
 	initialize
 	{
 		initialize_general_values()
@@ -2054,6 +2054,7 @@ agent Aircraft on AgentLayer{
 
 	//-----Aircraft Characteristics-----
 	observe var Aircraft__callsign : string // IDENTIFIER!
+	external var callsign_number : integer
 	var Aircraft__mass : real = 725.0 // kg
 	var Aircraft__wing_area : real = 15.0 // m^2
 	var Aircraft__wing_span : real = 10.1 // m

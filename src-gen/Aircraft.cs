@@ -18,14 +18,6 @@ namespace cessna_digital_twin {
 		private static readonly Mars.Common.Logging.ILogger _Logger = 
 					Mars.Common.Logging.LoggerFactory.GetLogger(typeof(Aircraft));
 		private readonly System.Random _Random = new System.Random();
-		private int __callsign_number
-			 = 1;
-		internal int callsign_number { 
-			get { return __callsign_number; }
-			set{
-				if(__callsign_number != value) __callsign_number = value;
-			}
-		}
 		private double __Latitude
 			 = default(double);
 		public double Latitude { 
@@ -72,6 +64,14 @@ namespace cessna_digital_twin {
 			get { return __Aircraft__callsign; }
 			set{
 				if(__Aircraft__callsign != value) __Aircraft__callsign = value;
+			}
+		}
+		private int __callsign_number
+			 = default(int);
+		internal int callsign_number { 
+			get { return __callsign_number; }
+			set{
+				if(__callsign_number != value) __callsign_number = value;
 			}
 		}
 		private double __Aircraft__mass
@@ -882,14 +882,14 @@ namespace cessna_digital_twin {
 							{
 							new System.Func<Tuple<double,double>>(() => {
 								
-								var _speed2237_68733 = Aircraft__movement_x
+								var _speed2238_68724 = Aircraft__movement_x
 							;
 								
-								var _entity2237_68733 = this;
+								var _entity2238_68724 = this;
 								
-								Func<double[], bool> _predicate2237_68733 = null;
+								Func<double[], bool> _predicate2238_68724 = null;
 								
-								_AgentLayer._AircraftEnvironment.MoveTowards(_entity2237_68733, Aircraft__heading_bearing, _speed2237_68733);	
+								_AgentLayer._AircraftEnvironment.MoveTowards(_entity2238_68724, Aircraft__heading_bearing, _speed2238_68724);	
 								
 								return new Tuple<double, double>(Position.X, Position.Y);
 							}).Invoke()
@@ -1312,9 +1312,9 @@ namespace cessna_digital_twin {
 		public void Remove() {
 			{
 			new System.Action(() => {
-				var _target2034_60939 = this;
-				if (_target2034_60939 != null) {
-					_AgentLayer._KillAircraft(_target2034_60939, _target2034_60939._executionFrequency);
+				var _target2034_60889 = this;
+				if (_target2034_60889 != null) {
+					_AgentLayer._KillAircraft(_target2034_60889, _target2034_60889._executionFrequency);
 				}
 			}).Invoke()
 					;
@@ -1328,12 +1328,12 @@ namespace cessna_digital_twin {
 			{
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget2035_60994 = cor;
+				var _taget2035_60944 = cor;
 				
-				var _object2035_60994 = this;
+				var _object2035_60944 = this;
 				
-				_AgentLayer._AircraftEnvironment.PosAt(_object2035_60994, 
-					_taget2035_60994.Item1, _taget2035_60994.Item2
+				_AgentLayer._AircraftEnvironment.PosAt(_object2035_60944, 
+					_taget2035_60944.Item1, _taget2035_60944.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke()
@@ -1735,12 +1735,14 @@ namespace cessna_digital_twin {
 		Mars.Interfaces.Layer.RegisterAgent _register,
 		Mars.Interfaces.Layer.UnregisterAgent _unregister,
 		Mars.Components.Environments.GeoHashEnvironment<Aircraft> _AircraftEnvironment,
-		double xcor = 0, double ycor = 0, int freq = 1)
+		int callsign_number
+	,	double xcor = 0, double ycor = 0, int freq = 1)
 		{
 			_AgentLayer = _layer;
 			ID = _id;
 			Position = Mars.Interfaces.Environment.Position.CreatePosition(xcor, ycor);
 			_Random = new System.Random(ID.GetHashCode());
+			this.callsign_number = callsign_number;
 			_AgentLayer._AircraftEnvironment.Insert(this);
 			_register(_layer, this, freq);
 			_isAlive = true;
@@ -1764,22 +1766,22 @@ namespace cessna_digital_twin {
 			{ if (!_isAlive) return; }
 			{
 			weather = new Func<cessna_digital_twin.Weather>(() => {
-				Func<cessna_digital_twin.Weather, bool> _predicate1974_59047 = null;
-				Func<cessna_digital_twin.Weather, bool> _predicateMod1974_59047 = new Func<cessna_digital_twin.Weather, bool>(_it => 
+				Func<cessna_digital_twin.Weather, bool> _predicate1974_58997 = null;
+				Func<cessna_digital_twin.Weather, bool> _predicateMod1974_58997 = new Func<cessna_digital_twin.Weather, bool>(_it => 
 				{
 					if (_it?.ID == this.ID)
 					{
 						return false;
-					} else if (_predicate1974_59047 != null)
+					} else if (_predicate1974_58997 != null)
 					{
-						return _predicate1974_59047.Invoke(_it);
+						return _predicate1974_58997.Invoke(_it);
 					} else return true;
 				});
 				
-				const int _range1974_59047 = -1;
-				var _source1974_59047 = this.Position;
+				const int _range1974_58997 = -1;
+				var _source1974_58997 = this.Position;
 				
-				return _AgentLayer._WeatherEnvironment.Explore(_source1974_59047, _range1974_59047, 1, _predicateMod1974_59047)?.FirstOrDefault();
+				return _AgentLayer._WeatherEnvironment.Explore(_source1974_58997, _range1974_58997, 1, _predicateMod1974_58997)?.FirstOrDefault();
 			}).Invoke();
 			update_general_values();
 			update_Engine();

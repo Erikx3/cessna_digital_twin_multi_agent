@@ -307,7 +307,8 @@ namespace cessna_digital_twin {
 			var id = System.Guid.NewGuid();
 			var agent = new cessna_digital_twin.Aircraft(id, this, _Register, _Unregister,
 			_AircraftEnvironment,
-			xcor, ycor, freq);
+			default(int)
+		, 	xcor, ycor, freq);
 			_AircraftAgents.Add(id, agent);
 			return agent;
 		}
