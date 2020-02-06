@@ -25,11 +25,11 @@
     "agents": [
         {
             "name":"Pilot",
-            "count":0,
+            "count":1,
         },
         {
             "name":"Aircraft",
-            "count":0,
+            "count":1,
         },
         {
             "name":"Weather",
@@ -52,6 +52,10 @@
                 {
                     "parameter" : "pressure_QNH",
                     "value" : 101325
+                },
+                {
+                    "parameter" : "gravity",
+                    "value" : 9.81
                 }
             ]
         },
@@ -70,12 +74,8 @@
                     "value" : 8
                 },
                 {
-                    "parameter" : "takeoff_spawn_interval",
-                    "value" : 88888
-                },
-                {
-                    "parameter" : "landing_spawn_interval",
-                    "value" : 88888
+                    "parameter" : "print_interval",
+                    "value" : 200
                 }
             ]
         }      

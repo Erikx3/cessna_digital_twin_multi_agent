@@ -49,22 +49,6 @@ namespace cessna_digital_twin {
 		
 		public AgentLayer _AgentLayer => this;
 		public AgentLayer agentlayer => this;
-		private double __gravity
-			 = 9.81;
-		internal double gravity { 
-			get { return __gravity; }
-			set{
-				if(System.Math.Abs(__gravity - value) > 0.0000001) __gravity = value;
-			}
-		}
-		private int __callsign_number
-			 = 0;
-		internal int callsign_number { 
-			get { return __callsign_number; }
-			set{
-				if(__callsign_number != value) __callsign_number = value;
-			}
-		}
 		private bool __frequency_blocked
 			 = false;
 		internal bool frequency_blocked { 
@@ -120,24 +104,6 @@ namespace cessna_digital_twin {
 			set{
 				if(__message_information_bool != value) __message_information_bool = value;
 			}
-		}
-		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public virtual double Get_gravity() 
-		{
-			{
-			return gravity
-					;
-			}
-			return default(double);;
-		}
-		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public virtual int Get_callsign_number() 
-		{
-			{
-			callsign_number = callsign_number + 1;
-			return callsign_number
-			;}
-			return default(int);;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public virtual string Listen_receiver_on_frequency() 
@@ -351,7 +317,6 @@ namespace cessna_digital_twin {
 			var agent = new cessna_digital_twin.Observer(id, this, _Register, _Unregister,
 			_ObserverEnvironment,
 			default(int), 
-			default(int), 
 			default(int)
 		, 	xcor, ycor, freq);
 			_ObserverAgents.Add(id, agent);
@@ -371,6 +336,7 @@ namespace cessna_digital_twin {
 			var id = System.Guid.NewGuid();
 			var agent = new cessna_digital_twin.Weather(id, this, _Register, _Unregister,
 			_WeatherEnvironment,
+			default(double), 
 			default(double), 
 			default(double), 
 			default(double), 

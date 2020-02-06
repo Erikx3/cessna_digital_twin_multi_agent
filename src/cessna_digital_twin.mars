@@ -4,19 +4,6 @@ use Mars
 
 layer AgentLayer as agentlayer
 {	
-	// Physics Values
-	var gravity : real = 9.81 // m/s^2
-	def Get_gravity() => return gravity
-	
-	// Callsign Handling
-	var callsign_number : integer = 0
-	
-	def Get_callsign_number()
-	{
-		callsign_number = callsign_number + 1
-		return callsign_number
-	}
-	
 	//-----Communication Handling-----
 	var frequency_blocked = false
 	var sender_identifier = ""
@@ -81,6 +68,10 @@ agent Weather on AgentLayer{
 	{ 
 	}
 	
+	// Physics Values
+	external var gravity : real // m/s^2
+	passive Get_gravity() => return gravity
+	
 	//Weather Values TODO: Think about another solution for weather
 	external var wind_bearing : real // ° range 0..360
 	external var wind_speed : real // m/s
@@ -124,11 +115,10 @@ agent Weather on AgentLayer{
 	passive Get_temperature() => return temperature
 }
 
-
 // -----Agent Observer for spawning sequence-----
 agent Observer on AgentLayer{
 	initialize{
-		state_list = #["PreflightInspection", "StartingEngine", "TakeOffPreparationRequest", "Taxiing", "TakeOffPreparation", "TakeOffHoldShortRequest", "TakeOffRequest", "TakeOff", "Climb", "LeavingFrequencyRequest", "LandingRequest","GoAround","Landing", "LeavingFrequency"]
+		state_list = #["Initialization", "PreflightInspection", "StartingEngine", "TakeOffPreparationRequest", "Taxiing", "TakeOffPreparation", "TakeOffHoldShortRequest", "TakeOffRequest", "TakeOff", "Climb", "LeavingFrequencyRequest", "LandingRequest","GoAround","Landing", "LeavingFrequency"]
 		available_runway_heading = airportstade.Get_available_runway_heading_list()
 		initialize_spawn_cor()
 	}
@@ -138,7 +128,7 @@ agent Observer on AgentLayer{
 		weather = nearest Weather // Has do be done here, since during initialization Weather agent might not be existing yet
 		
 		
-		if (simtime % 150 === 0)
+		if (simtime % print_interval === 0)
 		{
 			println "Simulation Time: " + simtime
 			println "Number of Pilots in each State"
@@ -148,16 +138,6 @@ agent Observer on AgentLayer{
 				println state + ": " + length(pilot_array)
 			}
 			println "-----End of information-----"
-		}
-		
-		if (simtime === 1 or simtime % takeoff_spawn_interval === 0) // add for multiple spawns: or simtime % 100 === 0
-		{
-			spawn_pilot_and_aircraft_on_ground()
-		}
-		
-		if (simtime === 1 or simtime % landing_spawn_interval === 0) // add for multiple spawns: or simtime % 100 === 0
-		{
-			spawn_pilot_and_aircraft_landing()
 		}
 	}
 	
@@ -169,8 +149,7 @@ agent Observer on AgentLayer{
 	//-----Spawn Handling-----
 	// Apron spawn coordinates and handling
 	external var number_of_spawning_points : integer
-	external var takeoff_spawn_interval : integer
-	external var landing_spawn_interval: integer
+	external var print_interval : integer
 	var left_xcor : real
 	var left_ycor : real 
 	var right_xcor : real 
@@ -225,38 +204,59 @@ agent Observer on AgentLayer{
 			}
 		}
 	}
-		
-	def spawn_pilot_and_aircraft_landing()
+	
+	passive Get_runway_heading()
 	{
 		var wind_bearing = weather.Get_wind_bearing()
 		runway_heading_calculated = formula.calculate_runway_heading(available_runway_heading, wind_bearing)
-		var landing_spawn_cor = airportstade.Get_landing_spawning_point(runway_heading_calculated)
-		
-		var spawn_aircraft = spawn Aircraft at landing_spawn_cor
-		spawn_aircraft.Initialize_landing(runway_heading_calculated)
-		var spawn_pilot = spawn Pilot at landing_spawn_cor
-		spawn_pilot.Initialize_landing(runway_heading_calculated)
-		
+		return runway_heading_calculated
 	}
 }
 
 // -----Agent Pilot flying the aircraft-----
 agent Pilot on AgentLayer{
 		
+	var state_type = "Landing" // or "Takeoff"
+	var initialization_time : integer = 50
+	var callsign_number : integer = 1
+	
+	// Second Initialization necessary after INIT time is over
+	def Second_Initialization()
+	{
+		myAircraft = nearest Aircraft where [it => return it.Get_callsign() === myAircraft_callsign]
+		observer = nearest Observer // only one observer agent exists, needed for init handling
+		if (simtime === initialization_time)
+		{
+			if (state_type === "Landing")
+			{
+				//TODO: Catch if callsign is missing
+				state = "LandingRequest"
+				heading_information = observer.Get_runway_heading()
+				myAircraft.Initialize_landing(heading_information)
+				var landing_spawn_cor = airportstade.Get_landing_spawning_point(heading_information)
+				pos me at landing_spawn_cor
+				myAircraft.Teleport(landing_spawn_cor)
+			}
+			else
+			{
+				state = "PreflightInspection" // first state for starting on ground
+			}
+		}
+	}
+	
 	initialize
 	{	
-		//General Initialization for Pilot starting from the ground
-		myAircraft = nearest Aircraft where [it => return it.Get_occupy_bool() === false]
-		myAircraft.Set_occupied()		
-		myAircraft_callsign = myAircraft.Get_callsign() // save aircraft callsign --> IDENTIFIER!
-		weather = nearest Weather //only ne weather agent existing
-		update_general_values() // so first row of csv is not empty
-		state = "PreflightInspection" // first state for starting on ground
-		current_activity = "Initialization:)"
+		//NOTE: Before second initialization aircrafts and pilots are at default position #(0.0, 0.0)
+		state = "Initialization"
+		current_activity = "Initialization"
+		next_action = "Initialization"
 		event_info = "None"
-		
 		takeoff_distance = 0 // for measuring takeoff distance later
+		myAircraft_callsign = "Cessna" + callsign_number
 		
+		Longitude = xcor
+		Latitude = ycor
+				
 		// Pilot attributes and share them with classes
 		age = age_min + random((age_max - age_min) + 1)
 		flight_experience = random((age - age_min) * flight_experience_max / (age_max - age_min))
@@ -265,7 +265,11 @@ agent Pilot on AgentLayer{
 		
 	tick
 	{	
-		if (state === "PreflightInspection"){
+		if (state === "Initialization"){
+			Second_Initialization()
+		}
+		
+		else if (state === "PreflightInspection"){
 			PreflightInspection_action()
 		}
 		
@@ -336,7 +340,8 @@ agent Pilot on AgentLayer{
 	
 	//Classes and Agents
 	var myAircraft : Aircraft // for accessing the real aircraft
-	var weather : Weather
+	var observer : Observer
+	var airportstade = new AirportStade()
 	var timehandler = new TimeHandler()
 	var formula = new Formula()
 	
@@ -387,11 +392,6 @@ agent Pilot on AgentLayer{
 	
 	// functions for observer agent
 	passive Get_state() => return state  
-	passive Initialize_landing(heading : real)
-	{
-		state = "LandingRequest"
-		heading_information = heading
-	}
 	
 	//-----General Pilot Values and functions-----
 	observe var age: integer // years
@@ -1924,6 +1924,7 @@ agent Pilot on AgentLayer{
 
 
 agent Aircraft on AgentLayer{
+	var callsign_number : integer = 1 //TODO: refactor
 	initialize
 	{
 		initialize_general_values()
@@ -1940,6 +1941,7 @@ agent Aircraft on AgentLayer{
 	
 	tick
 	{
+		weather = nearest Weather //TODO: Refactor this
 		update_general_values()
 		update_Engine()
 		update_LeftWingTank()
@@ -1999,13 +2001,8 @@ agent Aircraft on AgentLayer{
 	var Utility = new UtilityClass()
 	var weather : Weather
 	
-	//Making sure only one pilot controls the aircraft
-	var occupied : bool = false
-	passive Get_occupy_bool() => return occupied
-	passive Set_occupied() => occupied = true
-	
 	passive Remove() => kill me
-	passive Teleport(cor : Tuple<real, real>) => pos at cor  // TODO: Remove this workaround when bug fixed (see pilot comment)
+	passive Teleport(cor : Tuple<real, real>) => pos at cor
 
 	observe var event_info : string // maybe add something like this or think about it
 	
@@ -2015,7 +2012,6 @@ agent Aircraft on AgentLayer{
 		Latitude = ycor
 			
 		event_info = "None"
-		weather = nearest Weather
 	}
 	
 	def update_general_values()
@@ -2037,7 +2033,7 @@ agent Aircraft on AgentLayer{
 	
 	def initialize_AircraftCharacteristics()
 	{
-		Aircraft__callsign = "Cessna" + agentlayer.Get_callsign_number()
+		Aircraft__callsign = "Cessna" + callsign_number
 	}
 	
 	passive Get_callsign() => return Aircraft__callsign
@@ -2177,7 +2173,7 @@ agent Aircraft on AgentLayer{
 			Aircraft__drag = Aircraft__drag_coefficient * weather.Get_density(Aircraft__height) * Aircraft__true_air_speed**2 * Aircraft__wing_area / 2
 			
 			//Z Movement calculation
-			Aircraft__acceleration_z = ((Propeller__thrust - Tire__friction_force - Aircraft__drag) * Math.Sin(Aircraft__climb_angle_rad) + Aircraft__lift * Math.Cos(Aircraft__climb_angle_rad) - Aircraft__mass * agentlayer.Get_gravity()) / Aircraft__mass 
+			Aircraft__acceleration_z = ((Propeller__thrust - Tire__friction_force - Aircraft__drag) * Math.Sin(Aircraft__climb_angle_rad) + Aircraft__lift * Math.Cos(Aircraft__climb_angle_rad) - Aircraft__mass * weather.Get_gravity()) / Aircraft__mass 
 			Aircraft__rate_of_climb = Aircraft__rate_of_climb + Aircraft__acceleration_z / n_cycle
 			Aircraft__height = Aircraft__height + Aircraft__rate_of_climb / n_cycle
 			
@@ -2358,7 +2354,7 @@ agent Aircraft on AgentLayer{
 		Engine__power = 0.0
 		Engine__running = false
 		Engine__oil_pressure = 101325
-		Engine__oil_temperature = weather.Get_temperature()
+		Engine__oil_temperature = 15
 		Engine__failure_probability = 0.0
 		Engine__failure = false
 		Engine__fuel_consumption = 0.0
@@ -2589,7 +2585,7 @@ agent Aircraft on AgentLayer{
 		//TODO: Add friction dependency on Tire inflation
 		if (Aircraft__flight_phase === "on-ground")
 		{
-			Tire__friction_force = (Aircraft__mass * agentlayer.Get_gravity() - Aircraft__lift) * Tire__number_of_wheels * Tire__roll_coefficient / Tire__wheel_radius
+			Tire__friction_force = (Aircraft__mass * weather.Get_gravity() - Aircraft__lift) * Tire__number_of_wheels * Tire__roll_coefficient / Tire__wheel_radius
 		}
 		else
 		{

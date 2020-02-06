@@ -18,6 +18,30 @@ namespace cessna_digital_twin {
 		private static readonly Mars.Common.Logging.ILogger _Logger = 
 					Mars.Common.Logging.LoggerFactory.GetLogger(typeof(Pilot));
 		private readonly System.Random _Random = new System.Random();
+		private string __state_type
+			 = "Landing";
+		internal string state_type { 
+			get { return __state_type; }
+			set{
+				if(__state_type != value) __state_type = value;
+			}
+		}
+		private int __initialization_time
+			 = 50;
+		internal int initialization_time { 
+			get { return __initialization_time; }
+			set{
+				if(__initialization_time != value) __initialization_time = value;
+			}
+		}
+		private int __callsign_number
+			 = 1;
+		internal int callsign_number { 
+			get { return __callsign_number; }
+			set{
+				if(__callsign_number != value) __callsign_number = value;
+			}
+		}
 		private double __Latitude
 			 = default(double);
 		public double Latitude { 
@@ -82,12 +106,20 @@ namespace cessna_digital_twin {
 				if(__myAircraft != value) __myAircraft = value;
 			}
 		}
-		private cessna_digital_twin.Weather __weather
-			 = default(cessna_digital_twin.Weather);
-		internal cessna_digital_twin.Weather weather { 
-			get { return __weather; }
+		private cessna_digital_twin.Observer __observer
+			 = default(cessna_digital_twin.Observer);
+		internal cessna_digital_twin.Observer observer { 
+			get { return __observer; }
 			set{
-				if(__weather != value) __weather = value;
+				if(__observer != value) __observer = value;
+			}
+		}
+		private cessna_digital_twin.AirportStade __airportstade
+			 = new cessna_digital_twin.AirportStade();
+		internal cessna_digital_twin.AirportStade airportstade { 
+			get { return __airportstade; }
+			set{
+				if(__airportstade != value) __airportstade = value;
 			}
 		}
 		private cessna_digital_twin.TimeHandler __timehandler
@@ -267,6 +299,85 @@ namespace cessna_digital_twin {
 			}
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public virtual void Second_Initialization() 
+		{
+			{
+			myAircraft = new Func<cessna_digital_twin.Aircraft>(() => {
+				Func<cessna_digital_twin.Aircraft, bool> _predicate226_8066 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft it) => 
+				 {
+						{
+						return Equals(it.Get_callsign()
+						, myAircraft_callsign)
+						;}
+						;
+						return default(bool);;
+				});
+				Func<cessna_digital_twin.Aircraft, bool> _predicateMod226_8066 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
+				{
+					if (_it?.ID == this.ID)
+					{
+						return false;
+					} else if (_predicate226_8066 != null)
+					{
+						return _predicate226_8066.Invoke(_it);
+					} else return true;
+				});
+				
+				const int _range226_8066 = -1;
+				var _source226_8066 = this.Position;
+				
+				return _AgentLayer._AircraftEnvironment.Explore(_source226_8066, _range226_8066, 1, _predicateMod226_8066)?.FirstOrDefault();
+			}).Invoke();
+			observer = new Func<cessna_digital_twin.Observer>(() => {
+				Func<cessna_digital_twin.Observer, bool> _predicate227_8160 = null;
+				Func<cessna_digital_twin.Observer, bool> _predicateMod227_8160 = new Func<cessna_digital_twin.Observer, bool>(_it => 
+				{
+					if (_it?.ID == this.ID)
+					{
+						return false;
+					} else if (_predicate227_8160 != null)
+					{
+						return _predicate227_8160.Invoke(_it);
+					} else return true;
+				});
+				
+				const int _range227_8160 = -1;
+				var _source227_8160 = this.Position;
+				
+				return _AgentLayer._ObserverEnvironment.Explore(_source227_8160, _range227_8160, 1, _predicateMod227_8160)?.FirstOrDefault();
+			}).Invoke();
+			if(Equals((int) Mars.Core.SimulationManager.Entities.SimulationClock.CurrentStep, initialization_time)) {
+							{
+							if(Equals(state_type, "Landing")) {
+											{
+											state = "LandingRequest";
+											heading_information = observer.Get_runway_heading();
+											myAircraft.Initialize_landing(heading_information);
+											System.Tuple<double,double> landing_spawn_cor = airportstade.Get_landing_spawning_point(heading_information);
+											new System.Func<System.Tuple<double,double>>(() => {
+												
+												var _taget237_8602 = landing_spawn_cor;
+												
+												var _object237_8602 = this;
+												
+												_AgentLayer._PilotEnvironment.PosAt(_object237_8602, 
+													_taget237_8602.Item1, _taget237_8602.Item2
+												);
+												return new Tuple<double, double>(Position.X, Position.Y);
+											}).Invoke();
+											myAircraft.Teleport(landing_spawn_cor)
+											;}
+									;} else {
+											{
+											state = "PreflightInspection"
+											;}
+										;}
+							;}
+					;} 
+			;}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public virtual void go_to_next_state(string _state) 
 		{
 			{
@@ -287,9 +398,9 @@ namespace cessna_digital_twin {
 			event_info = "End flight mission due to " + info;
 			myAircraft.Remove();
 			new System.Action(() => {
-				var _target377_12739 = this;
-				if (_target377_12739 != null) {
-					_AgentLayer._KillPilot(_target377_12739, _target377_12739._executionFrequency);
+				var _target382_12753 = this;
+				if (_target382_12753 != null) {
+					_AgentLayer._KillPilot(_target382_12753, _target382_12753._executionFrequency);
 				}
 			}).Invoke()
 			;}
@@ -301,13 +412,13 @@ namespace cessna_digital_twin {
 			{
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget382_12790 = (myAircraft.Get_position()
+				var _taget387_12804 = (myAircraft.Get_position()
 				);
 				
-				var _object382_12790 = this;
+				var _object387_12804 = this;
 				
-				_AgentLayer._PilotEnvironment.PosAt(_object382_12790, 
-					_taget382_12790.Item1, _taget382_12790.Item2
+				_AgentLayer._PilotEnvironment.PosAt(_object387_12804, 
+					_taget387_12804.Item1, _taget387_12804.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
@@ -1753,11 +1864,11 @@ namespace cessna_digital_twin {
 											active_taxi_point);
 											cessna_digital_twin.Aircraft[] aircraft_array = new System.Func<cessna_digital_twin.Aircraft[]>(() => {
 												
-												var _sourceMapped1615_48503 = this.Position;
-												var _source1615_48503 = _sourceMapped1615_48503;
-												var _range1615_48503 = -1;
+												var _sourceMapped1615_48403 = this.Position;
+												var _source1615_48403 = _sourceMapped1615_48403;
+												var _range1615_48403 = -1;
 															
-												Func<cessna_digital_twin.Aircraft, bool> _predicate1615_48503 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft x) => 
+												Func<cessna_digital_twin.Aircraft, bool> _predicate1615_48403 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft x) => 
 												 {
 														{
 														return formula.haversine(myAircraft.Get_position(),
@@ -1768,18 +1879,18 @@ namespace cessna_digital_twin {
 														;
 														return default(bool);;
 												});
-												Func<cessna_digital_twin.Aircraft, bool> _predicateMod1615_48503 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
+												Func<cessna_digital_twin.Aircraft, bool> _predicateMod1615_48403 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
 												{
 													if (_it?.ID == this.ID)
 													{
 														return false;
-													} else if (_predicate1615_48503 != null)
+													} else if (_predicate1615_48403 != null)
 													{
-														return _predicate1615_48503.Invoke(_it);
+														return _predicate1615_48403.Invoke(_it);
 													} else return true;
 												});
 												
-												return _AgentLayer._AircraftEnvironment.Explore(_source1615_48503 , _range1615_48503, -1, _predicate1615_48503).ToArray();
+												return _AgentLayer._AircraftEnvironment.Explore(_source1615_48403 , _range1615_48403, -1, _predicate1615_48403).ToArray();
 											}).Invoke();
 											if(aircraft_array.Length > 1) {
 															{
@@ -2166,16 +2277,6 @@ namespace cessna_digital_twin {
 			
 			return default(string);;
 		}
-		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-		public void Initialize_landing(
-		double heading) {
-			{
-			state = "LandingRequest";
-			heading_information = heading
-			;}
-			
-			return;
-		}
 		internal bool _isAlive;
 		internal int _executionFrequency;
 		
@@ -2183,7 +2284,7 @@ namespace cessna_digital_twin {
 		public cessna_digital_twin.AgentLayer _AgentLayer { get; set; }
 		public cessna_digital_twin.AgentLayer agentlayer => _AgentLayer;
 		public Mars.Components.Environments.GeoHashEnvironment<Aircraft> _AircraftEnvironment { get; set; }
-		public Mars.Components.Environments.GeoHashEnvironment<Weather> _WeatherEnvironment { get; set; }
+		public Mars.Components.Environments.GeoHashEnvironment<Observer> _ObserverEnvironment { get; set; }
 		
 		[Mars.Interfaces.LIFECapabilities.PublishForMappingInMars]
 		public Pilot (
@@ -2203,57 +2304,14 @@ namespace cessna_digital_twin {
 			_isAlive = true;
 			_executionFrequency = freq;
 			{
-			myAircraft = new Func<cessna_digital_twin.Aircraft>(() => {
-				Func<cessna_digital_twin.Aircraft, bool> _predicate249_8771 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft it) => 
-				 {
-						{
-						return Equals(it.Get_occupy_bool()
-						, false)
-						;}
-						;
-						return default(bool);;
-				});
-				Func<cessna_digital_twin.Aircraft, bool> _predicateMod249_8771 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
-				{
-					if (_it?.ID == this.ID)
-					{
-						return false;
-					} else if (_predicate249_8771 != null)
-					{
-						return _predicate249_8771.Invoke(_it);
-					} else return true;
-				});
-				
-				const int _range249_8771 = -1;
-				var _source249_8771 = this.Position;
-				
-				return _AgentLayer._AircraftEnvironment.Explore(_source249_8771, _range249_8771, 1, _predicateMod249_8771)?.FirstOrDefault();
-			}).Invoke();
-			myAircraft.Set_occupied();
-			myAircraft_callsign = myAircraft.Get_callsign();
-			weather = new Func<cessna_digital_twin.Weather>(() => {
-				Func<cessna_digital_twin.Weather, bool> _predicate252_8977 = null;
-				Func<cessna_digital_twin.Weather, bool> _predicateMod252_8977 = new Func<cessna_digital_twin.Weather, bool>(_it => 
-				{
-					if (_it?.ID == this.ID)
-					{
-						return false;
-					} else if (_predicate252_8977 != null)
-					{
-						return _predicate252_8977.Invoke(_it);
-					} else return true;
-				});
-				
-				const int _range252_8977 = -1;
-				var _source252_8977 = this.Position;
-				
-				return _AgentLayer._WeatherEnvironment.Explore(_source252_8977, _range252_8977, 1, _predicateMod252_8977)?.FirstOrDefault();
-			}).Invoke();
-			update_general_values();
-			state = "PreflightInspection";
-			current_activity = "Initialization:)";
+			state = "Initialization";
+			current_activity = "Initialization";
+			next_action = "Initialization";
 			event_info = "None";
 			takeoff_distance = 0;
+			myAircraft_callsign = "Cessna" + callsign_number;
+			Longitude = this.Position.X;
+			Latitude = this.Position.Y;
 			age = age_min + _Random.Next((age_max - age_min) + 1);
 			flight_experience = Mars.Mathematics.Statistics.RandomHelper.NextDouble(_Random, 0, (age - age_min) * flight_experience_max / (age_max - age_min));
 			timehandler.initialize_variables(age,flight_experience,flight_experience_max,age_max,age_min)
@@ -2264,76 +2322,82 @@ namespace cessna_digital_twin {
 		{
 			{ if (!_isAlive) return; }
 			{
-			if(Equals(state, "PreflightInspection")) {
+			if(Equals(state, "Initialization")) {
 							{
-							PreflightInspection_action()
+							Second_Initialization()
 							;}
 					;} else {
-							if(Equals(state, "StartingEngine")) {
+							if(Equals(state, "PreflightInspection")) {
 											{
-											StartingEngine_action()
+											PreflightInspection_action()
 											;}
 									;} else {
-											if(Equals(state, "TakeOffPreparationRequest")) {
+											if(Equals(state, "StartingEngine")) {
 															{
-															TakeOffPreparationRequest_action()
+															StartingEngine_action()
 															;}
 													;} else {
-															if(Equals(state, "Taxiing")) {
+															if(Equals(state, "TakeOffPreparationRequest")) {
 																			{
-																			Taxiing_action()
+																			TakeOffPreparationRequest_action()
 																			;}
 																	;} else {
-																			if(Equals(state, "TakeOffPreparation")) {
+																			if(Equals(state, "Taxiing")) {
 																							{
-																							TakeOffPreparation_action()
+																							Taxiing_action()
 																							;}
 																					;} else {
-																							if(Equals(state, "TakeOffHoldShortRequest")) {
+																							if(Equals(state, "TakeOffPreparation")) {
 																											{
-																											TakeOffHoldShortRequest_action()
+																											TakeOffPreparation_action()
 																											;}
 																									;} else {
-																											if(Equals(state, "TakeOffRequest")) {
+																											if(Equals(state, "TakeOffHoldShortRequest")) {
 																															{
-																															TakeOffRequest_action()
+																															TakeOffHoldShortRequest_action()
 																															;}
 																													;} else {
-																															if(Equals(state, "TakeOff")) {
+																															if(Equals(state, "TakeOffRequest")) {
 																																			{
-																																			TakeOff_action()
+																																			TakeOffRequest_action()
 																																			;}
 																																	;} else {
-																																			if(Equals(state, "Climb")) {
+																																			if(Equals(state, "TakeOff")) {
 																																							{
-																																							Climb_action()
+																																							TakeOff_action()
 																																							;}
 																																					;} else {
-																																							if(Equals(state, "LeavingFrequencyRequest")) {
+																																							if(Equals(state, "Climb")) {
 																																											{
-																																											LeavingFrequencyRequest_action()
+																																											Climb_action()
 																																											;}
 																																									;} else {
-																																											if(Equals(state, "LandingRequest")) {
+																																											if(Equals(state, "LeavingFrequencyRequest")) {
 																																															{
-																																															LandingRequest_action()
+																																															LeavingFrequencyRequest_action()
 																																															;}
 																																													;} else {
-																																															if(Equals(state, "GoAround")) {
+																																															if(Equals(state, "LandingRequest")) {
 																																																			{
-																																																			GoAround_action()
+																																																			LandingRequest_action()
 																																																			;}
 																																																	;} else {
-																																																			if(Equals(state, "Landing")) {
+																																																			if(Equals(state, "GoAround")) {
 																																																							{
-																																																							Landing_action()
+																																																							GoAround_action()
 																																																							;}
 																																																					;} else {
-																																																							if(Equals(state, "LeavingFrequency")) {
+																																																							if(Equals(state, "Landing")) {
 																																																											{
-																																																											LeavingFrequency_action()
+																																																											Landing_action()
 																																																											;}
-																																																									;} 
+																																																									;} else {
+																																																											if(Equals(state, "LeavingFrequency")) {
+																																																															{
+																																																															LeavingFrequency_action()
+																																																															;}
+																																																													;} 
+																																																										;}
 																																																						;}
 																																																		;}
 																																														;}

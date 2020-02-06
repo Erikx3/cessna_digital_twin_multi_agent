@@ -18,6 +18,14 @@ namespace cessna_digital_twin {
 		private static readonly Mars.Common.Logging.ILogger _Logger = 
 					Mars.Common.Logging.LoggerFactory.GetLogger(typeof(Weather));
 		private readonly System.Random _Random = new System.Random();
+		private double __gravity
+			 = default(double);
+		internal double gravity { 
+			get { return __gravity; }
+			set{
+				if(System.Math.Abs(__gravity - value) > 0.0000001) __gravity = value;
+			}
+		}
 		private double __wind_bearing
 			 = default(double);
 		internal double wind_bearing { 
@@ -99,6 +107,15 @@ namespace cessna_digital_twin {
 			}
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public double Get_gravity() {
+			{
+			return gravity
+					;
+			}
+			
+			return default(double);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public double Get_wind_bearing() {
 			{
 			return wind_bearing
@@ -160,6 +177,7 @@ namespace cessna_digital_twin {
 		Mars.Interfaces.Layer.RegisterAgent _register,
 		Mars.Interfaces.Layer.UnregisterAgent _unregister,
 		Mars.Components.Environments.GeoHashEnvironment<Weather> _WeatherEnvironment,
+		double gravity,
 		double wind_bearing,
 		double wind_speed,
 		double temperature,
@@ -170,6 +188,7 @@ namespace cessna_digital_twin {
 			ID = _id;
 			Position = Mars.Interfaces.Environment.Position.CreatePosition(xcor, ycor);
 			_Random = new System.Random(ID.GetHashCode());
+			this.gravity = gravity;
 			this.wind_bearing = wind_bearing;
 			this.wind_speed = wind_speed;
 			this.temperature = temperature;
