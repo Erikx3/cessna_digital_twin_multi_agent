@@ -25,12 +25,12 @@
     "agents": [
         {
             "name":"Pilot",
-            "count":1,
+            "count":2,
             "file" : "Pilot_variables.csv"
         },
         {
             "name":"Aircraft",
-            "count":1,
+            "count":2,
             "file" : "Aircraft_variables.csv"
         },
         {

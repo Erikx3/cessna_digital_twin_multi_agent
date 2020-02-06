@@ -1963,7 +1963,7 @@ namespace cessna_digital_twin {
 											{
 											if(Equals(Feel_Aircraft__acceleration_x(), false)) {
 															{
-															temp_throttle_value = temp_throttle_value + 0.30
+															temp_throttle_value = temp_throttle_value + 0.20
 															;}
 													;} 
 											;}

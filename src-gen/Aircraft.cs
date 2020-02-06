@@ -75,7 +75,7 @@ namespace cessna_digital_twin {
 			}
 		}
 		private double __Aircraft__mass
-			 = 725.0;
+			 = default(double);
 		internal double Aircraft__mass { 
 			get { return __Aircraft__mass; }
 			set{
@@ -83,7 +83,7 @@ namespace cessna_digital_twin {
 			}
 		}
 		private double __Aircraft__wing_area
-			 = 15.0;
+			 = default(double);
 		internal double Aircraft__wing_area { 
 			get { return __Aircraft__wing_area; }
 			set{
@@ -91,7 +91,7 @@ namespace cessna_digital_twin {
 			}
 		}
 		private double __Aircraft__wing_span
-			 = 10.1;
+			 = default(double);
 		internal double Aircraft__wing_span { 
 			get { return __Aircraft__wing_span; }
 			set{
@@ -99,7 +99,7 @@ namespace cessna_digital_twin {
 			}
 		}
 		private double __Aircraft__stall_angle
-			 = 14.0;
+			 = default(double);
 		internal double Aircraft__stall_angle { 
 			get { return __Aircraft__stall_angle; }
 			set{
@@ -235,7 +235,7 @@ namespace cessna_digital_twin {
 			}
 		}
 		private double __Aircraft__lift_coefficient_slope
-			 = 4.9;
+			 = default(double);
 		internal double Aircraft__lift_coefficient_slope { 
 			get { return __Aircraft__lift_coefficient_slope; }
 			set{
@@ -251,7 +251,7 @@ namespace cessna_digital_twin {
 			}
 		}
 		private double __Aircraft__total_stall_angle
-			 = 18.0;
+			 = default(double);
 		internal double Aircraft__total_stall_angle { 
 			get { return __Aircraft__total_stall_angle; }
 			set{
@@ -267,7 +267,7 @@ namespace cessna_digital_twin {
 			}
 		}
 		private double __Aircraft__zero_lift_drag_coefficient
-			 = 0.04;
+			 = default(double);
 		internal double Aircraft__zero_lift_drag_coefficient { 
 			get { return __Aircraft__zero_lift_drag_coefficient; }
 			set{
@@ -275,7 +275,7 @@ namespace cessna_digital_twin {
 			}
 		}
 		private double __Aircraft__oswald_factor
-			 = 0.7;
+			 = default(double);
 		internal double Aircraft__oswald_factor { 
 			get { return __Aircraft__oswald_factor; }
 			set{
@@ -307,7 +307,7 @@ namespace cessna_digital_twin {
 			}
 		}
 		private double __Brake__deceleration_force_max
-			 = 2500;
+			 = default(double);
 		internal double Brake__deceleration_force_max { 
 			get { return __Brake__deceleration_force_max; }
 			set{
@@ -315,7 +315,7 @@ namespace cessna_digital_twin {
 			}
 		}
 		private double __Propeller__diameter
-			 = 1.75;
+			 = default(double);
 		internal double Propeller__diameter { 
 			get { return __Propeller__diameter; }
 			set{
@@ -347,7 +347,7 @@ namespace cessna_digital_twin {
 			}
 		}
 		private double __Propeller__thrust_coefficient_constant
-			 = 0.1;
+			 = default(double);
 		internal double Propeller__thrust_coefficient_constant { 
 			get { return __Propeller__thrust_coefficient_constant; }
 			set{
@@ -355,7 +355,7 @@ namespace cessna_digital_twin {
 			}
 		}
 		private double __Propeller__thrust_coefficient_speed_constant
-			 = 25.0;
+			 = default(double);
 		internal double Propeller__thrust_coefficient_speed_constant { 
 			get { return __Propeller__thrust_coefficient_speed_constant; }
 			set{
@@ -491,7 +491,7 @@ namespace cessna_digital_twin {
 			}
 		}
 		private double __Engine__power_coefficient_constant
-			 = 0.05;
+			 = default(double);
 		internal double Engine__power_coefficient_constant { 
 			get { return __Engine__power_coefficient_constant; }
 			set{
@@ -499,7 +499,7 @@ namespace cessna_digital_twin {
 			}
 		}
 		private double __Engine__power_coefficient_speed_constant
-			 = 30.0;
+			 = default(double);
 		internal double Engine__power_coefficient_speed_constant { 
 			get { return __Engine__power_coefficient_speed_constant; }
 			set{
@@ -563,7 +563,7 @@ namespace cessna_digital_twin {
 			}
 		}
 		private int __Engine__RPM_max
-			 = 2750;
+			 = default(int);
 		internal int Engine__RPM_max { 
 			get { return __Engine__RPM_max; }
 			set{
@@ -571,7 +571,7 @@ namespace cessna_digital_twin {
 			}
 		}
 		private int __Engine__power_max
-			 = 75000;
+			 = default(int);
 		internal int Engine__power_max { 
 			get { return __Engine__power_max; }
 			set{
@@ -579,11 +579,59 @@ namespace cessna_digital_twin {
 			}
 		}
 		private double __Engine__fuel_consumption_max
-			 = 0.0079;
+			 = default(double);
 		internal double Engine__fuel_consumption_max { 
 			get { return __Engine__fuel_consumption_max; }
 			set{
 				if(System.Math.Abs(__Engine__fuel_consumption_max - value) > 0.0000001) __Engine__fuel_consumption_max = value;
+			}
+		}
+		private double __Engine__oil_pump_condition_probability
+			 = default(double);
+		internal double Engine__oil_pump_condition_probability { 
+			get { return __Engine__oil_pump_condition_probability; }
+			set{
+				if(System.Math.Abs(__Engine__oil_pump_condition_probability - value) > 0.0000001) __Engine__oil_pump_condition_probability = value;
+			}
+		}
+		private double __Engine__oil_leakage_probability
+			 = default(double);
+		internal double Engine__oil_leakage_probability { 
+			get { return __Engine__oil_leakage_probability; }
+			set{
+				if(System.Math.Abs(__Engine__oil_leakage_probability - value) > 0.0000001) __Engine__oil_leakage_probability = value;
+			}
+		}
+		private double __Engine__failure_probability_add_water_sediments
+			 = default(double);
+		internal double Engine__failure_probability_add_water_sediments { 
+			get { return __Engine__failure_probability_add_water_sediments; }
+			set{
+				if(System.Math.Abs(__Engine__failure_probability_add_water_sediments - value) > 0.0000001) __Engine__failure_probability_add_water_sediments = value;
+			}
+		}
+		private double __Engine__failure_probability_add_oil_min
+			 = default(double);
+		internal double Engine__failure_probability_add_oil_min { 
+			get { return __Engine__failure_probability_add_oil_min; }
+			set{
+				if(System.Math.Abs(__Engine__failure_probability_add_oil_min - value) > 0.0000001) __Engine__failure_probability_add_oil_min = value;
+			}
+		}
+		private double __Engine__failure_probability_add_oil_critical_min
+			 = default(double);
+		internal double Engine__failure_probability_add_oil_critical_min { 
+			get { return __Engine__failure_probability_add_oil_critical_min; }
+			set{
+				if(System.Math.Abs(__Engine__failure_probability_add_oil_critical_min - value) > 0.0000001) __Engine__failure_probability_add_oil_critical_min = value;
+			}
+		}
+		private double __Engine__failure_probability_add_oil_pump_condition
+			 = default(double);
+		internal double Engine__failure_probability_add_oil_pump_condition { 
+			get { return __Engine__failure_probability_add_oil_pump_condition; }
+			set{
+				if(System.Math.Abs(__Engine__failure_probability_add_oil_pump_condition - value) > 0.0000001) __Engine__failure_probability_add_oil_pump_condition = value;
 			}
 		}
 		private double __RWT__fuel_quantity
@@ -610,6 +658,14 @@ namespace cessna_digital_twin {
 				if(__RWT__total_capacity != value) __RWT__total_capacity = value;
 			}
 		}
+		private double __RWT__water_sediments_probability
+			 = default(double);
+		internal double RWT__water_sediments_probability { 
+			get { return __RWT__water_sediments_probability; }
+			set{
+				if(System.Math.Abs(__RWT__water_sediments_probability - value) > 0.0000001) __RWT__water_sediments_probability = value;
+			}
+		}
 		private double __LWT__fuel_quantity
 			 = default(double);
 		public double LWT__fuel_quantity { 
@@ -627,11 +683,19 @@ namespace cessna_digital_twin {
 			}
 		}
 		private int __LWT__total_capacity
-			 = 49;
+			 = default(int);
 		internal int LWT__total_capacity { 
 			get { return __LWT__total_capacity; }
 			set{
 				if(__LWT__total_capacity != value) __LWT__total_capacity = value;
+			}
+		}
+		private double __LWT__water_sediments_probability
+			 = default(double);
+		internal double LWT__water_sediments_probability { 
+			get { return __LWT__water_sediments_probability; }
+			set{
+				if(System.Math.Abs(__LWT__water_sediments_probability - value) > 0.0000001) __LWT__water_sediments_probability = value;
 			}
 		}
 		private int __TireRightMainWheel__inflation
@@ -691,7 +755,7 @@ namespace cessna_digital_twin {
 			}
 		}
 		private double __Tire__wheel_radius
-			 = 0.075;
+			 = default(double);
 		internal double Tire__wheel_radius { 
 			get { return __Tire__wheel_radius; }
 			set{
@@ -707,7 +771,7 @@ namespace cessna_digital_twin {
 			}
 		}
 		private double __Tire__roll_coefficient
-			 = 0.002;
+			 = default(double);
 		internal double Tire__roll_coefficient { 
 			get { return __Tire__roll_coefficient; }
 			set{
@@ -806,8 +870,7 @@ namespace cessna_digital_twin {
 			Aircraft__angle_of_attack = 0.0;
 			Aircraft__pitch = 0.0;
 			Aircraft__climb_angle = 0.0;
-			Aircraft__drag = 0.0;
-			Aircraft__zero_lift_angle = -3.0
+			Aircraft__drag = 0.0
 			;}
 			return;
 		}
@@ -882,14 +945,14 @@ namespace cessna_digital_twin {
 							{
 							new System.Func<Tuple<double,double>>(() => {
 								
-								var _speed2238_68724 = Aircraft__movement_x
+								var _speed2236_68746 = Aircraft__movement_x
 							;
 								
-								var _entity2238_68724 = this;
+								var _entity2236_68746 = this;
 								
-								Func<double[], bool> _predicate2238_68724 = null;
+								Func<double[], bool> _predicate2236_68746 = null;
 								
-								_AgentLayer._AircraftEnvironment.MoveTowards(_entity2238_68724, Aircraft__heading_bearing, _speed2238_68724);	
+								_AgentLayer._AircraftEnvironment.MoveTowards(_entity2236_68746, Aircraft__heading_bearing, _speed2236_68746);	
 								
 								return new Tuple<double, double>(Position.X, Position.Y);
 							}).Invoke()
@@ -955,8 +1018,7 @@ namespace cessna_digital_twin {
 		public virtual void initialize_Propeller() 
 		{
 			{
-			Propeller__thrust = 0.0;
-			Propeller__thrust_coefficient_slope = -0.002
+			Propeller__thrust = 0.0
 			;}
 			return;
 		}
@@ -991,9 +1053,9 @@ namespace cessna_digital_twin {
 		public virtual void initialize_Engine() 
 		{
 			{
-			Engine__oil_pump_condition = Utility.probability_check(0.98);
+			Engine__oil_pump_condition = Utility.probability_check(Engine__oil_pump_condition_probability);
 			Engine__oil_leakage = 0.0;
-			if(Equals(Utility.probability_check(0.02)
+			if(Equals(Utility.probability_check(Engine__oil_leakage_probability)
 			, true)) {
 							{
 							Engine__oil_leakage = 0.01
@@ -1014,8 +1076,7 @@ namespace cessna_digital_twin {
 			Engine__oil_temperature = 15;
 			Engine__failure_probability = 0.0;
 			Engine__failure = false;
-			Engine__fuel_consumption = 0.0;
-			Engine__power_coefficient_slope = -0.0009
+			Engine__fuel_consumption = 0.0
 			;}
 			return;
 		}
@@ -1048,32 +1109,27 @@ namespace cessna_digital_twin {
 			Engine__failure_probability = 0.0;
 			if(Equals(RWT__water_sediments, true)) {
 							{
-							Add_Engine__failure_probability(Mars.Components.Common.Math.Pow(10, (-4)))
+							Add_Engine__failure_probability(Engine__failure_probability_add_water_sediments)
 							;}
 					;} ;
 			if(Equals(LWT__water_sediments, true)) {
 							{
-							Add_Engine__failure_probability(Mars.Components.Common.Math.Pow(10, (-4)))
+							Add_Engine__failure_probability(Engine__failure_probability_add_water_sediments)
 							;}
 					;} ;
 			if(Engine__oil < Engine__oil_min) {
 							{
-							Add_Engine__failure_probability(5 * Mars.Components.Common.Math.Pow(10, (-4)))
+							Add_Engine__failure_probability(Engine__failure_probability_add_oil_min)
 							;}
 					;} ;
 			if(Engine__oil < Engine__oil_critical_min) {
 							{
-							Add_Engine__failure_probability(5 * Mars.Components.Common.Math.Pow(10, (-2)))
+							Add_Engine__failure_probability(Engine__failure_probability_add_oil_critical_min)
 							;}
 					;} ;
 			if(Equals(Engine__oil_pump_condition, false)) {
 							{
-							Add_Engine__failure_probability(5 * Mars.Components.Common.Math.Pow(10, (-4)))
-							;}
-					;} ;
-			if(Equals(Engine__mixture_control, "LEAN")) {
-							{
-							Add_Engine__failure_probability(Mars.Components.Common.Math.Pow(10, (-4)))
+							Add_Engine__failure_probability(Engine__failure_probability_add_oil_pump_condition)
 							;}
 					;} 
 			;}
@@ -1161,7 +1217,7 @@ namespace cessna_digital_twin {
 		{
 			{
 			RWT__fuel_quantity = _Random.Next(RWT__total_capacity + 1);
-			RWT__water_sediments = Utility.probability_check(0.5)
+			RWT__water_sediments = Utility.probability_check(RWT__water_sediments_probability)
 			;}
 			return;
 		}
@@ -1178,7 +1234,7 @@ namespace cessna_digital_twin {
 		{
 			{
 			LWT__fuel_quantity = _Random.Next(LWT__total_capacity + 1);
-			LWT__water_sediments = Utility.probability_check(0.5)
+			LWT__water_sediments = Utility.probability_check(LWT__water_sediments_probability)
 			;}
 			return;
 		}
@@ -1735,7 +1791,39 @@ namespace cessna_digital_twin {
 		Mars.Interfaces.Layer.RegisterAgent _register,
 		Mars.Interfaces.Layer.UnregisterAgent _unregister,
 		Mars.Components.Environments.GeoHashEnvironment<Aircraft> _AircraftEnvironment,
-		int callsign_number
+		int callsign_number,
+		double Aircraft__mass,
+		double Aircraft__wing_area,
+		double Aircraft__wing_span,
+		double Aircraft__stall_angle,
+		double Aircraft__lift_coefficient_slope,
+		double Aircraft__zero_lift_angle,
+		double Aircraft__total_stall_angle,
+		double Aircraft__zero_lift_drag_coefficient,
+		double Aircraft__oswald_factor,
+		double Brake__deceleration_force_max,
+		double Propeller__diameter,
+		double Propeller__thrust_coefficient_slope,
+		double Propeller__thrust_coefficient_constant,
+		double Propeller__thrust_coefficient_speed_constant,
+		double Engine__power_coefficient_slope,
+		double Engine__power_coefficient_constant,
+		double Engine__power_coefficient_speed_constant,
+		int Engine__RPM_max,
+		int Engine__power_max,
+		double Engine__fuel_consumption_max,
+		double Engine__oil_pump_condition_probability,
+		double Engine__oil_leakage_probability,
+		double Engine__failure_probability_add_water_sediments,
+		double Engine__failure_probability_add_oil_min,
+		double Engine__failure_probability_add_oil_critical_min,
+		double Engine__failure_probability_add_oil_pump_condition,
+		int RWT__total_capacity,
+		double RWT__water_sediments_probability,
+		int LWT__total_capacity,
+		double LWT__water_sediments_probability,
+		double Tire__wheel_radius,
+		double Tire__roll_coefficient
 	,	double xcor = 0, double ycor = 0, int freq = 1)
 		{
 			_AgentLayer = _layer;
@@ -1743,6 +1831,38 @@ namespace cessna_digital_twin {
 			Position = Mars.Interfaces.Environment.Position.CreatePosition(xcor, ycor);
 			_Random = new System.Random(ID.GetHashCode());
 			this.callsign_number = callsign_number;
+			this.Aircraft__mass = Aircraft__mass;
+			this.Aircraft__wing_area = Aircraft__wing_area;
+			this.Aircraft__wing_span = Aircraft__wing_span;
+			this.Aircraft__stall_angle = Aircraft__stall_angle;
+			this.Aircraft__lift_coefficient_slope = Aircraft__lift_coefficient_slope;
+			this.Aircraft__zero_lift_angle = Aircraft__zero_lift_angle;
+			this.Aircraft__total_stall_angle = Aircraft__total_stall_angle;
+			this.Aircraft__zero_lift_drag_coefficient = Aircraft__zero_lift_drag_coefficient;
+			this.Aircraft__oswald_factor = Aircraft__oswald_factor;
+			this.Brake__deceleration_force_max = Brake__deceleration_force_max;
+			this.Propeller__diameter = Propeller__diameter;
+			this.Propeller__thrust_coefficient_slope = Propeller__thrust_coefficient_slope;
+			this.Propeller__thrust_coefficient_constant = Propeller__thrust_coefficient_constant;
+			this.Propeller__thrust_coefficient_speed_constant = Propeller__thrust_coefficient_speed_constant;
+			this.Engine__power_coefficient_slope = Engine__power_coefficient_slope;
+			this.Engine__power_coefficient_constant = Engine__power_coefficient_constant;
+			this.Engine__power_coefficient_speed_constant = Engine__power_coefficient_speed_constant;
+			this.Engine__RPM_max = Engine__RPM_max;
+			this.Engine__power_max = Engine__power_max;
+			this.Engine__fuel_consumption_max = Engine__fuel_consumption_max;
+			this.Engine__oil_pump_condition_probability = Engine__oil_pump_condition_probability;
+			this.Engine__oil_leakage_probability = Engine__oil_leakage_probability;
+			this.Engine__failure_probability_add_water_sediments = Engine__failure_probability_add_water_sediments;
+			this.Engine__failure_probability_add_oil_min = Engine__failure_probability_add_oil_min;
+			this.Engine__failure_probability_add_oil_critical_min = Engine__failure_probability_add_oil_critical_min;
+			this.Engine__failure_probability_add_oil_pump_condition = Engine__failure_probability_add_oil_pump_condition;
+			this.RWT__total_capacity = RWT__total_capacity;
+			this.RWT__water_sediments_probability = RWT__water_sediments_probability;
+			this.LWT__total_capacity = LWT__total_capacity;
+			this.LWT__water_sediments_probability = LWT__water_sediments_probability;
+			this.Tire__wheel_radius = Tire__wheel_radius;
+			this.Tire__roll_coefficient = Tire__roll_coefficient;
 			_AgentLayer._AircraftEnvironment.Insert(this);
 			_register(_layer, this, freq);
 			_isAlive = true;
