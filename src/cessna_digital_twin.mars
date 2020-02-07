@@ -1677,6 +1677,7 @@ agent Pilot on AgentLayer{
 				for (var i = 1; i < length(aircraft_crash_array); i++)
 				{
 					var temp_string = "Crash with " + myAircraft_callsign
+					//TODO: This is not working 100%, since during the same tick the state might get overwritten
 					aircraft_crash_array[i].Get_pilot().Set_state("LeavingFrequency")
 					aircraft_crash_array[i].Get_pilot().Set_killmeinfo(temp_string)
 					other_aircrafts = other_aircrafts + aircraft_crash_array[i].Get_callsign() + " "
@@ -2205,7 +2206,9 @@ agent Aircraft on AgentLayer{
 		Aircraft__climb_angle = 0.0
 		Aircraft__drag = 0.0
 	}
-		
+	
+	// Settings for cycle calculation
+	external var n_cycle : integer
 	def update_AircraftPhysics()
 	{
 		//Note: remember, Tick size is ONE second!
@@ -2223,8 +2226,7 @@ agent Aircraft on AgentLayer{
 		// Calculate wind direction delta with -180° < delta_wind_bearing < 180°
 		var delta_wind_bearing = ((Aircraft__heading_bearing - weather.Get_wind_bearing()) +180) % 360 - 180
 		var delta_wind_bearing_rad = delta_wind_bearing * Constants.Pi / 180
-		// Settings for cycle calculation
-		var n_cycle = 100
+		
 		Aircraft__movement_x = 0
 		
 		//artificially reducing tick size here, since movement equation require smaller time intervals
