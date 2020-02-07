@@ -378,6 +378,7 @@ namespace cessna_digital_twin {
 			default(double), 
 			default(double), 
 			default(double), 
+			default(double), 
 			default(int), 
 			default(int), 
 			default(double)

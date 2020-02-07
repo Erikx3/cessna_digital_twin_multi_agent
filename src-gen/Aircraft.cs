@@ -829,11 +829,11 @@ namespace cessna_digital_twin {
 							{
 							cessna_digital_twin.Pilot[] myPilot_array = new System.Func<cessna_digital_twin.Pilot[]>(() => {
 								
-								var _sourceMapped2086_62477 = this.Position;
-								var _source2086_62477 = _sourceMapped2086_62477;
-								var _range2086_62477 = -1;
+								var _sourceMapped2087_62565 = this.Position;
+								var _source2087_62565 = _sourceMapped2087_62565;
+								var _range2087_62565 = -1;
 											
-								Func<cessna_digital_twin.Pilot, bool> _predicate2086_62477 = new Func<cessna_digital_twin.Pilot,bool>((cessna_digital_twin.Pilot it) => 
+								Func<cessna_digital_twin.Pilot, bool> _predicate2087_62565 = new Func<cessna_digital_twin.Pilot,bool>((cessna_digital_twin.Pilot it) => 
 								 {
 										{
 										return Equals(it.Get_callsign()
@@ -842,26 +842,26 @@ namespace cessna_digital_twin {
 										;
 										return default(bool);;
 								});
-								Func<cessna_digital_twin.Pilot, bool> _predicateMod2086_62477 = new Func<cessna_digital_twin.Pilot, bool>(_it => 
+								Func<cessna_digital_twin.Pilot, bool> _predicateMod2087_62565 = new Func<cessna_digital_twin.Pilot, bool>(_it => 
 								{
 									if (_it?.ID == this.ID)
 									{
 										return false;
-									} else if (_predicate2086_62477 != null)
+									} else if (_predicate2087_62565 != null)
 									{
-										return _predicate2086_62477.Invoke(_it);
+										return _predicate2087_62565.Invoke(_it);
 									} else return true;
 								});
 								
-								return _AgentLayer._PilotEnvironment.Explore(_source2086_62477 , _range2086_62477, -1, _predicate2086_62477).ToArray();
+								return _AgentLayer._PilotEnvironment.Explore(_source2087_62565 , _range2087_62565, -1, _predicate2087_62565).ToArray();
 							}).Invoke();
 							if(!Equals(myPilot_array.Length, 1)) {
 											{
 											System.Console.WriteLine("WARNING: Aircraft with callsign " + Aircraft__callsign + " did find " + myPilot_array.Length + " matching pilot(s) (not one) and will be removed!");;
 											new System.Action(() => {
-												var _target2090_62763 = this;
-												if (_target2090_62763 != null) {
-													_AgentLayer._KillAircraft(_target2090_62763, _target2090_62763._executionFrequency);
+												var _target2091_62851 = this;
+												if (_target2091_62851 != null) {
+													_AgentLayer._KillAircraft(_target2091_62851, _target2091_62851._executionFrequency);
 												}
 											}).Invoke()
 											;}
@@ -871,22 +871,22 @@ namespace cessna_digital_twin {
 											;}
 										;};
 							weather = new Func<cessna_digital_twin.Weather>(() => {
-								Func<cessna_digital_twin.Weather, bool> _predicate2096_62844 = null;
-								Func<cessna_digital_twin.Weather, bool> _predicateMod2096_62844 = new Func<cessna_digital_twin.Weather, bool>(_it => 
+								Func<cessna_digital_twin.Weather, bool> _predicate2097_62932 = null;
+								Func<cessna_digital_twin.Weather, bool> _predicateMod2097_62932 = new Func<cessna_digital_twin.Weather, bool>(_it => 
 								{
 									if (_it?.ID == this.ID)
 									{
 										return false;
-									} else if (_predicate2096_62844 != null)
+									} else if (_predicate2097_62932 != null)
 									{
-										return _predicate2096_62844.Invoke(_it);
+										return _predicate2097_62932.Invoke(_it);
 									} else return true;
 								});
 								
-								const int _range2096_62844 = -1;
-								var _source2096_62844 = this.Position;
+								const int _range2097_62932 = -1;
+								var _source2097_62932 = this.Position;
 								
-								return _AgentLayer._WeatherEnvironment.Explore(_source2096_62844, _range2096_62844, 1, _predicateMod2096_62844)?.FirstOrDefault();
+								return _AgentLayer._WeatherEnvironment.Explore(_source2097_62932, _range2097_62932, 1, _predicateMod2097_62932)?.FirstOrDefault();
 							}).Invoke();
 							check_bool = true
 							;}
@@ -1034,14 +1034,14 @@ namespace cessna_digital_twin {
 							{
 							new System.Func<Tuple<double,double>>(() => {
 								
-								var _speed2283_70399 = Aircraft__movement_x
+								var _speed2284_70487 = Aircraft__movement_x
 							;
 								
-								var _entity2283_70399 = this;
+								var _entity2284_70487 = this;
 								
-								Func<double[], bool> _predicate2283_70399 = null;
+								Func<double[], bool> _predicate2284_70487 = null;
 								
-								_AgentLayer._AircraftEnvironment.MoveTowards(_entity2283_70399, Aircraft__heading_bearing, _speed2283_70399);	
+								_AgentLayer._AircraftEnvironment.MoveTowards(_entity2284_70487, Aircraft__heading_bearing, _speed2284_70487);	
 								
 								return new Tuple<double, double>(Position.X, Position.Y);
 							}).Invoke()
@@ -1466,9 +1466,9 @@ namespace cessna_digital_twin {
 		public void Remove() {
 			{
 			new System.Action(() => {
-				var _target2062_62040 = this;
-				if (_target2062_62040 != null) {
-					_AgentLayer._KillAircraft(_target2062_62040, _target2062_62040._executionFrequency);
+				var _target2063_62128 = this;
+				if (_target2063_62128 != null) {
+					_AgentLayer._KillAircraft(_target2063_62128, _target2063_62128._executionFrequency);
 				}
 			}).Invoke()
 					;
@@ -1482,12 +1482,12 @@ namespace cessna_digital_twin {
 			{
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget2063_62095 = cor;
+				var _taget2064_62183 = cor;
 				
-				var _object2063_62095 = this;
+				var _object2064_62183 = this;
 				
-				_AgentLayer._AircraftEnvironment.PosAt(_object2063_62095, 
-					_taget2063_62095.Item1, _taget2063_62095.Item2
+				_AgentLayer._AircraftEnvironment.PosAt(_object2064_62183, 
+					_taget2064_62183.Item1, _taget2064_62183.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke()

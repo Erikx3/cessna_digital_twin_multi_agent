@@ -1536,6 +1536,7 @@ agent Pilot on AgentLayer{
 	
 	//variables:
 	external var Taxiing__spacing_to_next_aircraft : real // distance kept to the next aircraft (when start braking)
+	external var Taxiing__collision_crash_distance : real
 	external var Taxiing__angle_of_vision : real // angle of vision when looking with current heading
 	external var Taxiing__final_point_distance : integer
 	external var Taxiing__next_point_distance : integer
@@ -1668,7 +1669,7 @@ agent Pilot on AgentLayer{
 			
 			
 			//Check for collision crash
-			var aircraft_crash_array = explore Aircraft where [x => return formula.haversine(myAircraft.Get_position(), x.Get_position()) < 2]
+			var aircraft_crash_array = explore Aircraft where [x => return formula.haversine(myAircraft.Get_position(), x.Get_position()) < Taxiing__collision_crash_distance]
 			if (length(aircraft_crash_array) > 1) // since list contains ALWAYS the airplane controlled by the pilot!
 			{
 				// in case of multiple crash
