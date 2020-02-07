@@ -1,0 +1,85 @@
+{
+    "globals": {
+        // To simulate scnearios with realtime scenario
+        "startTime": "2020-01-01T18:00:00.000Z",
+        "endTime": "2020-01-01T18:25:00.000Z",
+        "deltaTUnit": "seconds",
+        
+        // To simulate with only the steps
+        // "steps": 600,
+        
+        "deltaT": 1,
+        "output": "csv",
+        "options": {
+            "delimiter": ",",
+            "numberFormat" : "G",
+           // "decimal": ".",
+           //"format": "en-EN"
+        }
+    },
+    "layers": [
+        {
+            "name": "AgentLayer"
+        }
+    ],
+    "agents": [
+        {
+            "name":"Pilot",
+            "count":20,
+            "file" : "Pilot_variables.csv"
+        },
+        {
+            "name":"Aircraft",
+            "count":20,
+            "file" : "Aircraft_variables.csv"
+        },
+        {
+            "name":"Weather",
+            "count":1,
+            // Deactivate the output for an agent
+            "outputFrequency": -1,
+            "mapping": [
+                {
+                    "parameter" : "wind_bearing",
+                    "value" : 107.0
+                },
+                {
+                    "parameter" : "wind_speed",
+                    "value" : 5.0
+                },
+                {
+                    "parameter" : "temperature",
+                    "value" : 15.0
+                },
+                {
+                    "parameter" : "pressure_QNH",
+                    "value" : 101325
+                },
+                {
+                    "parameter" : "gravity",
+                    "value" : 9.81
+                }
+            ]
+        },
+        {
+            "name":"AirTrafficController",
+            "count":1,
+        },
+        {
+            "name":"Observer",
+            "count":1,
+            // Deactivate the output for an agent
+            "outputFrequency": -1,
+            "mapping" : [
+                {
+                    "parameter" : "number_of_spawning_points",
+                    "value" : 8
+                },
+                {
+                    "parameter" : "print_interval",
+                    "value" : 200
+                }
+            ]
+        }      
+    ]
+}
