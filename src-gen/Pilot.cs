@@ -479,11 +479,11 @@ namespace cessna_digital_twin {
 			{
 			cessna_digital_twin.Aircraft[] myAircraft_array = new System.Func<cessna_digital_twin.Aircraft[]>(() => {
 				
-				var _sourceMapped381_12270 = this.Position;
-				var _source381_12270 = _sourceMapped381_12270;
-				var _range381_12270 = -1;
+				var _sourceMapped388_12518 = this.Position;
+				var _source388_12518 = _sourceMapped388_12518;
+				var _range388_12518 = -1;
 							
-				Func<cessna_digital_twin.Aircraft, bool> _predicate381_12270 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft it) => 
+				Func<cessna_digital_twin.Aircraft, bool> _predicate388_12518 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft it) => 
 				 {
 						{
 						return Equals(it.Get_callsign()
@@ -492,18 +492,18 @@ namespace cessna_digital_twin {
 						;
 						return default(bool);;
 				});
-				Func<cessna_digital_twin.Aircraft, bool> _predicateMod381_12270 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
+				Func<cessna_digital_twin.Aircraft, bool> _predicateMod388_12518 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
 				{
 					if (_it?.ID == this.ID)
 					{
 						return false;
-					} else if (_predicate381_12270 != null)
+					} else if (_predicate388_12518 != null)
 					{
-						return _predicate381_12270.Invoke(_it);
+						return _predicate388_12518.Invoke(_it);
 					} else return true;
 				});
 				
-				return _AgentLayer._AircraftEnvironment.Explore(_source381_12270 , _range381_12270, -1, _predicate381_12270).ToArray();
+				return _AgentLayer._AircraftEnvironment.Explore(_source388_12518 , _range388_12518, -1, _predicate388_12518).ToArray();
 			}).Invoke();
 			if(!Equals(myAircraft_array.Length, 1)) {
 							{
@@ -511,15 +511,15 @@ namespace cessna_digital_twin {
 							state = "LeavingFrequency";
 							event_info = "End flight mission due to no matching aircraft callsign found";
 							new System.Action(() => {
-								var _target387_12675 = this;
-								if (_target387_12675 != null) {
-									_AgentLayer._KillPilot(_target387_12675, _target387_12675._executionFrequency);
+								var _target394_12923 = this;
+								if (_target394_12923 != null) {
+									_AgentLayer._KillPilot(_target394_12923, _target394_12923._executionFrequency);
 								}
 							}).Invoke()
 							;}
 					;} ;
 			myAircraft = new Func<cessna_digital_twin.Aircraft>(() => {
-				Func<cessna_digital_twin.Aircraft, bool> _predicate389_12704 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft it) => 
+				Func<cessna_digital_twin.Aircraft, bool> _predicate396_12952 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft it) => 
 				 {
 						{
 						return Equals(it.Get_callsign()
@@ -528,39 +528,39 @@ namespace cessna_digital_twin {
 						;
 						return default(bool);;
 				});
-				Func<cessna_digital_twin.Aircraft, bool> _predicateMod389_12704 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
+				Func<cessna_digital_twin.Aircraft, bool> _predicateMod396_12952 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
 				{
 					if (_it?.ID == this.ID)
 					{
 						return false;
-					} else if (_predicate389_12704 != null)
+					} else if (_predicate396_12952 != null)
 					{
-						return _predicate389_12704.Invoke(_it);
+						return _predicate396_12952.Invoke(_it);
 					} else return true;
 				});
 				
-				const int _range389_12704 = -1;
-				var _source389_12704 = this.Position;
+				const int _range396_12952 = -1;
+				var _source396_12952 = this.Position;
 				
-				return _AgentLayer._AircraftEnvironment.Explore(_source389_12704, _range389_12704, 1, _predicateMod389_12704)?.FirstOrDefault();
+				return _AgentLayer._AircraftEnvironment.Explore(_source396_12952, _range396_12952, 1, _predicateMod396_12952)?.FirstOrDefault();
 			}).Invoke();
 			observer = new Func<cessna_digital_twin.Observer>(() => {
-				Func<cessna_digital_twin.Observer, bool> _predicate390_12798 = null;
-				Func<cessna_digital_twin.Observer, bool> _predicateMod390_12798 = new Func<cessna_digital_twin.Observer, bool>(_it => 
+				Func<cessna_digital_twin.Observer, bool> _predicate397_13046 = null;
+				Func<cessna_digital_twin.Observer, bool> _predicateMod397_13046 = new Func<cessna_digital_twin.Observer, bool>(_it => 
 				{
 					if (_it?.ID == this.ID)
 					{
 						return false;
-					} else if (_predicate390_12798 != null)
+					} else if (_predicate397_13046 != null)
 					{
-						return _predicate390_12798.Invoke(_it);
+						return _predicate397_13046.Invoke(_it);
 					} else return true;
 				});
 				
-				const int _range390_12798 = -1;
-				var _source390_12798 = this.Position;
+				const int _range397_13046 = -1;
+				var _source397_13046 = this.Position;
 				
-				return _AgentLayer._ObserverEnvironment.Explore(_source390_12798, _range390_12798, 1, _predicateMod390_12798)?.FirstOrDefault();
+				return _AgentLayer._ObserverEnvironment.Explore(_source397_13046, _range397_13046, 1, _predicateMod397_13046)?.FirstOrDefault();
 			}).Invoke();
 			if(Equals((int) Mars.Core.SimulationManager.Entities.SimulationClock.CurrentStep, time_initialization)) {
 							{
@@ -572,12 +572,12 @@ namespace cessna_digital_twin {
 											System.Tuple<double,double> landing_spawn_cor = airportstade.Get_landing_spawning_point(heading_information);
 											new System.Func<System.Tuple<double,double>>(() => {
 												
-												var _taget399_13207 = landing_spawn_cor;
+												var _taget406_13455 = landing_spawn_cor;
 												
-												var _object399_13207 = this;
+												var _object406_13455 = this;
 												
-												_AgentLayer._PilotEnvironment.PosAt(_object399_13207, 
-													_taget399_13207.Item1, _taget399_13207.Item2
+												_AgentLayer._PilotEnvironment.PosAt(_object406_13455, 
+													_taget406_13455.Item1, _taget406_13455.Item2
 												);
 												return new Tuple<double, double>(Position.X, Position.Y);
 											}).Invoke();
@@ -593,12 +593,12 @@ namespace cessna_digital_twin {
 																			System.Tuple<double,double> cor = observer.Get_spawn_location_cor();
 																			new System.Func<System.Tuple<double,double>>(() => {
 																				
-																				var _taget408_13530 = cor;
+																				var _taget415_13778 = cor;
 																				
-																				var _object408_13530 = this;
+																				var _object415_13778 = this;
 																				
-																				_AgentLayer._PilotEnvironment.PosAt(_object408_13530, 
-																					_taget408_13530.Item1, _taget408_13530.Item2
+																				_AgentLayer._PilotEnvironment.PosAt(_object415_13778, 
+																					_taget415_13778.Item1, _taget415_13778.Item2
 																				);
 																				return new Tuple<double, double>(Position.X, Position.Y);
 																			}).Invoke();
@@ -616,9 +616,9 @@ namespace cessna_digital_twin {
 															state = "LeavingFrequency";
 															event_info = "End flight mission due to no valid initialization type";
 															new System.Action(() => {
-																var _target421_13958 = this;
-																if (_target421_13958 != null) {
-																	_AgentLayer._KillPilot(_target421_13958, _target421_13958._executionFrequency);
+																var _target428_14206 = this;
+																if (_target428_14206 != null) {
+																	_AgentLayer._KillPilot(_target428_14206, _target428_14206._executionFrequency);
 																}
 															}).Invoke()
 															;}
@@ -1884,7 +1884,7 @@ namespace cessna_digital_twin {
 		{
 			{
 			myAircraft.Teleport(new System.Tuple<double,double>(9.501273,53.559141));
-			timehandler.create_action_duration(3,0,"None");
+			timehandler.create_action_duration(2,0,"None");
 			if(timehandler.hold_action_time(timehandler.action_duration)
 			) {
 							{
@@ -2023,11 +2023,11 @@ namespace cessna_digital_twin {
 											active_taxi_point);
 											cessna_digital_twin.Aircraft[] aircraft_array = new System.Func<cessna_digital_twin.Aircraft[]>(() => {
 												
-												var _sourceMapped1645_50830 = this.Position;
-												var _source1645_50830 = _sourceMapped1645_50830;
-												var _range1645_50830 = -1;
+												var _sourceMapped1652_51114 = this.Position;
+												var _source1652_51114 = _sourceMapped1652_51114;
+												var _range1652_51114 = -1;
 															
-												Func<cessna_digital_twin.Aircraft, bool> _predicate1645_50830 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft x) => 
+												Func<cessna_digital_twin.Aircraft, bool> _predicate1652_51114 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft x) => 
 												 {
 														{
 														return formula.haversine(myAircraft.Get_position(),
@@ -2038,18 +2038,18 @@ namespace cessna_digital_twin {
 														;
 														return default(bool);;
 												});
-												Func<cessna_digital_twin.Aircraft, bool> _predicateMod1645_50830 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
+												Func<cessna_digital_twin.Aircraft, bool> _predicateMod1652_51114 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
 												{
 													if (_it?.ID == this.ID)
 													{
 														return false;
-													} else if (_predicate1645_50830 != null)
+													} else if (_predicate1652_51114 != null)
 													{
-														return _predicate1645_50830.Invoke(_it);
+														return _predicate1652_51114.Invoke(_it);
 													} else return true;
 												});
 												
-												return _AgentLayer._AircraftEnvironment.Explore(_source1645_50830 , _range1645_50830, -1, _predicate1645_50830).ToArray();
+												return _AgentLayer._AircraftEnvironment.Explore(_source1652_51114 , _range1652_51114, -1, _predicate1652_51114).ToArray();
 											}).Invoke();
 											if(aircraft_array.Length > 1) {
 															{
@@ -2068,6 +2068,56 @@ namespace cessna_digital_twin {
 																	 			;} 
 																	 	;}
 																	 }
+															;}
+													;} ;
+											cessna_digital_twin.Aircraft[] aircraft_crash_array = new System.Func<cessna_digital_twin.Aircraft[]>(() => {
+												
+												var _sourceMapped1671_52055 = this.Position;
+												var _source1671_52055 = _sourceMapped1671_52055;
+												var _range1671_52055 = -1;
+															
+												Func<cessna_digital_twin.Aircraft, bool> _predicate1671_52055 = new Func<cessna_digital_twin.Aircraft,bool>((cessna_digital_twin.Aircraft x) => 
+												 {
+														{
+														return formula.haversine(myAircraft.Get_position(),
+														x.Get_position()
+														)
+														 < 2
+														;}
+														;
+														return default(bool);;
+												});
+												Func<cessna_digital_twin.Aircraft, bool> _predicateMod1671_52055 = new Func<cessna_digital_twin.Aircraft, bool>(_it => 
+												{
+													if (_it?.ID == this.ID)
+													{
+														return false;
+													} else if (_predicate1671_52055 != null)
+													{
+														return _predicate1671_52055.Invoke(_it);
+													} else return true;
+												});
+												
+												return _AgentLayer._AircraftEnvironment.Explore(_source1671_52055 , _range1671_52055, -1, _predicate1671_52055).ToArray();
+											}).Invoke();
+											if(aircraft_crash_array.Length > 1) {
+															{
+															string other_aircrafts = "";
+															for(int i = 1;
+																	 i < aircraft_crash_array.Length;
+																	 i++){
+																	 	{
+																	 	string temp_string = "Crash with " + myAircraft_callsign;
+																	 	aircraft_crash_array[i].Get_pilot()
+																	 	.Set_state("LeavingFrequency");
+																	 	aircraft_crash_array[i].Get_pilot()
+																	 	.Set_killmeinfo(temp_string);
+																	 	other_aircrafts = other_aircrafts + aircraft_crash_array[i].Get_callsign()
+																	 	 + " "
+																	 	;}
+																	 };
+															go_to_next_state("LeavingFrequency");
+															killme_info = "Crash with " + other_aircrafts
 															;}
 													;} ;
 											if(Equals(avoid_collision, true)) {
@@ -2435,6 +2485,35 @@ namespace cessna_digital_twin {
 			}
 			
 			return default(string);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public string Get_callsign() {
+			{
+			return myAircraft_callsign
+					;
+			}
+			
+			return default(string);;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void Set_state(
+		string _state) {
+			{
+			state = _state
+					;
+			}
+			
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public void Set_killmeinfo(
+		string _killme_info) {
+			{
+			killme_info = _killme_info
+					;
+			}
+			
+			return;
 		}
 		internal bool _isAlive;
 		internal int _executionFrequency;

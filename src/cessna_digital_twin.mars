@@ -375,6 +375,13 @@ agent Pilot on AgentLayer{
 	// functions for observer agent
 	passive Get_state() => return state
 	
+	//functions for aircraft
+	passive Get_callsign() => return myAircraft_callsign
+	
+	//functions for collision
+	passive Set_state(_state: string) => state = _state
+	passive Set_killmeinfo(_killme_info : string) => killme_info = _killme_info
+	
 	// Second Initialization necessary after INIT time is over
 	def Second_Initialization()
 	{
@@ -1514,7 +1521,7 @@ agent Pilot on AgentLayer{
 		//can still be found via explore function, which leads to unwanted collision
 		myAircraft.Teleport(#(9.501273,53.559141)) // Workaround
 		
-		timehandler.create_action_duration(3, 0, "None")
+		timehandler.create_action_duration(2, 0, "None")
 		if (timehandler.hold_action_time(timehandler.action_duration))
 		{
 			remove_me_and_my_aircraft(killme_info)
@@ -1641,7 +1648,7 @@ agent Pilot on AgentLayer{
 			distance_to_next_point = formula.haversine(myAircraft.Get_position(), active_taxi_point)
 			
 			
-			//Check for collision TODO: Add collision conflict handling (e.g. when two aircrafts won't move)
+			//Check for collision TODO: Add collision conflict handling (e.g. when two aircrafts won't move, when they are moving to each other)
 			var aircraft_array = explore Aircraft where [x => return formula.haversine(myAircraft.Get_position(), x.Get_position()) < Taxiing__spacing_to_next_aircraft]
 			if (length(aircraft_array) > 1) // since list contains ALWAYS the airplane controlled by the pilot!
 			{
@@ -1658,6 +1665,25 @@ agent Pilot on AgentLayer{
 					}
 				}	
 			}
+			
+			
+			//Check for collision crash
+			var aircraft_crash_array = explore Aircraft where [x => return formula.haversine(myAircraft.Get_position(), x.Get_position()) < 2]
+			if (length(aircraft_crash_array) > 1) // since list contains ALWAYS the airplane controlled by the pilot!
+			{
+				// in case of multiple crash
+				var other_aircrafts : string = ""
+				for (var i = 1; i < length(aircraft_crash_array); i++)
+				{
+					var temp_string = "Crash with " + myAircraft_callsign
+					aircraft_crash_array[i].Get_pilot().Set_state("LeavingFrequency")
+					aircraft_crash_array[i].Get_pilot().Set_killmeinfo(temp_string)
+					other_aircrafts = other_aircrafts + aircraft_crash_array[i].Get_callsign() + " "
+				}
+				go_to_next_state("LeavingFrequency")
+				killme_info = "Crash with " + other_aircrafts
+			}
+			
 			if (avoid_collision === true)
 			{
 				Taxiing_brake(0.1, 0.8)
@@ -1971,7 +1997,7 @@ agent Aircraft on AgentLayer{
 	
 	tick
 	{
-		weather = nearest Weather //TODO: Refactor this
+		second_initialize()
 		update_general_values()
 		update_Engine()
 		update_LeftWingTank()
@@ -2030,11 +2056,13 @@ agent Aircraft on AgentLayer{
 	//Classes and Agents
 	var Utility = new UtilityClass()
 	var weather : Weather
+	var myPilot : Pilot
 	
+	passive Get_pilot() => return myPilot
 	passive Remove() => kill me
 	passive Teleport(cor : Tuple<real, real>) => pos at cor
 
-	observe var event_info : string // maybe add something like this or think about it
+	observe var event_info : string // saving events
 	
 	def initialize_general_values()
 	{	
@@ -2044,12 +2072,31 @@ agent Aircraft on AgentLayer{
 		event_info = "None"
 	}
 	
+	
 	def update_general_values()
-	{
+	{		
 		Longitude = xcor
 		Latitude = ycor
 	}
-	
+	var check_bool : bool = false
+	def second_initialize()
+	{
+		if (check_bool === false)
+		{
+			var myPilot_array = explore Pilot where [it => return it.Get_callsign() === Aircraft__callsign]
+			if (length(myPilot_array) !== 1)
+			{
+				println "WARNING: Aircraft with callsign " + Aircraft__callsign + " did find " + length(myPilot_array) + " matching pilot(s) (not one) and will be removed!"
+				kill me
+			}
+			else
+			{
+				myPilot = myPilot_array[0]
+			}
+			weather = nearest Weather
+			check_bool = true
+		}
+	}
 	passive Get_position() => return #(xcor, ycor) // for returning the position of the aircraft
 
 	//-----Aircraft Characteristics-----
