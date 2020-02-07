@@ -122,6 +122,15 @@ namespace cessna_digital_twin {
 			return;
 		}
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		public virtual void set_action_duration_time_bool(bool bo) 
+		{
+			{
+			action_duration_time_set = bo
+					;
+			}
+			return;
+		}
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 		public virtual void create_action_duration(double action_duration_base, double action_duration_extra, string mode) 
 		{
 			{
@@ -130,7 +139,7 @@ namespace cessna_digital_twin {
 							action_duration_time_set = true;
 							if(Equals(mode, "pilot_age_and_experience")) {
 											{
-											double action_duration_extra_calc = action_duration_extra * (1 + (pilot_age / pilot_age_max) - pilot_flight_experience / (pilot_flight_experience_max));
+											double action_duration_extra_calc = action_duration_extra * (1 + (pilot_age / pilot_age_max) - (pilot_flight_experience / pilot_flight_experience_max));
 											action_duration = action_duration_base + Mars.Mathematics.Statistics.RandomHelper.NextDouble(_Random, 0, action_duration_extra_calc)
 											;}
 									;} else {

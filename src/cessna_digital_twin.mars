@@ -228,6 +228,7 @@ agent Pilot on AgentLayer{
 		takeoff_distance = 0 // for measuring takeoff distance later
 		myAircraft_callsign = "Cessna" + callsign_number
 		
+		pos at #(9.4, 53.4) // default value, better than 0.0
 		Longitude = xcor
 		Latitude = ycor
 				
@@ -402,6 +403,7 @@ agent Pilot on AgentLayer{
 				state = "LandingRequest"
 				heading_information = observer.Get_runway_heading()
 				myAircraft.Initialize_landing(heading_information)
+				myAircraft.Set_second_init_bool(true)
 				var landing_spawn_cor = airportstade.Get_landing_spawning_point(heading_information)
 				pos me at landing_spawn_cor
 				myAircraft.Teleport(landing_spawn_cor)
@@ -412,6 +414,7 @@ agent Pilot on AgentLayer{
 				{
 					state = "PreflightInspection" // first state for starting on ground
 					var cor = observer.Get_spawn_location_cor()
+					myAircraft.Set_second_init_bool(true)
 					pos me at cor
 					myAircraft.Teleport(cor)
 				}
@@ -809,18 +812,18 @@ agent Pilot on AgentLayer{
 		
 		else if (next_action === "Listen_receiver_on_frequency")
 		{
-			var temp_receiver = agentlayer.Listen_receiver_on_frequency()
-			if (temp_receiver === myAircraft_callsign)
-			{
-				taxi_path = agentlayer.Listen_message_information_path_on_frequency()
-				next_action = "Clear_frequency"
-			}
-			
 			//retry contacting tower after a specific period of time
 			timehandler.create_action_duration(time_base_next_communication_attempt, time_extra_next_communication_attempt, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				next_action = "Communicate_on_frequency"
+			}
+			var temp_receiver = agentlayer.Listen_receiver_on_frequency()
+			if (temp_receiver === myAircraft_callsign)
+			{
+				taxi_path = agentlayer.Listen_message_information_path_on_frequency()
+				next_action = "Clear_frequency"
+				timehandler.set_action_duration_time_bool(false) // make sure retry timer above is set off
 			}
 		}
 		
@@ -981,19 +984,21 @@ agent Pilot on AgentLayer{
 		
 		else if (next_action === "Listen_receiver_on_frequency")
 		{
-			var temp_receiver = agentlayer.Listen_receiver_on_frequency()
-			if (temp_receiver === myAircraft_callsign)
-			{
-				taxi_path = agentlayer.Listen_message_information_path_on_frequency()
-				next_action = "Clear_frequency"
-			}
-			
 			//retry contacting tower after a specific period of time
 			timehandler.create_action_duration(time_base_next_communication_attempt, time_extra_next_communication_attempt, "pilot_age_and_experience")
 			if (timehandler.hold_action_time(timehandler.action_duration))
 			{
 				next_action = "Communicate_on_frequency"
 			}
+			var temp_receiver = agentlayer.Listen_receiver_on_frequency()
+			if (temp_receiver === myAircraft_callsign)
+			{
+				taxi_path = agentlayer.Listen_message_information_path_on_frequency()
+				next_action = "Clear_frequency"
+				timehandler.set_action_duration_time_bool(false) // make sure retry timer above is set off
+			}
+			
+			
 		}
 		
 		// to make sure that message is not instantly deleted and simulate processing time of incoming message and blockage
@@ -1037,6 +1042,13 @@ agent Pilot on AgentLayer{
 		
 		else if (next_action === "Listen_receiver_on_frequency")
 		{
+			//retry contacting tower after a specific period of time
+			timehandler.create_action_duration(time_base_next_communication_attempt, time_extra_next_communication_attempt, "pilot_age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				next_action = "Communicate_on_frequency"
+			}
+			//except getting answer in that moment
 			var temp_receiver = agentlayer.Listen_receiver_on_frequency()
 			if (temp_receiver === myAircraft_callsign)
 			{
@@ -1052,12 +1064,7 @@ agent Pilot on AgentLayer{
 					agentlayer.Clear_frequency()
 					next_action = "Wait_to_communicate_on_frequency"
 				}
-			}
-			//retry contacting tower after a specific period of time
-			timehandler.create_action_duration(time_base_next_communication_attempt, time_extra_next_communication_attempt, "pilot_age_and_experience")
-			if (timehandler.hold_action_time(timehandler.action_duration))
-			{
-				next_action = "Communicate_on_frequency"
+				timehandler.set_action_duration_time_bool(false) // make sure retry timer above is set off
 			}
 		}
 		
@@ -1250,6 +1257,13 @@ agent Pilot on AgentLayer{
 		
 		else if (next_action === "Listen_receiver_on_frequency")
 		{
+			//retry contacting tower after a specific period of time
+			timehandler.create_action_duration(time_base_next_communication_attempt, time_extra_next_communication_attempt, "pilot_age_and_experience")
+			if (timehandler.hold_action_time(timehandler.action_duration))
+			{
+				next_action = "Communicate_on_frequency"
+			}
+			
 			var temp_receiver = agentlayer.Listen_receiver_on_frequency()
 			if (temp_receiver === myAircraft_callsign)
 			{
@@ -1258,13 +1272,7 @@ agent Pilot on AgentLayer{
 				{
 					next_action = "Clear_frequency"
 				}
-			}
-			
-			//retry contacting tower after a specific period of time
-			timehandler.create_action_duration(time_base_next_communication_attempt, time_extra_next_communication_attempt, "pilot_age_and_experience")
-			if (timehandler.hold_action_time(timehandler.action_duration))
-			{
-				next_action = "Communicate_on_frequency"
+				timehandler.set_action_duration_time_bool(false) // make sure retry timer above is set off
 			}
 		}
 		
@@ -1999,13 +2007,17 @@ agent Aircraft on AgentLayer{
 	
 	tick
 	{
+		
 		second_initialize()
-		update_general_values()
-		update_Engine()
-		update_LeftWingTank()
-		update_RightWingTank()
-		update_Brake()
-		update_AircraftPhysics() // includes engine_rpm, propeller thrust, friction force
+		if (second_initialize_by_pilot_bool === true)
+		{
+			update_general_values()
+			update_Engine()
+			update_LeftWingTank()
+			update_RightWingTank()
+			update_Brake()
+			update_AircraftPhysics() // includes engine_rpm, propeller thrust, friction force
+		}
 	}
 	
 	passive Initialize_landing(heading : real)
@@ -2054,6 +2066,8 @@ agent Aircraft on AgentLayer{
 	// -----General Values and Functions (Settings and Doc)-----
 	observe var Latitude : real
 	observe var Longitude : real
+	var second_initialize_by_pilot_bool : bool = false // Only update values, when second init is done
+	passive Set_second_init_bool(bo : bool) =>  second_initialize_by_pilot_bool = bo
 	
 	//Classes and Agents
 	var Utility = new UtilityClass()
@@ -2068,6 +2082,7 @@ agent Aircraft on AgentLayer{
 	
 	def initialize_general_values()
 	{	
+		pos at #(9.4, 53.4) //default spawn value so far (better than at 0.0)
 		Longitude = xcor
 		Latitude = ycor
 			
@@ -2080,10 +2095,12 @@ agent Aircraft on AgentLayer{
 		Longitude = xcor
 		Latitude = ycor
 	}
-	var check_bool : bool = false
+	
+	// second init to make sure, all agents are available
+	var second_initialize_bool : bool = false
 	def second_initialize()
 	{
-		if (check_bool === false)
+		if (second_initialize_bool === false)
 		{
 			var myPilot_array = explore Pilot where [it => return it.Get_callsign() === Aircraft__callsign]
 			if (length(myPilot_array) !== 1)
@@ -2096,7 +2113,7 @@ agent Aircraft on AgentLayer{
 				myPilot = myPilot_array[0]
 			}
 			weather = nearest Weather
-			check_bool = true
+			second_initialize_bool = true
 		}
 	}
 	passive Get_position() => return #(xcor, ycor) // for returning the position of the aircraft
@@ -2865,8 +2882,8 @@ agent AirTrafficController on AgentLayer
 					else if(message_type_received === "RequestTakeOff")
 					{
 						taxipath = airportstade.Get_taxipath_to_RunwayLineUpPoint(runway_heading_calculated)
-						var pilot_array = explore Pilot where [x => return x.Get_state() === "Landing" or x.Get_state() === "TakeOff"]
-						if (length(pilot_array) >= 1) // active aircraft on runway
+						var pilot_array = explore Pilot where [x => return x.Get_state() === "Landing" or x.Get_state() === "TakeOff" or x.Get_state() === "LandingRequest"]
+						if (length(pilot_array) >= 1) // active aircraft to/on runway
 						{
 							request_approval = false
 						}
@@ -3181,6 +3198,8 @@ class TimeHandler
 		action_run_time = 0
 	}
 	
+	def set_action_duration_time_bool(bo : bool) => action_duration_time_set = bo
+	
 	def create_action_duration(action_duration_base : real, action_duration_extra : real, mode : string)
 	{
 		if (action_duration_time_set === false)
@@ -3188,7 +3207,7 @@ class TimeHandler
 			action_duration_time_set = true			
 			if (mode === "pilot_age_and_experience")
 			{
-				var action_duration_extra_calc = action_duration_extra * (1 + (pilot_age / pilot_age_max) - pilot_flight_experience / (pilot_flight_experience_max) )
+				var action_duration_extra_calc = action_duration_extra * (1 + (pilot_age / pilot_age_max) - (pilot_flight_experience / pilot_flight_experience_max))
 				action_duration = action_duration_base + random(action_duration_extra_calc)
 			}
 			else
