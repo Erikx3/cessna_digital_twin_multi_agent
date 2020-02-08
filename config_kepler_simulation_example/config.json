@@ -2,7 +2,7 @@
     "globals": {
         // To simulate scnearios with realtime scenario
         "startTime": "2020-01-01T18:00:00.000Z",
-        "endTime": "2020-01-01T18:25:00.000Z",
+        "endTime": "2020-01-01T18:30:00.000Z",
         "deltaTUnit": "seconds",
         
         // To simulate with only the steps
