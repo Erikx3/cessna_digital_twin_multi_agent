@@ -824,12 +824,12 @@ namespace cessna_digital_twin {
 			{
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget2085_63215 = new System.Tuple<double,double>(9.4,53.4);
+				var _taget2084_63223 = new System.Tuple<double,double>(9.4,53.4);
 				
-				var _object2085_63215 = this;
+				var _object2084_63223 = this;
 				
-				_AgentLayer._AircraftEnvironment.PosAt(_object2085_63215, 
-					_taget2085_63215.Item1, _taget2085_63215.Item2
+				_AgentLayer._AircraftEnvironment.PosAt(_object2084_63223, 
+					_taget2084_63223.Item1, _taget2084_63223.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
@@ -856,11 +856,11 @@ namespace cessna_digital_twin {
 							{
 							cessna_digital_twin.Pilot[] myPilot_array = new System.Func<cessna_digital_twin.Pilot[]>(() => {
 								
-								var _sourceMapped2105_63644 = this.Position;
-								var _source2105_63644 = _sourceMapped2105_63644;
-								var _range2105_63644 = -1;
+								var _sourceMapped2104_63652 = this.Position;
+								var _source2104_63652 = _sourceMapped2104_63652;
+								var _range2104_63652 = -1;
 											
-								Func<cessna_digital_twin.Pilot, bool> _predicate2105_63644 = new Func<cessna_digital_twin.Pilot,bool>((cessna_digital_twin.Pilot it) => 
+								Func<cessna_digital_twin.Pilot, bool> _predicate2104_63652 = new Func<cessna_digital_twin.Pilot,bool>((cessna_digital_twin.Pilot it) => 
 								 {
 										{
 										return Equals(it.Get_callsign()
@@ -869,26 +869,26 @@ namespace cessna_digital_twin {
 										;
 										return default(bool);;
 								});
-								Func<cessna_digital_twin.Pilot, bool> _predicateMod2105_63644 = new Func<cessna_digital_twin.Pilot, bool>(_it => 
+								Func<cessna_digital_twin.Pilot, bool> _predicateMod2104_63652 = new Func<cessna_digital_twin.Pilot, bool>(_it => 
 								{
 									if (_it?.ID == this.ID)
 									{
 										return false;
-									} else if (_predicate2105_63644 != null)
+									} else if (_predicate2104_63652 != null)
 									{
-										return _predicate2105_63644.Invoke(_it);
+										return _predicate2104_63652.Invoke(_it);
 									} else return true;
 								});
 								
-								return _AgentLayer._PilotEnvironment.Explore(_source2105_63644 , _range2105_63644, -1, _predicate2105_63644).ToArray();
+								return _AgentLayer._PilotEnvironment.Explore(_source2104_63652 , _range2104_63652, -1, _predicate2104_63652).ToArray();
 							}).Invoke();
 							if(!Equals(myPilot_array.Length, 1)) {
 											{
 											System.Console.WriteLine("WARNING: Aircraft with callsign " + Aircraft__callsign + " did find " + myPilot_array.Length + " matching pilot(s) (not one) and will be removed!");;
 											new System.Action(() => {
-												var _target2109_63930 = this;
-												if (_target2109_63930 != null) {
-													_AgentLayer._KillAircraft(_target2109_63930, _target2109_63930._executionFrequency);
+												var _target2108_63938 = this;
+												if (_target2108_63938 != null) {
+													_AgentLayer._KillAircraft(_target2108_63938, _target2108_63938._executionFrequency);
 												}
 											}).Invoke()
 											;}
@@ -898,22 +898,22 @@ namespace cessna_digital_twin {
 											;}
 										;};
 							weather = new Func<cessna_digital_twin.Weather>(() => {
-								Func<cessna_digital_twin.Weather, bool> _predicate2115_64011 = null;
-								Func<cessna_digital_twin.Weather, bool> _predicateMod2115_64011 = new Func<cessna_digital_twin.Weather, bool>(_it => 
+								Func<cessna_digital_twin.Weather, bool> _predicate2114_64019 = null;
+								Func<cessna_digital_twin.Weather, bool> _predicateMod2114_64019 = new Func<cessna_digital_twin.Weather, bool>(_it => 
 								{
 									if (_it?.ID == this.ID)
 									{
 										return false;
-									} else if (_predicate2115_64011 != null)
+									} else if (_predicate2114_64019 != null)
 									{
-										return _predicate2115_64011.Invoke(_it);
+										return _predicate2114_64019.Invoke(_it);
 									} else return true;
 								});
 								
-								const int _range2115_64011 = -1;
-								var _source2115_64011 = this.Position;
+								const int _range2114_64019 = -1;
+								var _source2114_64019 = this.Position;
 								
-								return _AgentLayer._WeatherEnvironment.Explore(_source2115_64011, _range2115_64011, 1, _predicateMod2115_64011)?.FirstOrDefault();
+								return _AgentLayer._WeatherEnvironment.Explore(_source2114_64019, _range2114_64019, 1, _predicateMod2114_64019)?.FirstOrDefault();
 							}).Invoke();
 							second_initialize_bool = true
 							;}
@@ -1060,14 +1060,14 @@ namespace cessna_digital_twin {
 							{
 							new System.Func<Tuple<double,double>>(() => {
 								
-								var _speed2303_71592 = Aircraft__movement_x
+								var _speed2302_71600 = Aircraft__movement_x
 							;
 								
-								var _entity2303_71592 = this;
+								var _entity2302_71600 = this;
 								
-								Func<double[], bool> _predicate2303_71592 = null;
+								Func<double[], bool> _predicate2302_71600 = null;
 								
-								_AgentLayer._AircraftEnvironment.MoveTowards(_entity2303_71592, Aircraft__heading_bearing, _speed2303_71592);	
+								_AgentLayer._AircraftEnvironment.MoveTowards(_entity2302_71600, Aircraft__heading_bearing, _speed2302_71600);	
 								
 								return new Tuple<double, double>(Position.X, Position.Y);
 							}).Invoke()
@@ -1502,9 +1502,9 @@ namespace cessna_digital_twin {
 		public void Remove() {
 			{
 			new System.Action(() => {
-				var _target2078_63051 = this;
-				if (_target2078_63051 != null) {
-					_AgentLayer._KillAircraft(_target2078_63051, _target2078_63051._executionFrequency);
+				var _target2077_63059 = this;
+				if (_target2077_63059 != null) {
+					_AgentLayer._KillAircraft(_target2077_63059, _target2077_63059._executionFrequency);
 				}
 			}).Invoke()
 					;
@@ -1518,12 +1518,12 @@ namespace cessna_digital_twin {
 			{
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget2079_63106 = cor;
+				var _taget2078_63114 = cor;
 				
-				var _object2079_63106 = this;
+				var _object2078_63114 = this;
 				
-				_AgentLayer._AircraftEnvironment.PosAt(_object2079_63106, 
-					_taget2079_63106.Item1, _taget2079_63106.Item2
+				_AgentLayer._AircraftEnvironment.PosAt(_object2078_63114, 
+					_taget2078_63114.Item1, _taget2078_63114.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke()

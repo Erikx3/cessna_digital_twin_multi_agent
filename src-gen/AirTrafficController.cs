@@ -167,12 +167,12 @@ namespace cessna_digital_twin {
 			double y_spawn = 53.559712;
 			new System.Func<System.Tuple<double,double>>(() => {
 				
-				var _taget2838_88701 = new System.Tuple<double,double>(x_spawn,y_spawn);
+				var _taget2837_88709 = new System.Tuple<double,double>(x_spawn,y_spawn);
 				
-				var _object2838_88701 = this;
+				var _object2837_88709 = this;
 				
-				_AgentLayer._AirTrafficControllerEnvironment.PosAt(_object2838_88701, 
-					_taget2838_88701.Item1, _taget2838_88701.Item2
+				_AgentLayer._AirTrafficControllerEnvironment.PosAt(_object2837_88709, 
+					_taget2837_88709.Item1, _taget2837_88709.Item2
 				);
 				return new Tuple<double, double>(Position.X, Position.Y);
 			}).Invoke();
@@ -186,22 +186,22 @@ namespace cessna_digital_twin {
 			{ if (!_isAlive) return; }
 			{
 			weather = new Func<cessna_digital_twin.Weather>(() => {
-				Func<cessna_digital_twin.Weather, bool> _predicate2845_88873 = null;
-				Func<cessna_digital_twin.Weather, bool> _predicateMod2845_88873 = new Func<cessna_digital_twin.Weather, bool>(_it => 
+				Func<cessna_digital_twin.Weather, bool> _predicate2844_88881 = null;
+				Func<cessna_digital_twin.Weather, bool> _predicateMod2844_88881 = new Func<cessna_digital_twin.Weather, bool>(_it => 
 				{
 					if (_it?.ID == this.ID)
 					{
 						return false;
-					} else if (_predicate2845_88873 != null)
+					} else if (_predicate2844_88881 != null)
 					{
-						return _predicate2845_88873.Invoke(_it);
+						return _predicate2844_88881.Invoke(_it);
 					} else return true;
 				});
 				
-				const int _range2845_88873 = -1;
-				var _source2845_88873 = this.Position;
+				const int _range2844_88881 = -1;
+				var _source2844_88881 = this.Position;
 				
-				return _AgentLayer._WeatherEnvironment.Explore(_source2845_88873, _range2845_88873, 1, _predicateMod2845_88873)?.FirstOrDefault();
+				return _AgentLayer._WeatherEnvironment.Explore(_source2844_88881, _range2844_88881, 1, _predicateMod2844_88881)?.FirstOrDefault();
 			}).Invoke();
 			if(Equals(state, "Listen_on_frequency")) {
 							{
@@ -246,11 +246,11 @@ namespace cessna_digital_twin {
 																											taxipath = airportstade.Get_taxipath_to_RunwayLineUpPoint(runway_heading_calculated);
 																											cessna_digital_twin.Pilot[] pilot_array = new System.Func<cessna_digital_twin.Pilot[]>(() => {
 																												
-																												var _sourceMapped2885_90815 = this.Position;
-																												var _source2885_90815 = _sourceMapped2885_90815;
-																												var _range2885_90815 = -1;
+																												var _sourceMapped2884_90823 = this.Position;
+																												var _source2884_90823 = _sourceMapped2884_90823;
+																												var _range2884_90823 = -1;
 																															
-																												Func<cessna_digital_twin.Pilot, bool> _predicate2885_90815 = new Func<cessna_digital_twin.Pilot,bool>((cessna_digital_twin.Pilot x) => 
+																												Func<cessna_digital_twin.Pilot, bool> _predicate2884_90823 = new Func<cessna_digital_twin.Pilot,bool>((cessna_digital_twin.Pilot x) => 
 																												 {
 																														{
 																														return Equals(x.Get_state()
@@ -261,18 +261,18 @@ namespace cessna_digital_twin {
 																														;
 																														return default(bool);;
 																												});
-																												Func<cessna_digital_twin.Pilot, bool> _predicateMod2885_90815 = new Func<cessna_digital_twin.Pilot, bool>(_it => 
+																												Func<cessna_digital_twin.Pilot, bool> _predicateMod2884_90823 = new Func<cessna_digital_twin.Pilot, bool>(_it => 
 																												{
 																													if (_it?.ID == this.ID)
 																													{
 																														return false;
-																													} else if (_predicate2885_90815 != null)
+																													} else if (_predicate2884_90823 != null)
 																													{
-																														return _predicate2885_90815.Invoke(_it);
+																														return _predicate2884_90823.Invoke(_it);
 																													} else return true;
 																												});
 																												
-																												return _AgentLayer._PilotEnvironment.Explore(_source2885_90815 , _range2885_90815, -1, _predicate2885_90815).ToArray();
+																												return _AgentLayer._PilotEnvironment.Explore(_source2884_90823 , _range2884_90823, -1, _predicate2884_90823).ToArray();
 																											}).Invoke();
 																											if(pilot_array.Length >= 1) {
 																															{
@@ -291,11 +291,11 @@ namespace cessna_digital_twin {
 																															taxipath = airportstade.Get_taxipath_to_ApronPoint(runway_heading_calculated);
 																															cessna_digital_twin.Pilot[] pilot_array = new System.Func<cessna_digital_twin.Pilot[]>(() => {
 																																
-																																var _sourceMapped2899_91465 = this.Position;
-																																var _source2899_91465 = _sourceMapped2899_91465;
-																																var _range2899_91465 = -1;
+																																var _sourceMapped2898_91473 = this.Position;
+																																var _source2898_91473 = _sourceMapped2898_91473;
+																																var _range2898_91473 = -1;
 																																			
-																																Func<cessna_digital_twin.Pilot, bool> _predicate2899_91465 = new Func<cessna_digital_twin.Pilot,bool>((cessna_digital_twin.Pilot x) => 
+																																Func<cessna_digital_twin.Pilot, bool> _predicate2898_91473 = new Func<cessna_digital_twin.Pilot,bool>((cessna_digital_twin.Pilot x) => 
 																																 {
 																																		{
 																																		return Equals(x.Get_state()
@@ -304,18 +304,18 @@ namespace cessna_digital_twin {
 																																		;
 																																		return default(bool);;
 																																});
-																																Func<cessna_digital_twin.Pilot, bool> _predicateMod2899_91465 = new Func<cessna_digital_twin.Pilot, bool>(_it => 
+																																Func<cessna_digital_twin.Pilot, bool> _predicateMod2898_91473 = new Func<cessna_digital_twin.Pilot, bool>(_it => 
 																																{
 																																	if (_it?.ID == this.ID)
 																																	{
 																																		return false;
-																																	} else if (_predicate2899_91465 != null)
+																																	} else if (_predicate2898_91473 != null)
 																																	{
-																																		return _predicate2899_91465.Invoke(_it);
+																																		return _predicate2898_91473.Invoke(_it);
 																																	} else return true;
 																																});
 																																
-																																return _AgentLayer._PilotEnvironment.Explore(_source2899_91465 , _range2899_91465, -1, _predicate2899_91465).ToArray();
+																																return _AgentLayer._PilotEnvironment.Explore(_source2898_91473 , _range2898_91473, -1, _predicate2898_91473).ToArray();
 																															}).Invoke();
 																															if(pilot_array.Length >= 1) {
 																																			{

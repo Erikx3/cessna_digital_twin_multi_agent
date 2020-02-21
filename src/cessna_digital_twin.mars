@@ -95,7 +95,7 @@ agent Weather on AgentLayer{
 		// 1. Calculate Pressure Height in relation to Airport Elevation, that is ZERO
 		var pressure_height : real
 		pressure_height = (temperature_zero / L_constant) * (1 - (pressure_QNH / pressure_zero)**(1/5.2561))
-		// 2. Determine the ISA variation (since "Weather__temperature" is at airport)
+		// 2. Determine the ISA variation (since "temperature" is at airport)
 		var pressure_height_temperature : real
 		pressure_height_temperature = temperature_zero - L_constant * pressure_height
 		var temperature_isa_delta : real
@@ -1685,7 +1685,7 @@ agent Pilot on AgentLayer{
 				for (var i = 1; i < length(aircraft_crash_array); i++)
 				{
 					var temp_string = "Crash with " + myAircraft_callsign
-					//TODO: This is not working 100%, since during the same tick the state might get overwritten
+					//TODO: This is not working 100%, since during the same tick the state might get overwritten from the other pilot
 					aircraft_crash_array[i].Get_pilot().Set_state("LeavingFrequency")
 					aircraft_crash_array[i].Get_pilot().Set_killmeinfo(temp_string)
 					other_aircrafts = other_aircrafts + aircraft_crash_array[i].Get_callsign() + " "
@@ -2007,7 +2007,6 @@ agent Aircraft on AgentLayer{
 	
 	tick
 	{
-		
 		second_initialize()
 		if (second_initialize_by_pilot_bool === true)
 		{
@@ -3131,7 +3130,7 @@ class Formula
 	
 	def calculate_runway_heading(available_runway_heading : List<real>, wind_bearing : real)
 	{
-		var temp_delta = 999.9 // this will be always overwritten
+		var temp_delta = 999.9 // this will be always overwritten, but should not be zero otherwise
 		var saved_heading : real
 		//Looping through all available headings
 		each (var temp_runway_heading in available_runway_heading)
