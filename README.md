@@ -1,13 +1,14 @@
 # Running Simulations Guide
 
-This is a guide on how to setup, run and analyze the simulation
-results.
+This program is part of my Bachelorthesis at the University of Applied Sciences. The final version of my Thesis is available above.
+
+In the following is a guide on how to setup, run and analyze the simulation, which is written with the MARS DSL <https://mars-group.org/>.
 
 ## Setup
 
 First of all it’s recommended to download the “MARS Handbook”
 from <https://mars-group.org/modeling-handbook/> for a full setup and
-further reference. In this appendix it’s only described what is needed
+further reference. In this guide it’s only described what is needed
 to run the simulation program of this thesis without working on it.
 
 1.  For running the simulation install Dotnet Core - SDK (Version
@@ -147,7 +148,7 @@ file. There are two ways to visualize the results.
 
 ## Kepler
 
-FIGURE HERE
+![Kepler_image](guide_kepler.PNG "Simulation visualization result")
 
 Visit <https://kepler.gl/> and upload for instance the *Aircraft.csv*.
 To get a nice visualization over the internal simulation time as in
