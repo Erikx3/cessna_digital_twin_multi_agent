@@ -228,7 +228,7 @@ agent Pilot on AgentLayer{
 		takeoff_distance = 0 // for measuring takeoff distance later
 		myAircraft_callsign = "Cessna" + callsign_number
 		
-		pos at #(9.4, 53.4) // default value, better than 0.0
+		pos at #(9.4, 53.4)  // workaround, better than 0.0 for visualization reasons, place until second init
 		Longitude = xcor
 		Latitude = ycor
 				
@@ -2046,7 +2046,7 @@ agent Aircraft on AgentLayer{
 		Aircraft__true_air_speed_x = 32.0
 		Aircraft__ground_speed_x = 30.0
 		Aircraft__true_air_speed = 32.04
-		Aircraft__height = 115
+		Aircraft__height = 140
 		Aircraft__flight_phase = "in-air"
 		Aircraft__rate_of_climb = -1.5 // almost standard descent glide scope of 3°
 		Aircraft__pitch = 3.5
@@ -2081,7 +2081,7 @@ agent Aircraft on AgentLayer{
 	
 	def initialize_general_values()
 	{	
-		pos at #(9.4, 53.4) //default spawn value so far (better than at 0.0)
+		pos at #(9.4, 53.4)  // workaround, better than 0.0 for visualization reasons, place until second init
 		Longitude = xcor
 		Latitude = ycor
 			
@@ -2633,7 +2633,6 @@ agent Aircraft on AgentLayer{
 	var TireRightMainWheel__inflation_max : integer = 145000
 	var TireLeftMainWheel__inflation_max : integer = 145000
 	var TireNoseWheel__inflation_max : integer = 207000
-	var Tire__number_of_wheels : integer = 3
 	external var Tire__wheel_radius : real //meter; neglecting non equal size of nose and main wheels
 	
 	// Friction Calculation (See Excel "Calculation table")
@@ -2688,7 +2687,7 @@ agent Aircraft on AgentLayer{
 		//TODO: Add friction dependency on Tire inflation
 		if (Aircraft__flight_phase === "on-ground")
 		{
-			Tire__friction_force = (Aircraft__mass * weather.Get_gravity() - Aircraft__lift) * Tire__number_of_wheels * Tire__roll_coefficient / Tire__wheel_radius
+			Tire__friction_force = (Aircraft__mass * weather.Get_gravity() - Aircraft__lift) * Tire__roll_coefficient / Tire__wheel_radius
 		}
 		else
 		{
