@@ -220,7 +220,7 @@ agent Pilot on AgentLayer{
 	
 	initialize
 	{	
-		//NOTE: Before second initialization aircrafts and pilots are at default position #(0.0, 0.0)
+		//NOTE: Before second initialization aircrafts and pilots would be at default position #(0.0, 0.0)
 		state = "Initialization"
 		current_activity = "Initialization"
 		next_action = "Initialization"
@@ -1516,6 +1516,7 @@ agent Pilot on AgentLayer{
 		if (next_action === "End_of_Actions")
 		{
 			go_to_next_state("Taxiing")
+			active_taxi_point_number = 1 // workaround, otherwise pilot turns around to first point on list
 			state_after_taxiing = "LeavingFrequency"
 			killme_info = "LandingComplete"
 		}	
@@ -2015,7 +2016,7 @@ agent Aircraft on AgentLayer{
 			update_LeftWingTank()
 			update_RightWingTank()
 			update_Brake()
-			update_AircraftPhysics() // includes engine_rpm, propeller thrust, friction force
+			update_AircraftPhysics()  // includes engine_rpm, propeller thrust and friction force due to tick size independent calculation
 		}
 	}
 	
@@ -2894,7 +2895,7 @@ agent AirTrafficController on AgentLayer
 					else if(message_type_received === "RequestLanding")
 					{
 						taxipath = airportstade.Get_taxipath_to_ApronPoint(runway_heading_calculated)
-						var pilot_array = explore Pilot where [x => return x.Get_state() === "TakeOff"]
+						var pilot_array = explore Pilot where [x => return x.Get_state() === "Landing" or x.Get_state() === "TakeOff"]
 						if (length(pilot_array) >= 1) // active aircraft on runway
 						{
 							request_approval = false
